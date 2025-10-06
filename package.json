@@ -1,0 +1,16 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "A platform to connect users with local service providers, shop, and rental options.",
+  "license": "ISC",
+  "author": "Abhishek Raj",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongoose": "^8.19.0"
+  }
+}
