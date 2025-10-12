@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import validator from 'validator'
+import JWT from 'jsonwebtoken'
+import bcrypt from 'bcrypt'
 
 const userSchema = new mongoose.Schema(
   {
@@ -51,11 +53,26 @@ const userSchema = new mongoose.Schema(
     },
     role : {
       type: String,
-      enum : ['user', 'provider', 'admin']
+      enum : ['user', 'provider', 'admin'],
+      default : 'user'
     }
   },
   { timestamps: true }
 );
+
+userSchema.methods.getJWT = function (){
+  const user = this;
+  const token = JWT.sign({_id : user._id}, process.env.SECRET_KEY, {
+    expiresIn : '7d'
+  })
+  return token
+}
+
+userSchema.methods.isPasswordMatch = function (password){
+  const user = this
+  return bcrypt.compare(password, user.password)
+}
+
 
 const userModel = mongoose.model("User", userSchema);
 
