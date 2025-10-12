@@ -1,5 +1,6 @@
 import express from 'express'
 import dotenv from 'dotenv'
+import connectDB from './config/db'
 
 dotenv.config()
 
@@ -12,6 +13,14 @@ app.get("/", (req,res) => {
     res.send('API working fine!!!')
 })
 
-app.listen(PORT, () => {
-    console.log('Server Started Listening at PORT :', PORT)
-})
+connectDB()
+    .then(() => {
+        console.log('Connected to DB Successfully!!');
+        
+        app.listen(PORT, () => {
+            console.log('Server Started Listening at PORT :', PORT)
+        })
+    })
+    .catch(err => {
+        throw new Error(err);
+    })
