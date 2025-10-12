@@ -70,6 +70,7 @@ export const userLogin = async (req, res) => {
   }
 };
 
+// User Log Out 
 export const userLogOut = async () => {
   res
     .cookie("token", null, {
