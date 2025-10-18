@@ -11,7 +11,7 @@ function Header() {
     }
     const isAuthenticated = true;
   return (
-    <header className="border-b bg-white/95 backdrop:blur-sm fixed top-0 left-0 right-0 z-50">
+    <header className="border-b border-slate-900/20 bg-white/95 backdrop:blur-sm fixed top-0 left-0 right-0 z-50">
         <div className='container mx-auto px-4 h-16 flex items-center justify-between'>
             
             <div className='flex items-center space-x-8'>
