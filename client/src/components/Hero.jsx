@@ -30,29 +30,32 @@ function Hero() {
 
                 {/* Category List */}
                 <div className="py-6">
-                    <div className="flex justify-center items-center gap-6 pb-2 mx-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-100">
-                        {localServiceCategories.map((category) => (
-                            <button
-                                key={category.id}
-                                className="flex flex-col items-center min-w-[100px] group transition-transform hover:scale-105"
-                            >
-                                <div
-                                    className={`w-14 h-14 ${category.color} rounded-2xl flex items-center justify-center mb-2 group-hover:shadow-xl transition-all duration-200`}
+                    <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-100">
+                        <div className="flex items-center gap-6 pb-2 px-4 w-max mx-auto">
+                            {localServiceCategories.map((category) => (
+                                <button
+                                    key={category.id}
+                                    className="flex flex-col items-center min-w-[100px] group transition-transform hover:scale-105"
                                 >
-                                    <svg
-                                        className="w-6 h-6 text-white"
-                                        fill="currentColor"
-                                        viewBox="0 0 24 24"
+                                    <div
+                                        className={`w-14 h-14 ${category.color} rounded-2xl flex items-center justify-center mb-2 group-hover:shadow-xl transition-all duration-200`}
                                     >
-                                        <path d={category.icon} />
-                                    </svg>
-                                </div>
-                                <span className="text-xs font-medium text-blue-900 text-center leading-tight">
-                                    {category.title}
-                                </span>
-                            </button>
-                        ))}
+                                        <svg
+                                            className="w-6 h-6 text-white"
+                                            fill="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path d={category.icon} />
+                                        </svg>
+                                    </div>
+                                    <span className="text-xs font-medium text-blue-900 text-center leading-tight">
+                                        {category.title}
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
                     </div>
+
                 </div>
 
                 {/* Trust Indicators */}
