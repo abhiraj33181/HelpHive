@@ -19,7 +19,7 @@ function Header() {
                     <div className='w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center'>
                         <HandHelpingIcon className='w-5 h-5 text-white'/>
                     </div>
-                    <div className='text-2xl font-bold bg-gradient-to-br from-blue-600 to-blue-800 bg-clip-text text-transparent'>
+                    <div className='heading text-2xl font-bold bg-gradient-to-br from-blue-600 to-blue-800 bg-clip-text text-transparent'>
                         HelpHive
                     </div>
                 </Link>

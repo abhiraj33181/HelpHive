@@ -7,9 +7,9 @@ function Hero() {
     return (
         <section className="py-20 px-4 bg-gradient-to-b from-blue-50 to-white">
             <div className="container mx-auto text-center">
-                <h1 className="text-5xl md:text-6xl font-bold text-blue-900 leading-tight mb-6">
+                <h1 className="heading text-5xl md:text-6xl font-bold text-blue-900 leading-tight mb-6">
                     Find trusted local helpers <br />
-                    <span className="text-blue-800">all in one place</span>
+                    <span className="heading text-blue-800">all in one place</span>
                 </h1>
 
                 <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
@@ -30,7 +30,7 @@ function Hero() {
 
                 {/* Category List */}
                 <div className="py-6">
-                    <div className="flex justify-center items-center overflow-x-auto gap-6 pb-2 mx-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-100">
+                    <div className="flex justify-center items-center gap-6 pb-2 mx-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-100">
                         {localServiceCategories.map((category) => (
                             <button
                                 key={category.id}
