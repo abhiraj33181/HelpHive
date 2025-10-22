@@ -1,3 +1,5 @@
+import { Facebook, Instagram, Linkedin, Twitter ,Phone, Mail, MapPin, Video, Clock, FileText} from "lucide-react";
+
 export const localServiceCategories = [
     {
         id: 'electrician',
@@ -63,34 +65,34 @@ export const localServiceCategories = [
 
 
 export const testimonials = [
-  {
-    rating: 5,
-    text: "The electrician arrived on time, fixed the wiring quickly, and explained everything in simple terms. Very professional and reliable service!",
-    author: "Rohit Sharma",
-    location: "From Delhi",
-    bgColor: "bg-[#E0F2FE]" // light blue
-  },
-  {
-    rating: 5,
-    text: "I hired a plumber through the platform and the experience was seamless. He solved the issue within an hour and left everything clean.",
-    author: "Priya Singh",
-    location: "From Mumbai",
-    bgColor: "bg-[#FEF3C7]" // light yellow
-  },
-  {
-    rating: 5,
-    text: "Booked a home tutor for my son. The tutor was patient, very knowledgeable, and made learning fun. Highly recommend!",
-    author: "Ananya Mehta",
-    location: "From Bengaluru",
-    bgColor: "bg-[#DCFCE7]" // light green
-  },
-  {
-    rating: 5,
-    text: "The carpenter was punctual and did an amazing job fixing our furniture. The quality of work exceeded my expectations. Super easy booking!",
-    author: "Vikram Kapoor",
-    location: "From Hyderabad",
-    bgColor: "bg-[#FFE3E3]" // light red
-  }
+    {
+        rating: 5,
+        text: "The electrician arrived on time, fixed the wiring quickly, and explained everything in simple terms. Very professional and reliable service!",
+        author: "Rohit Sharma",
+        location: "From Delhi",
+        bgColor: "bg-[#E0F2FE]" // light blue
+    },
+    {
+        rating: 5,
+        text: "I hired a plumber through the platform and the experience was seamless. He solved the issue within an hour and left everything clean.",
+        author: "Priya Singh",
+        location: "From Mumbai",
+        bgColor: "bg-[#FEF3C7]" // light yellow
+    },
+    {
+        rating: 5,
+        text: "Booked a home tutor for my son. The tutor was patient, very knowledgeable, and made learning fun. Highly recommend!",
+        author: "Ananya Mehta",
+        location: "From Bengaluru",
+        bgColor: "bg-[#DCFCE7]" // light green
+    },
+    {
+        rating: 5,
+        text: "The carpenter was punctual and did an amazing job fixing our furniture. The quality of work exceeded my expectations. Super easy booking!",
+        author: "Vikram Kapoor",
+        location: "From Hyderabad",
+        bgColor: "bg-[#FFE3E3]" // light red
+    }
 ];
 
 
@@ -121,6 +123,62 @@ export const faqs = [
         question: "Can I book recurring services?",
         answer: "Yes, you can schedule recurring services such as weekly tutoring sessions, monthly home cleaning, or regular appliance maintenance. You can manage all bookings through your account dashboard."
     }
+];
+
+export const footerSections = [
+    {
+        title: "Company",
+        links: [
+            { text: "About Us", href: "/about" },
+            { text: "How It Works", href: "/how-it-works" },
+            { text: "Contact Us", href: "/contact" },
+        ],
+    },
+    {
+        title: "For Helpers",
+        links: [
+            { text: "Join as a Service Provider", href: "/signup/helper" },
+            { text: "Partner Resources", href: "/resources" },
+        ],
+    },
+    {
+        title: "For Customers",
+        links: [
+            { text: "Find Local Helpers", href: "/helpers" },
+            { text: "Book a Service", href: "/book-service" },
+        ],
+    },
+    {
+        title: "Legal",
+        links: [
+            { text: "Privacy Policy", href: "/privacy" },
+            { text: "Terms & Conditions", href: "/terms" },
+        ],
+    },
+];
+
+
+export const contactInfo = [
+    {
+        icon: Phone,
+        text: "1800-202-HELP (4357)",
+    },
+    {
+        icon: Mail,
+        text: "support@localhelp.in",
+    },
+    {
+        icon: MapPin,
+        text: "Serving across India 🇮🇳",
+    },
+];
+
+
+export const socials = [
+    { name: "twitter", icon: Twitter, url: "https://twitter.com/localhelpindia" },
+    { name: "facebook", icon: Facebook, url: "https://facebook.com/localhelpindia" },
+    { name: "linkedin", icon: Linkedin, url: "https://linkedin.com/company/localhelpindia" },
+    { name: "instagram", icon: Instagram, url: "https://instagram.com/localhelp.in" },
 ];
 
 

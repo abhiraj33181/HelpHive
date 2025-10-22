@@ -1,4 +1,4 @@
-import { Calendar, HandHelpingIcon, HousePlugIcon, Stethoscope } from 'lucide-react'
+import { Calendar, HandHelpingIcon } from 'lucide-react'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
