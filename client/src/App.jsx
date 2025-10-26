@@ -1,20 +1,15 @@
-import React from 'react'
-import Header from './components/Header'
-import Hero from './components/Hero'
-import Testinomials from './components/Testinomials'
-import FAQ from './components/FAQ'
-import Footer from './components/Footer'
+import { Route, Routes } from 'react-router-dom'
+import Home from './Pages/Home'
+import Auth from './Pages/Auth'
 
 const App = () => {
   return (
     <>
-    <div className="min-h-screen bg-white">
-      <Header/>
-      <Hero/>
-      <Testinomials/>
-      <FAQ/>
-      <Footer/>
-    </div>
+
+    <Routes>
+      <Route path='/' element={<Home/>}/>
+      <Route path='/login' element={<Auth/>}/>
+    </Routes>
     </>
   )
 }
