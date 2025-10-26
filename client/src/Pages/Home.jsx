@@ -1,9 +1,9 @@
 import React from 'react'
-import Header from '../components/Header'
-import Hero from '../components/Hero'
-import FAQ from '../components/FAQ'
-import Footer from '../components/Footer'
-import Testimonials from '../components/Testinomials'
+import Header from '../components/Home/Header'
+import Hero from '../components/Home/Hero'
+import FAQ from '../components/Home/FAQ'
+import Footer from '../components/Home/Footer'
+import Testimonials from '../components/Home/Testinomials'
 
 function Home() {
     return (

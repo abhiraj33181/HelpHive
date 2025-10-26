@@ -1,5 +1,5 @@
 import React from "react";
-import { localServiceCategories } from "../assets/constant";
+import { localServiceCategories } from "../../assets/constant";
 
 function Hero() {
     const isAuthenticated = false;

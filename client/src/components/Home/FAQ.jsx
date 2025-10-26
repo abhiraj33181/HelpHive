@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { faqs, trustLogos } from '../assets/constant';
+import { faqs, trustLogos } from '../../assets/constant';
 
 function FAQ() {
     const [openFAQ, setOpenFAQ] = useState(null);

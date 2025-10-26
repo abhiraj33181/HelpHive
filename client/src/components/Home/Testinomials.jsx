@@ -1,5 +1,5 @@
 import React from 'react';
-import { testimonials } from '../assets/constant';
+import { testimonials } from '../../assets/constant';
 
 function Testimonials() {
     return (

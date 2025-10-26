@@ -1,6 +1,6 @@
 import React from 'react'
 import { HandHelpingIcon } from 'lucide-react'
-import { contactInfo, footerSections, socials } from '../assets/constant'
+import { contactInfo, footerSections, socials } from '../../assets/constant'
 
 function Footer() {
     return (

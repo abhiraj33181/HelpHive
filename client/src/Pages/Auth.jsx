@@ -1,8 +1,61 @@
 import React from 'react'
+import Login from '../components/Auth/Login'
 
 function Auth() {
   return (
-    <div>Auth</div>
+    <div className="min-h-screen flex flex-col lg:flex-row bg-gray-50">
+      {/* Left section - Login form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12 bg-white">
+        <Login />
+      </div>
+
+      {/* Right section - Hero / Illustration */}
+      <div className="hidden lg:flex w-1/2 relative overflow-hidden">
+        {/* Overlay gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/40 to-transparent z-10"></div>
+
+        {/* Background image */}
+        <div className="w-full h-full bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 flex items-center justify-center relative">
+          <div
+            className='absolute inset-0 bg-[url("https://png.pngtree.com/thumb_back/fh260/background/20241224/pngtree-a-fully-equipped-gym-with-dumbbells-weight-machines-and-cardio-equipment-image_16843660.jpg")] bg-cover bg-center opacity-20'
+          ></div>
+
+          {/* Content overlay */}
+          <div className="text-center text-white p-10 max-w-lg z-20">
+            <div className="w-24 h-24 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-8 backdrop-blur-md shadow-lg">
+              <svg
+                className="w-12 h-12 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                />
+              </svg>
+            </div>
+
+            <h2 className="heading text-4xl font-extrabold mb-4 tracking-tight">
+              Welcome to <span className="text-blue-200 heading">HelpHive</span>
+            </h2>
+
+            <p className="text-lg text-blue-100 mb-3 font-medium">
+              Your trusted local connection.
+            </p>
+
+            <p className="text-base text-blue-100/80 leading-relaxed">
+              Find verified local helpers, shop owners, and landlords — all in one place.
+              HelpHive makes it easy to discover, connect, and book trusted services
+              quickly and safely, anytime and anywhere.
+            </p>
+
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 
