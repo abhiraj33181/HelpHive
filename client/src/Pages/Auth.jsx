@@ -1,26 +1,30 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Login from '../components/Auth/Login'
+import { useNavigate, useParams } from 'react-router-dom'
 
 function Auth() {
-  return (
+  const navigate = useNavigate()
+  const {authType} = useParams()
+
+  useEffect(() => {
+    if (authType !== 'login' && authType !== 'signup'){
+      navigate('/')
+    }
+  }, [authType, navigate])
+return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-gray-50">
-      {/* Left section - Login form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12 bg-white">
-        <Login />
+        <Login type={authType} />
       </div>
 
-      {/* Right section - Hero / Illustration */}
       <div className="hidden lg:flex w-1/2 relative overflow-hidden">
-        {/* Overlay gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/40 to-transparent z-10"></div>
 
-        {/* Background image */}
         <div className="w-full h-full bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 flex items-center justify-center relative">
           <div
             className='absolute inset-0 bg-[url("https://png.pngtree.com/thumb_back/fh260/background/20241224/pngtree-a-fully-equipped-gym-with-dumbbells-weight-machines-and-cardio-equipment-image_16843660.jpg")] bg-cover bg-center opacity-20'
           ></div>
 
-          {/* Content overlay */}
           <div className="text-center text-white p-10 max-w-lg z-20">
             <div className="w-24 h-24 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-8 backdrop-blur-md shadow-lg">
               <svg
