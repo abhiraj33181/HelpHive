@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Login from '../components/Auth/Login'
 import { useNavigate, useParams } from 'react-router-dom'
 
@@ -9,8 +9,16 @@ function Auth() {
   useEffect(() => {
     if (authType !== 'login' && authType !== 'signup'){
       navigate('/')
+    }else{
+      if (authType === 'login'){
+        setPara('Continue discovering and connecting with trusted local helpers, shop owners, and landlords — all in one place.')
+      }else{
+        setPara('Find verified local helpers, shop owners, and landlords — all in one place. HelpHive makes it easy to discover, connect, and book trusted services quickly and safely, anytime and anywhere.')
+      }
     }
   }, [authType, navigate])
+
+  const [para, setPara] = useState('')
 return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-gray-50">
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12 bg-white">
@@ -50,10 +58,8 @@ return (
               Your trusted local connection.
             </p>
 
-            <p className="text-base text-blue-100/80 leading-relaxed">
-              Find verified local helpers, shop owners, and landlords — all in one place.
-              HelpHive makes it easy to discover, connect, and book trusted services
-              quickly and safely, anytime and anywhere.
+            <p className="text-md text-blue-100/80 leading-relaxed">
+              {para}
             </p>
 
           </div>

@@ -1,5 +1,3 @@
-// UserDashboard.jsx
-
 import React, { useState } from "react";
 import {
     Home,
@@ -30,7 +28,6 @@ const SIDEBAR_NAV = [
     { name: "Logout", icon: <LogOut size={20} />, key: "logout" },
 ];
 
-// Dummy user & data
 const user = {
     name: "Priya Sharma",
     profilePic: "https://randomuser.me/api/portraits/women/68.jpg",
