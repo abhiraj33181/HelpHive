@@ -1,422 +1,414 @@
-import React, { useState } from "react";
-import {
-    Home,
-    CalendarCheck,
-    Briefcase,
-    MessageSquare,
-    Star,
-    User,
-    Settings,
-    LogOut,
-    Bell,
-    Moon,
-    Sun,
-    Pencil,
-    Camera,
-    Eye,
-    EyeOff,
-} from "lucide-react";
+"use client";
+import React, { useEffect, useState } from "react";
+import { Calendar, Clock, FileText, MapPin, Phone, Star, Video } from "lucide-react";
+import {Link} from "react-router-dom";
 
-const SIDEBAR_NAV = [
-    { name: "Dashboard", icon: <Home size={20} />, key: "dashboard" },
-    { name: "My Bookings", icon: <CalendarCheck size={20} />, key: "bookings" },
-    { name: "My Services", icon: <Briefcase size={20} />, key: "services" },
-    { name: "Messages", icon: <MessageSquare size={20} />, key: "messages" },
-    { name: "Reviews", icon: <Star size={20} />, key: "reviews" },
-    { name: "Profile", icon: <User size={20} />, key: "profile" },
-    { name: "Settings", icon: <Settings size={20} />, key: "settings" },
-    { name: "Logout", icon: <LogOut size={20} />, key: "logout" },
+// Minimal local UI components with Tailwind
+function Card({ children, className = "" }) {
+  return <div className={`bg-white rounded-xl shadow ${className}`}>{children}</div>;
+}
+function CardContent({ children, className = "" }) {
+  return <div className={`px-6 py-4 ${className}`}>{children}</div>;
+}
+function Button({ children, className = "", ...props }) {
+  return <button className={`px-4 py-2 rounded font-medium transition ${className}`} {...props}>{children}</button>;
+}
+function Badge({ children, className = "" }) {
+  return <span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${className}`}>{children}</span>;
+}
+function Avatar({ children, className = "" }) {
+  return <span className={`inline-block rounded-full overflow-hidden bg-gray-200 ${className}`}>{children}</span>;
+}
+function AvatarImage({ src, alt }) {
+  return src ? <img src={src} alt={alt} className="object-cover w-full h-full" /> : null;
+}
+function AvatarFallback({ children, className = "" }) {
+  return <span className={`flex items-center justify-center w-full h-full ${className}`}>{children}</span>;
+}
+// Tabs system: basic implementation
+function Tabs({ value, onValueChange, children, className = "" }) {
+  return <div className={className}>{children}</div>;
+}
+function TabsList({ children, className = "" }) {
+  return <div className={className}>{children}</div>;
+}
+function TabsTrigger({ value, children, className = "", onClick }) {
+  return <button className={`focus:outline-none px-4 py-2 ${className}`} onClick={() => onClick(value)}>{children}</button>;
+}
+function TabsContent({ value, activeValue, children, className = "" }) {
+  return value === activeValue ? <div className={className}>{children}</div> : null;
+}
+
+// Local constants
+function getStatusColor(status) {
+  switch (status) {
+    case "Scheduled":
+      return "bg-blue-100 text-blue-600";
+    case "Completed":
+      return "bg-green-100 text-green-600";
+    case "Cancelled":
+      return "bg-red-100 text-red-600";
+    case "In Progress":
+      return "bg-yellow-100 text-yellow-700";
+    default:
+      return "bg-gray-100 text-gray-500";
+  }
+}
+
+// Dummy Modal component
+function PrescriptionViewModal({ appointment, userType, trigger }) {
+  return <>
+    {trigger}
+    {/* Implement actual modal as needed */}
+  </>;
+}
+
+
+// Dummy hooks with static data for demo purpose
+const dummyAppointments = [
+  {
+    _id: "123",
+    slotStartIso: new Date(Date.now() + 3600 * 1000).toISOString(),
+    doctorId: {
+      name: "Dr. John Smith",
+      specialization: "Dermatology",
+      profileImage: "",
+      hospitalInfo: { name: "City Hospital" },
+      fees: 500,
+    },
+    status: "Scheduled",
+    symptoms: "Fever, headache",
+    consultationType: "Video Consultation",
+    prescription: null,
+  },
+  {
+    _id: "456",
+    slotStartIso: new Date(Date.now() - 24 * 3600 * 1000).toISOString(),
+    doctorId: {
+      name: "Dr. Alice Ray",
+      specialization: "Paediatrics",
+      profileImage: "",
+      hospitalInfo: { name: "Children Care" },
+      fees: 400,
+    },
+    status: "Completed",
+    symptoms: "Cough, cold",
+    consultationType: "Phone Consultation",
+    prescription: { details: "Take rest, drink fluids" },
+  },
 ];
 
-const user = {
-    name: "Priya Sharma",
-    profilePic: "https://randomuser.me/api/portraits/women/68.jpg",
-    email: "priya.sharma@example.com",
-    phone: "9876543210",
-    address: "Boring Road, Patna, Bihar",
+function useAppointmentStore() {
+  const [appointments, setAppointments] = useState(dummyAppointments);
+  const [loading, setLoading] = useState(false);
+  const fetchAppointments = (userType, tab) => {
+    setLoading(false);
+    // In a real implementation, filter by tab here
+    if (tab === "upcoming") {
+      setAppointments(dummyAppointments.filter(apt =>
+        new Date(apt.slotStartIso) >= new Date() &&
+        (apt.status === "Scheduled" || apt.status === "In Progress")));
+    } else {
+      setAppointments(dummyAppointments.filter(apt =>
+        new Date(apt.slotStartIso) < new Date() ||
+        apt.status === "Completed" ||
+        apt.status === "Cancelled"));
+    }
+  };
+  return { appointments, fetchAppointments, loading };
+}
+function userAuthStore() {
+  return { user: { type: "patient", name: "Jane Doe" } };
+}
+
+// Main Component
+const PatientDashboardContent = () => {
+  const { user } = userAuthStore();
+  const { appointments, fetchAppointments, loading } = useAppointmentStore();
+  const [activeTab, setActiveTab] = useState("upcoming");
+  const [tabCounts, setTabCounts] = useState({ upcoming: 0, past: 0 });
+
+  useEffect(() => {
+    if (user?.type === "patient") fetchAppointments("patient", activeTab);
+  }, [user, activeTab, fetchAppointments]);
+
+  useEffect(() => {
+    const now = new Date();
+    const upcomingAppointments = appointments.filter(apt => {
+      const aptDate = new Date(apt.slotStartIso);
+      return (
+        (aptDate >= now || apt.status === "In Progress") &&
+        (apt.status === "Scheduled" || apt.status === "In Progress")
+      );
+    });
+    const pastAppointments = appointments.filter(apt => {
+      const aptDate = new Date(apt.slotStartIso);
+      return (
+        aptDate < now ||
+        apt.status === "Completed" ||
+        apt.status === "Cancelled"
+      );
+    });
+    setTabCounts({ upcoming: upcomingAppointments.length, past: pastAppointments.length });
+  }, [appointments]);
+
+  const formatDate = dateString =>
+    new Date(dateString).toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  const isToday = dateString => new Date(dateString).toDateString() === new Date().toDateString();
+  const canJoinCall = appointment => {
+    const appointmentTime = new Date(appointment.slotStartIso);
+    const now = new Date();
+    const diffMintues = (appointmentTime.getTime() - now.getTime()) / (1000 * 60);
+    return (
+      isToday(appointment.slotStartIso) &&
+      diffMintues <= 15 && diffMintues >= -120 &&
+      (appointment.status === "Scheduled" || appointment.status === "In Progress")
+    );
+  };
+
+  if (!user) return null;
+
+  const AppointmentCard = ({ appointment }) => (
+    <Card className="hover:shadow-lg transition-shadow">
+      <CardContent className="p-6">
+        <div className="flex flex-col items-center md:flex-row md:items-start md:space-x-6">
+          <div className="flex-shrink-0 flex justify-center md:justify-start">
+            <Avatar className="w-20 h-20">
+              <AvatarImage src={appointment.doctorId?.profileImage} alt={appointment.doctorId?.name} />
+              <AvatarFallback className="bg-blue-100 text-blue-600 text-lg font-semibold">
+                {appointment.doctorId?.name?.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+          <div className="mt-4 md:mt-0 flex-1 w-full text-center md:text-left">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-start">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {appointment.doctorId?.name}
+                </h3>
+                <p className="text-gray-600">{appointment.doctorId?.specialization}</p>
+                <div className="flex items-center justify-center md:justify-start space-x-1 text-sm text-gray-500 mt-1">
+                  <MapPin className="w-3 h-3" />
+                  <span>{appointment.doctorId?.hospitalInfo?.name}</span>
+                </div>
+              </div>
+              <div className="mt-2 md:mt-0 text-center md:text-right">
+                <Badge className={getStatusColor(appointment.status)}>{appointment.status}</Badge>
+                {isToday(appointment.slotStartIso) && (
+                  <div className="text-xs text-blue-600 font-semibold mt-1">TODAY</div>
+                )}
+              </div>
+            </div>
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <div className="flex items-center justify-center md:justify-start space-x-2 text-sm text-gray-600">
+                  <Calendar className="w-4 h-4" />
+                  <span>{formatDate(appointment.slotStartIso)}</span>
+                </div>
+                <div className="flex items-center justify-center md:justify-start space-x-2 text-sm text-gray-600">
+                  {appointment.consultationType === "Video Consultation"
+                    ? <Video className="w-4 h-4" />
+                    : <Phone className="w-4 h-4" />}
+                  <span>{appointment.consultationType}</span>
+                </div>
+              </div>
+              <div className="text-center md:text-left">
+                <div className="flex justify-center gap-2 text-sm text-gray-600">
+                  <span className="font-semibold">Fee:</span>
+                  <p>₹{appointment.doctorId?.fees}</p>
+                </div>
+                {appointment.symptoms && (
+                  <div className="flex justify-center gap-2 text-sm text-gray-600 mt-1">
+                    <span className="font-semibold">Symptoms</span>
+                    <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                      {appointment.symptoms}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="mt-6 flex flex-col md:flex-row items-center md:justify-between space-y-3 md:space-y-0">
+              <div className="flex space-x-2">
+                {canJoinCall(appointment) && (
+                  <Link href={`/call/${appointment._id}`}>
+                    <Button size='sm' className="bg-green-600 text-white hover:bg-green-700 flex items-center">
+                      <Video className="w-4 h-4 mr-2" />
+                      Join Call
+                    </Button>
+                  </Link>
+                )}
+                {appointment.status === 'Completed' && appointment.prescription && (
+                  <PrescriptionViewModal
+                    appointment={appointment}
+                    userType="patient"
+                    trigger={
+                      <Button variant='outline' size='sm' className="text-green-700 border border-green-200 bg-white hover:bg-green-50 flex items-center">
+                        <FileText className="w-4 h-4 mr-2" />
+                        View Prescription
+                      </Button>
+                    }
+                  />
+                )}
+              </div>
+              {appointment.status === 'Completed' && (
+                <div className="flex items-center space-x-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const EmptyState = ({ tab }) => {
+    const emptyStates = {
+      upcoming: {
+        icon: Clock,
+        title: "No Upcoming Appointments",
+        description: "You have no upcoming appointments scheduled.",
+        showBookButton: true,
+      },
+      past: {
+        icon: FileText,
+        title: "No Past Appointments",
+        description: "Your Completed consultations will appear here.",
+        showBookButton: false,
+      },
+    };
+    const state = emptyStates[tab];
+    const Icon = state.icon;
+    return (
+      <Card>
+        <CardContent className="p-12 text-center">
+          <Icon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">{state.title}</h3>
+          <p className="text-gray-600 mb-6">{state.description}</p>
+          {state.showBookButton && (
+            <Link href="/doctor-list">
+              <Button className="bg-blue-600 text-white flex items-center">
+                <Calendar className="w-4 h-4 mr-2" />
+                Book Your First Appointment
+              </Button>
+            </Link>
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 pt-12">
+      <div className="container mx-auto px-4 py-6">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-md md:text-3xl font-bold text-gray-900">
+              My Appointment
+            </h1>
+            <p className="text-xs md:text-lg text-gray-600">
+              Manage your healthcare appointments
+            </p>
+          </div>
+          <div className="flex items-center space-x-4 ">
+            <Link href="/doctor-list">
+              <Button className="bg-blue-600 text-white flex items-center">
+                <Calendar className="w-4 h-4 mr-2 " />
+                Book <span className="hidden md:block">New Appointment</span>
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger
+              value="upcoming"
+              className={`flex items-center space-x-2 ${activeTab === "upcoming" ? "border-b-2 border-blue-600" : ""}`}
+              onClick={setActiveTab}
+            >
+              <Clock className="w-4 h-4" />
+              <span>Upcoming ({tabCounts.upcoming})</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="past"
+              className={`flex items-center space-x-2 ${activeTab === "past" ? "border-b-2 border-blue-600" : ""}`}
+              onClick={setActiveTab}
+            >
+              <Calendar className="w-4 h-4" />
+              <span>Past ({tabCounts.past})</span>
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="upcoming" activeValue={activeTab} className="space-y-4">
+            {loading ? (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 ">
+                {[...Array(4)].map((_, i) => (
+                  <Card key={i} className="animate-pulse">
+                    <CardContent className="p-6">
+                      <div className="flex space-x-4">
+                        <div className="w-16 h-16 bg-gray-200 rounded-full"></div>
+                        <div className="flex-1 space-y-2">
+                          <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                          <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                          <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : appointments.length > 0 ? (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {appointments.map((appointment) => (
+                  <AppointmentCard key={appointment._id} appointment={appointment} />
+                ))}
+              </div>
+            ) : (
+              <EmptyState tab="upcoming" />
+            )}
+          </TabsContent>
+          <TabsContent value="past" activeValue={activeTab} className="space-y-4">
+            {loading ? (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 ">
+                {[...Array(4)].map((_, i) => (
+                  <Card key={i} className="animate-pulse">
+                    <CardContent className="p-6">
+                      <div className="flex space-x-4">
+                        <div className="w-16 h-16 bg-gray-200 rounded-full"></div>
+                        <div className="flex-1 space-y-2">
+                          <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                          <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                          <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : appointments.length > 0 ? (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {appointments.map((appointment) => (
+                  <AppointmentCard key={appointment._id} appointment={appointment} />
+                ))}
+              </div>
+            ) : (
+              <EmptyState tab="past" />
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
 };
 
-const dashboardStats = [
-    { label: "Total Bookings", value: 24, icon: <CalendarCheck size={24} />, color: "bg-blue-100" },
-    { label: "Active Services", value: 7, icon: <Briefcase size={24} />, color: "bg-green-100" },
-    { label: "Pending Reviews", value: 3, icon: <Star size={24} />, color: "bg-yellow-100" },
-    { label: "Average Rating", value: "4.6", icon: <Star size={24} className="text-yellow-500" />, color: "bg-gray-100" },
-];
-
-const bookings = [
-    { id: 1, name: "AC Repair", provider: "Ravi Kumar", date: "27 Oct 2025", status: "Completed" },
-    { id: 2, name: "House Cleaning", provider: "Asha Devi", date: "30 Oct 2025", status: "Pending" },
-    { id: 3, name: "Plumbing", provider: "Sunil Singh", date: "25 Oct 2025", status: "Cancelled" },
-];
-
-const services = [
-    {
-        id: 51,
-        name: "Electrician Visit",
-        thumbnail: "https://picsum.photos/seed/electrician/80",
-        price: 350,
-        provider: "Manish Kumar",
-    },
-    {
-        id: 52,
-        name: "Gardening",
-        thumbnail: "https://picsum.photos/seed/gardening/80",
-        price: 250,
-        provider: "Poonam Sinha",
-    },
-    {
-        id: 53,
-        name: "Laptop Repair",
-        thumbnail: "https://picsum.photos/seed/laptoprepair/80",
-        price: 650,
-        provider: "Sandeep Tech",
-    },
-];
-
-const messages = [
-    {
-        id: 1,
-        contact: "Ravi Kumar",
-        avatar: "https://randomuser.me/api/portraits/men/45.jpg",
-        lastMsg: "Service completed, feedback?", unread: 0,
-        history: [
-            { self: false, msg: "Thank you for booking AC Repair.", time: "10:02 AM" },
-            { self: true, msg: "Thanks! Will leave feedback soon.", time: "10:05 AM" },
-        ],
-    },
-    {
-        id: 2,
-        contact: "Asha Devi",
-        avatar: "https://randomuser.me/api/portraits/women/23.jpg",
-        lastMsg: "Cleaning is pending", unread: 1,
-        history: [
-            { self: false, msg: "Can we reschedule cleaning?", time: "9:30 AM" },
-            { self: true, msg: "Sure, next week please.", time: "9:35 AM" },
-            { self: false, msg: "Noted!", time: "9:40 AM" },
-        ],
-    },
-];
-
-const reviews = [
-    { id: 1, type: "given", name: "AC Repair", to: "Ravi Kumar", rating: 5, review: "Quick and professional service!" },
-    { id: 2, type: "received", from: "Sunil Singh", name: "Plumbing", rating: 4, review: "Good customer!" },
-];
-
-function Sidebar({ current, setCurrent }) {
-    return (
-        <aside className="fixed md:static left-0 top-0 h-screen md:h-auto w-20 md:w-56 p-4 bg-gray-100 flex flex-col gap-2 shadow-md transition-all z-30">
-            <div className="mb-4 hidden md:block text-2xl font-semibold text-blue-600">HelpHive</div>
-            {SIDEBAR_NAV.map(nav => (
-                <button
-                    key={nav.key}
-                    className={`flex items-center gap-3 p-3 w-full rounded-xl text-sm transition duration-200 hover:bg-blue-100 hover:shadow
-            ${current === nav.key ? "bg-white shadow border border-blue-300" : ""}`}
-                    onClick={() => setCurrent(nav.key)}
-                >
-                    <span className="text-blue-600">{nav.icon}</span>
-                    <span className="hidden md:inline">{nav.name}</span>
-                </button>
-            ))}
-        </aside>
-    );
-}
-
-function Navbar({ user, darkMode, setDarkMode }) {
-    return (
-        <nav className="sticky top-0 left-0 right-0 bg-white border-b flex items-center p-4 px-6 justify-between shadow-sm z-20">
-            <div className="flex items-center gap-3">
-                <img src={user.profilePic} alt="profile" className="w-10 h-10 rounded-full object-cover shadow" />
-                <div className="hidden sm:block font-medium text-base">{user.name}</div>
-            </div>
-            <div className="flex items-center gap-4">
-                <button className="relative text-blue-500 hover:bg-blue-100 p-2 rounded-full transition">
-                    <Bell size={22} />
-                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                </button>
-                <button className="text-blue-600 p-2 rounded-full transition hover:bg-blue-100" onClick={() => setDarkMode(!darkMode)}>
-                    {darkMode ? <Sun size={22} /> : <Moon size={22} />}
-                </button>
-            </div>
-        </nav>
-    );
-}
-
-function DashboardHome() {
-    return (
-        <section className="p-4 grid gap-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {dashboardStats.map((stat, i) => (
-                    <div
-                        key={stat.label}
-                        className={`flex flex-col items-start justify-between gap-2 p-5 rounded-2xl shadow-md ${stat.color} hover:scale-105 hover:shadow-lg transition`}
-                    >
-                        <span className="text-blue-600">{stat.icon}</span>
-                        <span className="text-3xl font-bold">{stat.value}</span>
-                        <span className="text-sm text-gray-500 font-medium">{stat.label}</span>
-                    </div>
-                ))}
-            </div>
-        </section>
-    );
-}
-
-function Bookings() {
-    const [filter, setFilter] = useState("All");
-    const filtered = filter === "All" ? bookings : bookings.filter(b => b.status === filter);
-
-    return (
-        <section className="p-4">
-            <div className="mb-4 flex gap-3">
-                {["All", "Completed", "Pending", "Cancelled"].map(status => (
-                    <button key={status}
-                        className={`px-4 py-2 rounded-full border hover:bg-blue-50 transition font-medium
-              ${filter === status ? "bg-blue-100 border-blue-400" : "border-gray-300"}`}
-                        onClick={() => setFilter(status)}
-                    >
-                        {status}
-                    </button>
-                ))}
-            </div>
-            <div className="overflow-x-auto shadow rounded-xl">
-                <table className="w-full min-w-[520px] text-sm">
-                    <thead className="bg-blue-50">
-                        <tr>
-                            <th className="p-3 text-left">Service</th>
-                            <th className="p-3 text-left">Provider</th>
-                            <th className="p-3 text-left">Date</th>
-                            <th className="p-3 text-left">Status</th>
-                            <th className="p-3 text-left">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filtered.map(booking => (
-                            <tr className="border-b hover:bg-blue-100 transition" key={booking.id}>
-                                <td className="p-3">{booking.name}</td>
-                                <td className="p-3">{booking.provider}</td>
-                                <td className="p-3">{booking.date}</td>
-                                <td className={`p-3 font-medium ${booking.status === "Completed" ? "text-green-600" : booking.status === "Pending" ? "text-yellow-700" : "text-red-500"}`}>{booking.status}</td>
-                                <td className="p-3">
-                                    {booking.status === "Pending" && (
-                                        <button className="text-red-500 hover:text-red-700 px-3 py-1 rounded transition hover:bg-red-100">Cancel</button>
-                                    )}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    );
-}
-
-function Services() {
-    return (
-        <section className="p-4 grid gap-5">
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {services.map(service => (
-                    <div key={service.id} className="flex items-center gap-4 bg-white rounded-lg shadow p-4 hover:scale-105 transition">
-                        <img src={service.thumbnail} alt="service" className="w-16 h-16 rounded-md object-cover shadow" />
-                        <div className="flex flex-col gap-1">
-                            <div className="font-semibold text-lg">{service.name}</div>
-                            <div className="text-sm text-gray-500">Provider: {service.provider}</div>
-                            <div className="text-blue-600 font-bold">₹{service.price}</div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </section>
-    );
-}
-
-function Messages() {
-    const [active, setActive] = useState(messages[0]);
-    const [input, setInput] = useState("");
-    return (
-        <section className="flex h-full">
-            <aside className="w-1/3 max-w-xs border-r bg-gray-50 p-4 flex flex-col gap-3">
-                {messages.map(m => (
-                    <button
-                        key={m.id}
-                        onClick={() => setActive(m)}
-                        className={`flex items-center gap-3 p-2 rounded-md hover:bg-blue-100 transition ${active.id === m.id ? "bg-blue-50" : ""}`}
-                    >
-                        <img src={m.avatar} className="w-10 h-10 rounded-full object-cover shadow" alt={m.contact} />
-                        <div>
-                            <div className="font-semibold">{m.contact}</div>
-                            <div className="text-xs text-gray-500 truncate">{m.lastMsg}</div>
-                        </div>
-                        {m.unread > 0 && <span className="ml-auto bg-blue-500 w-4 h-4 text-white text-xs rounded-full flex items-center justify-center">{m.unread}</span>}
-                    </button>
-                ))}
-            </aside>
-            <div className="flex-1 flex flex-col h-full">
-                <header className="flex items-center gap-4 p-4 bg-white border-b shadow-sm">
-                    <img src={active.avatar} className="w-10 h-10 rounded-full object-cover shadow" alt={active.contact} />
-                    <div className="font-semibold">{active.contact}</div>
-                </header>
-                <main className="flex-1 p-4 flex flex-col gap-2 overflow-y-auto">
-                    {active.history.map((msg, idx) => (
-                        <div key={idx} className={`flex ${msg.self ? "justify-end" : "justify-start"}`}>
-                            <div className={`max-w-[60%] px-4 py-2 rounded-lg ${msg.self ? "bg-blue-100 text-blue-900" : "bg-gray-200 text-black"} shadow-sm`}>
-                                <span>{msg.msg}</span>
-                                <div className="text-xs text-gray-400 mt-1">{msg.time}</div>
-                            </div>
-                        </div>
-                    ))}
-                </main>
-                <footer className="p-4 bg-gray-100 border-t flex gap-3 items-center">
-                    <input
-                        type="text"
-                        placeholder="Type a message…"
-                        value={input}
-                        onChange={e => setInput(e.target.value)}
-                        className="flex-1 px-4 py-2 rounded-full border focus:outline-none focus:ring focus:ring-blue-200 transition"
-                    />
-                    <button className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600">Send</button>
-                </footer>
-            </div>
-        </section>
-    );
-}
-
-function Reviews() {
-    return (
-        <section className="p-4">
-            <div className="grid gap-6 mb-4">
-                <div className="text-lg font-semibold">Reviews Given</div>
-                {reviews.filter(r => r.type === 'given').map(r => (
-                    <div key={r.id} className="bg-white p-4 rounded-lg shadow flex items-center justify-between">
-                        <div>
-                            <div className="font-medium">{r.name}</div>
-                            <div className="text-gray-500 text-sm">To: {r.to}</div>
-                            <div className="flex gap-1 mt-1">
-                                {Array.from({ length: r.rating }, (_, i) => (<Star key={i} size={18} className="text-yellow-400" />))}
-                            </div>
-                            <div className="mt-2 text-gray-600 text-sm italic">{r.review}</div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-            <div className="grid gap-6">
-                <div className="text-lg font-semibold">Reviews Received</div>
-                {reviews.filter(r => r.type === 'received').map(r => (
-                    <div key={r.id} className="bg-white p-4 rounded-lg shadow flex items-center justify-between">
-                        <div>
-                            <div className="font-medium">{r.name}</div>
-                            <div className="text-gray-500 text-sm">From: {r.from}</div>
-                            <div className="flex gap-1 mt-1">
-                                {Array.from({ length: r.rating }, (_, i) => (<Star key={i} size={18} className="text-yellow-400" />))}
-                            </div>
-                            <div className="mt-2 text-gray-600 text-sm italic">{r.review}</div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </section>
-    );
-}
-
-function Profile() {
-    const [edit, setEdit] = useState(false);
-    const [values, setValues] = useState(user);
-    function handleChange(e) {
-        setValues({ ...values, [e.target.name]: e.target.value });
-    }
-    function handlePic(e) {
-        setValues({ ...values, profilePic: URL.createObjectURL(e.target.files[0]) });
-    }
-    return (
-        <section className="p-4">
-            <div className="bg-white p-6 rounded-xl shadow flex gap-8 items-center flex-col md:flex-row">
-                <div className="relative">
-                    <img src={values.profilePic} className="w-32 h-32 rounded-full shadow-lg object-cover" alt="Profile" />
-                    {edit && (
-                        <label className="absolute bottom-2 right-2 bg-blue-500 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700">
-                            <Camera size={18} />
-                            <input type="file" hidden onChange={handlePic} />
-                        </label>
-                    )}
-                </div>
-                <form className="flex flex-col gap-4 flex-1 min-w-[200px]">
-                    <div className="flex items-center gap-3">
-                        <input
-                            className={`border-b py-2 px-3 text-lg w-full font-medium focus:outline-none transition ${!edit ? "bg-transparent" : "bg-blue-50"}`}
-                            name="name" value={values.name} disabled={!edit} onChange={handleChange}
-                        />
-                        <button type="button" className="text-blue-500 px-3 py-1 rounded transition hover:bg-blue-100" onClick={() => setEdit(!edit)}>
-                            <Pencil size={18} />
-                        </button>
-                    </div>
-                    <input className="border-b py-2 px-3" name="email" value={values.email} disabled={!edit} onChange={handleChange} />
-                    <input className="border-b py-2 px-3" name="phone" value={values.phone} disabled={!edit} onChange={handleChange} />
-                    <input className="border-b py-2 px-3" name="address" value={values.address} disabled={!edit} onChange={handleChange} />
-                    {edit && <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-2" type="submit">Save Changes</button>}
-                </form>
-            </div>
-        </section>
-    );
-}
-
-function UserSettings({ darkMode, setDarkMode }) {
-    const [showPassword, setShowPassword] = useState(false);
-    return (
-        <section className="p-4 max-w-xl mx-auto">
-            <div className="bg-white p-6 rounded-xl shadow flex flex-col gap-5">
-                <div className="flex justify-between items-center">
-                    <span className="font-medium">Dark Mode</span>
-                    <button
-                        className="flex items-center gap-2 text-blue-500 hover:bg-blue-100 px-3 py-1 rounded transition"
-                        onClick={() => setDarkMode(!darkMode)}
-                    >
-                        {darkMode ? <Sun size={18} /> : <Moon size={18} />}
-                        {darkMode ? "Light Mode" : "Dark Mode"}
-                    </button>
-                </div>
-                <div className="flex justify-between items-center">
-                    <span className="font-medium">Notification Preferences</span>
-                    <label className="inline-flex items-center cursor-pointer">
-                        <input type="checkbox" className="form-checkbox text-blue-600" defaultChecked />
-                        <span className="ml-2">Enable Notifications</span>
-                    </label>
-                </div>
-                <div>
-                    <span className="font-medium block mb-2">Change Password</span>
-                    <div className="flex gap-3 items-center">
-                        <input type={showPassword ? "text" : "password"} className="border rounded px-3 py-2 flex-1" placeholder="New password" />
-                        <button className="text-blue-500 hover:text-blue-700" type="button" onClick={() => setShowPassword(!showPassword)}>
-                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                        </button>
-                    </div>
-                    <button className="bg-blue-500 text-white px-4 py-2 rounded mt-3 hover:bg-blue-600">Update Password</button>
-                </div>
-            </div>
-        </section>
-    );
-}
-
-export default function Dashboard() {
-    const [current, setCurrent] = useState("dashboard");
-    const [darkMode, setDarkMode] = useState(false);
-
-    const pageComponent = {
-        dashboard: <DashboardHome />,
-        bookings: <Bookings />,
-        services: <Services />,
-        messages: <Messages />,
-        reviews: <Reviews />,
-        profile: <Profile />,
-        settings: <UserSettings darkMode={darkMode} setDarkMode={setDarkMode} />,
-        logout: (<div className="p-16 text-center text-xl">Logging out...</div>),
-    }[current];
-
-    return (
-        <div className={`${darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-black"} min-h-screen w-full flex`}>
-            <Sidebar current={current} setCurrent={setCurrent} />
-            <main className="flex-1 ml-20 md:ml-56 min-h-screen transition bg-inherit">
-                <Navbar user={user} darkMode={darkMode} setDarkMode={setDarkMode} />
-                <div className="pb-8">{pageComponent}</div>
-            </main>
-        </div>
-    );
-}
-
+export default PatientDashboardContent;

@@ -1,5 +1,4 @@
-import React from 'react'
-import Header from '../components/Home/Header'
+import Header from '../components/Header'
 import Hero from '../components/Home/Hero'
 import FAQ from '../components/Home/FAQ'
 import Footer from '../components/Home/Footer'
@@ -9,7 +8,6 @@ function Home() {
     return (
         <>
             <div className="min-h-screen bg-white">
-                <Header />
                 <Hero />
                 <Testimonials />
                 <FAQ />

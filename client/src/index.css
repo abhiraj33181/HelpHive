@@ -9,3 +9,11 @@
 .heading {
     font-family: "Poppins", sans-serif;
 }
+
+.bg-primary {
+    background-color: #5f6FFF;
+}
+
+.active hr{
+    @apply block
+}
