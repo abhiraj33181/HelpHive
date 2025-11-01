@@ -1,8 +1,10 @@
 import React from "react";
 import { localServiceCategories } from "../../assets/constant";
+import { useNavigate } from "react-router-dom";
 
 function Hero() {
     const isAuthenticated = false;
+    const nvaigate = useNavigate()
 
     return (
         <section className="py-20 px-4 bg-gradient-to-b from-blue-50 to-white">
@@ -34,6 +36,7 @@ function Hero() {
                         <div className="flex items-center gap-6 pb-2 px-4 w-max mx-auto">
                             {localServiceCategories.map((category) => (
                                 <button
+                                onClick={() => nvaigate(`/providers/${category.title}`)}
                                     key={category.id}
                                     className="flex flex-col items-center min-w-[100px] group transition-transform hover:scale-105"
                                 >

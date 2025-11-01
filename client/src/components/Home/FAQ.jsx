@@ -7,26 +7,6 @@ function FAQ() {
     return (
         <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
             <div className="max-w-7xl mx-auto">
-                {/* Trusted logos */}
-                <div className="text-center mb-16">
-                    <h2 className="text-3xl font-bold text-blue-900 mb-12 heading">Trusted by millions since 2010</h2>
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 items-center">
-                        {trustLogos.map((logo, index) => (
-                            <div
-                                key={index}
-                                className="flex items-center justify-center h-16 opacity-60 hover:opacity-100 transition-opacity duration-300"
-                            >
-                                <img
-                                    src={logo}
-                                    alt={`logo-${index}`}
-                                    className="h-10 w-auto max-w-[120px] object-contain"
-                                />
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
                 {/* FAQ Section */}
                 <div className="max-w-4xl mx-auto">
                     <h2 className="heading text-3xl font-bold text-blue-900 text-center mb-12">

@@ -161,15 +161,15 @@ export const footerSections = [
 export const contactInfo = [
     {
         icon: Phone,
-        text: "1800-202-HELP (4357)",
+        text: "+9170-5060-2972",
     },
     {
         icon: Mail,
-        text: "support@localhelp.in",
+        text: "support@helphive.com",
     },
     {
         icon: MapPin,
-        text: "Serving across India 🇮🇳",
+        text: "Gaya, Bihar - 824232, India",
     },
 ];
 
