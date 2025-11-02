@@ -1,12 +1,25 @@
 import { Calendar, HandHelpingIcon } from 'lucide-react'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { assets } from '../assets/assets';
 
 function Header() {
     const navigate = useNavigate();
     const [showMenu, setShowMenu] = useState(false)
+    const [showDropdown, setShowDropdown] = useState(false)
     const [token, setToken] = useState(true)
+
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (!e.target.closest('.profile-menu')) {
+                setShowDropdown(false)
+            }
+        }
+        document.addEventListener('click', handleClickOutside)
+        return () => document.removeEventListener('click', handleClickOutside)
+    }, [])
+
 
     return (
         <header className="border-b border-slate-900/20 bg-white/95 backdrop:blur-sm fixed top-0 left-0 right-0 z-50">
@@ -44,18 +57,51 @@ function Header() {
 
                 <div className='flex items-center gap-4'>
                     {token ? (
-                        <div className='flex items-center gap-2 cursor-pointer group relative'>
-                            <img src={assets.profile_pic} className='w-10 rounded-full' />
-                            <img src={assets.dropdown_icon} className='w-2.5' />
+                        <div
+                            className="flex items-center gap-2 cursor-pointer relative profile-menu"
+                            onClick={() => setShowDropdown(prev => !prev)}
+                        >
+                            <img src={assets.profile_pic} className="w-10 rounded-full" />
+                            <img src={assets.dropdown_icon} className="w-2.5" />
 
-                            <div className='absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20 hidden group-hover:block'>
-                                <div className='min-w-48 bg-white rounded-lg flex flex-col gap-4 p-4'>
-                                    <p onClick={() => navigate('/my-profile')} className='hover:text-black cursor-pointer font-semibold'>My Profile</p>
-                                    <p onClick={() => navigate('/my-appointment')} className='hover:text-black cursor-pointer font-semibold'>My Appointments</p>
-                                    <p onClick={() => { setToken(false); navigate('/') }} className='hover:text-black cursor-pointer font-semibold'>Logout</p>
+                            {/* Dropdown */}
+                            <div
+                                className={`absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20 transition-all duration-200 ${showDropdown ? 'block' : 'hidden'
+                                    }`}
+                            >
+                                <div className="min-w-48 bg-white rounded-lg flex flex-col gap-4 p-4 shadow-lg" onClick={(e) => e.stopPropagation()}>
+                                    <p
+                                        onClick={() => {
+                                            navigate('/my-profile');
+                                            setShowDropdown(false)
+                                        }}
+                                        className="hover:text-black cursor-pointer font-semibold"
+                                    >
+                                        My Profile
+                                    </p>
+                                    <p
+                                        onClick={() => {
+                                            navigate('/my-appointment')
+                                            setShowDropdown(false)
+                                        }}
+                                        className="hover:text-black cursor-pointer font-semibold"
+                                    >
+                                        My Appointments
+                                    </p>
+                                    <p
+                                        onClick={() => {
+                                            setToken(false)
+                                            setShowDropdown(false)
+                                            navigate('/')
+                                        }}
+                                        className="hover:text-black cursor-pointer font-semibold"
+                                    >
+                                        Logout
+                                    </p>
                                 </div>
                             </div>
                         </div>
+
                     ) : (
                         <button onClick={() => navigate('/auth/login')} className='bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 cursor-pointer text-white px-8 py-3 rounded-full hidden md:block transition-all duration-300 shadow-md hover:shadow-lg font-medium'>Create Account</button>
                     )}

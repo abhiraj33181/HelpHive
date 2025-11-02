@@ -9,14 +9,14 @@ const MyAppointments = () => {
         <div className="w-full max-w-2xl">
           <h2 className="text-2xl font-semibold text-zinc-800 mb-6 border-b pb-2">My Appointments</h2>
           <div className="space-y-6">
-            {providers.slice(0, 2).map((item, index) => (
+            {providers.slice(0, 3).map((item, index) => (
               <div
                 key={index}
                 className="bg-white rounded-xl shadow-sm flex flex-col md:flex-row transition hover:shadow-md"
               >
-                <div className="md:w-44 flex-shrink-0 p-4 flex justify-center items-center">
+                <div className="md:w-54 flex-shrink-0 flex justify-center items-center">
                   <img
-                    className="w-28 h-28 object-cover rounded-lg bg-indigo-50"
+                    className="w-full h-full object-cover rounded-t-lg rounded-b-none md:rounded-none md:rounded-tl-lg md:rounded-bl-lg bg-indigo-50"
                     src={item.image}
                     alt={item.name}
                   />
