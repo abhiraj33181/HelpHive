@@ -52,13 +52,37 @@ function Header() {
                                 <div className='min-w-48 bg-white rounded-lg flex flex-col gap-4 p-4'>
                                     <p onClick={() => navigate('/my-profile')} className='hover:text-black cursor-pointer font-semibold'>My Profile</p>
                                     <p onClick={() => navigate('/my-appointment')} className='hover:text-black cursor-pointer font-semibold'>My Appointments</p>
-                                    <p onClick={() => {setToken(false); navigate('/')}} className='hover:text-black cursor-pointer font-semibold'>Logout</p>
+                                    <p onClick={() => { setToken(false); navigate('/') }} className='hover:text-black cursor-pointer font-semibold'>Logout</p>
                                 </div>
                             </div>
                         </div>
                     ) : (
                         <button onClick={() => navigate('/auth/login')} className='bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 cursor-pointer text-white px-8 py-3 rounded-full hidden md:block transition-all duration-300 shadow-md hover:shadow-lg font-medium'>Create Account</button>
                     )}
+
+                    <img onClick={() => setShowMenu(true)} src={assets.menu_icon} className="w-6 md:hidden" />
+                    {/* mobile menu  */}
+                    <div className={`${showMenu ? 'fixed w-full' : 'h-0 w-0'} md:hidden right-0 top-0 bottom-0 z-20 overflow-hidden bg-white transition-all`}>
+                        <div className='flex items-center justify-between px-5 py-6'>
+                            <Link to='/' className='flex items-center space-x-2'>
+                                <div className='w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center'>
+                                    <HandHelpingIcon className='w-5 h-5 text-white' />
+                                </div>
+                                <div className='heading text-2xl font-bold bg-gradient-to-br from-blue-600 to-blue-800 bg-clip-text text-transparent'>
+                                    HelpHive
+                                </div>
+                            </Link>
+                            <img className='w-7' onClick={() => setShowMenu(false)} src={assets.cross_icon} />
+                        </div>
+                        <div>
+                            <ul className='flex flex-col items-center gap-2 mt-5 px-5 text=lg font-medium'>
+                                <NavLink onClick={() => setShowMenu(false)} to='/'><p className={`px-4 py-2 rounded-full inline-block uppercase`}>Home</p></NavLink>
+                                <NavLink onClick={() => setShowMenu(false)} to='/providers'><p className={`px-4 py-2 rounded-full inline-block uppercase`}>Providers</p></NavLink>
+                                <NavLink onClick={() => setShowMenu(false)} to='/about'><p className={`px-4 py-2 rounded-full inline-block uppercase`}>About</p></NavLink>
+                                <NavLink onClick={() => setShowMenu(false)} to='/contact'><p className={`px-4 py-2 rounded-full inline-block uppercase`}>Contact</p></NavLink>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>

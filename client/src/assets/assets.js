@@ -41,7 +41,7 @@ export const providers = [
         about:
             'Ravi Kumar is a skilled electrician specializing in home wiring, fan and light installations, and appliance repair. Known for his quick service and reliability across the city.',
         price: '250/hr',
-        location: {
+        address: {
             line1: 'Shastri Nagar',
             line2: 'Patna, Bihar',
         },
@@ -56,7 +56,7 @@ export const providers = [
         about:
             'Anjali Singh provides personalized home tuition for students in grades 6–10. She focuses on conceptual learning and exam preparation in Science and Mathematics.',
         price: "300/hr",
-        location: {
+        address: {
             line1: 'Rajendra Nagar',
             line2: 'Patna, Bihar',
         },
@@ -71,7 +71,7 @@ export const providers = [
         about:
             'Amit Verma offers quick and affordable plumbing services for bathrooms, kitchens, and water tanks. Available for emergency repairs 24/7.',
         price: "200/hr",
-        location: {
+        address: {
             line1: 'Kankarbagh',
             line2: 'Patna, Bihar',
         },
@@ -86,7 +86,7 @@ export const providers = [
         about:
             'Sneha Patel is a fashion tailor specializing in women’s wear, custom stitching, and alterations. She ensures perfect fitting and on-time delivery.',
         price: "180/hr",
-        location: {
+        address: {
             line1: 'Boring Road',
             line2: 'Patna, Bihar',
         },
@@ -101,7 +101,7 @@ export const providers = [
         about:
             'Rohit Sharma provides wall painting, waterproofing, and decorative paint solutions for homes and offices with clean finishing.',
         price: "350/hr",
-        location: {
+        address: {
             line1: 'Gola Road',
             line2: 'Patna, Bihar',
         },
@@ -116,7 +116,7 @@ export const providers = [
         about:
             'Meena Devi is an experienced home cook who prepares hygienic and tasty meals. She is available for part-time cooking services for families and bachelors.',
         price: "150/hr",
-        location: {
+        address: {
             line1: 'Exhibition Road',
             line2: 'Patna, Bihar',
         },
@@ -131,7 +131,7 @@ export const providers = [
         about:
             'Suresh Yadav provides custom furniture design, repair, and installation services. Skilled in both traditional and modular woodwork.',
         price: "400/hr",
-        location: {
+        address: {
             line1: 'Patliputra Colony',
             line2: 'Patna, Bihar',
         },
@@ -146,7 +146,7 @@ export const providers = [
         about:
             'Pooja offers home beauty services including facials, waxing, haircuts, and bridal makeup. Known for her professional and hygienic setup.',
         price: '500/hr',
-        location: {
+        address: {
             line1: 'Ashok Nagar',
             line2: 'Patna, Bihar',
         },
@@ -159,9 +159,9 @@ export const providers = [
         service: 'Landlord',
         experience: '12 Years',
         about:
-            'Rajesh Kumar owns several flats for rent in prime Patna locations. Verified landlord with clean rental agreements and fair pricing.',
+            'Rajesh Kumar owns several flats for rent in prime Patna addresss. Verified landlord with clean rental agreements and fair pricing.',
         price: '9000/month',
-        location: {
+        address: {
             line1: 'Anisabad',
             line2: 'Patna, Bihar',
         },
@@ -176,7 +176,7 @@ export const providers = [
         about:
             'Nisha runs a stationery and photocopy shop offering quick printing, lamination, and school supplies at affordable rates.',
         price: '₹10 – ₹500 per item',
-        location: {
+        address: {
             line1: 'Bailey Road',
             line2: 'Patna, Bihar',
         },
