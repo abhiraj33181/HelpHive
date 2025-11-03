@@ -110,7 +110,7 @@ function Header() {
                     {/* mobile menu  */}
                     <div className={`${showMenu ? 'fixed w-full' : 'h-0 w-0'} md:hidden right-0 top-0 bottom-0 z-20 overflow-hidden bg-white transition-all`}>
                         <div className='flex items-center justify-between px-5 py-6'>
-                            <Link to='/' className='flex items-center space-x-2'>
+                            <Link to='/' onClick={() => setShowMenu(false)} className='flex items-center space-x-2'>
                                 <div className='w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center'>
                                     <HandHelpingIcon className='w-5 h-5 text-white' />
                                 </div>

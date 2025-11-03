@@ -10,11 +10,13 @@ import MyProfile from './Pages/MyProfile'
 import Appointment from './Pages/Appointment'
 import Header from './components/Header'
 import Footer from './components/Footer'
+import ScrollToTop from './components/ScrollTop'
 
 const App = () => {
   return (
     // mx-4 sm:mx-[10%]
     <>
+    <ScrollToTop/>
     <Header/>
     <Routes>
       <Route path='/' element={<Home/>}/>
