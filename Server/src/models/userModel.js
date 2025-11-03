@@ -1,79 +1,42 @@
 import mongoose from "mongoose";
-import validator from 'validator'
-import JWT from 'jsonwebtoken'
-import bcrypt from 'bcrypt'
 
-const userSchema = new mongoose.Schema(
-  {
-    fullName: {
-      type : String,
-      required : true,
-      trim: true,
-    },
-    mobile: {
-      type : String,
-      unique: true,
-      required: true,
-      validate: (value) => {
-        if (!validator.isMobilePhone(value)){
-          throw new Error('Mobile Number is not valid!!')
-        }
-      }
+const userSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
     },
     email: {
-      type: String,
-      required: true,
-      unique: true,
-      validate : (value) =>{
-        if (!validator.isEmail(value)){
-          throw new Error('Email is not Valid!!')
-        }
-      },
-    },
-    location: {
-      address: {
         type: String,
-      },
-      city: {
-        type: String,
-      },
-    },
-    profilePicture: {
-      type: String,
-      default: 'https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg'
+        required: true,
+        unique: true,
     },
     password: {
-      type : String,
-      required: true,
-      validate : (value) => {
-        if (!validator.isStrongPassword(value)){
-          throw new Error("Please Enter Strong Password!!");
-        }
-      }
+        type: String,
+        required: true,
     },
-    role : {
-      type: String,
-      enum : ['user', 'provider', 'admin'],
-      default : 'user'
+    image: {
+        type: String,
+        default: 'https://cutiedp.com/wp-content/uploads/2025/07/cute-cat-dp%E2%80%8B-16.webp'
+    },
+    address: {
+        type: String,
+        default: { line1: '', line2: '' }
+    },
+    gender: {
+        type: String,
+        default: 'Not Selected'
+    },
+    dob: {
+        type: String,
+        default: 'Not Selected'
+    },
+    phone: {
+        type: String,
+        default: '0000000000'
     }
-  },
-  { timestamps: true }
-);
-
-userSchema.methods.getJWT = function (){
-  const user = this;
-  const token = JWT.sign({_id : user._id}, process.env.SECRET_KEY, {
-    expiresIn : '7d'
-  })
-  return token
-}
-
-userSchema.methods.isPasswordMatch = function (password){
-  const user = this
-  return bcrypt.compare(password, user.password)
-}
+}, { timestamps: true })
 
 
-const userModel = mongoose.model("User", userSchema);
+const userModel = mongoose.model.user || mongoose.model('user', userSchema)
 
 export default userModel;

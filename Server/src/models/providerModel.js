@@ -1,54 +1,54 @@
 import mongoose from "mongoose";
 
-const providerSchema = new mongoose.Schema(
-  {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-      unique: true,
+const providerSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    password: {
+        type: String,
+        required: true,
+    },
+    image: {
+        type: String,
+        required: true,
     },
     service: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "ServiceCategory",
-      required: true,
+        type: String,
+        required: true
     },
     experience: {
-      type: Number,
-      default: 0,
-    },
-    baseCharge: {
-      type: Number,
-      required: true,
-    },
-    images: [
-      {
         type: String,
-      },
-    ],
-    description: {
-      type: String,
-      maxLength: 500,
+        required: true
     },
-    availability: {
-      type: String,
-      enum: ["Busy", "Available"],
-      default: "Available",
+    about: {
+        type: String,
+        required: true
     },
-    serviceLocation: {
-      // todo
-      type: {},
-      coordinates: {},
+    available: {
+        type: Boolean,
+        default: true,
     },
-    isVerified: {
-      type: Boolean,
-      default: false,
+    fees: {
+        type: Number,
+        required: true
     },
-    // todo - rating part
-  },
-  { timestamps: true }
-);
+    address: {
+        type: String,
+        required: true
+    },
+    slots_booked: {
+        type: Object,
+        default: {}
+    }
+}, { timestamps: true }, { minimize: false })
 
-const providerModel = mongoose.model("Provider", providerSchema);
+
+const providerModel = mongoose.model.provider || mongoose.model('provider', providerSchema)
 
 export default providerModel;
