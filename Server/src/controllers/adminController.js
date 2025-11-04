@@ -7,7 +7,7 @@ import JWT from 'jsonwebtoken'
 // creating the provider
 export const addProvider = async (req, res) => {
     try {
-        const { name, email, password, service, experience, fees, address } = req.body;
+        const { name, email, password, service, experience, fees, address, about } = req.body;
         const imageFile = req.file;
 
         if (!name || !email || !password || !service || !experience || !fees || !address) {
@@ -36,6 +36,7 @@ export const addProvider = async (req, res) => {
             experience,
             fees,
             address : JSON.parse(address),
+            about
         }
 
         const newProvider = new providerModel(providerData)

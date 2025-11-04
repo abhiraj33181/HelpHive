@@ -2,9 +2,9 @@ import React, { useContext, useState } from 'react'
 import { assets } from '../../../assets/assets'
 import { AdminContext } from '../../../context/AdminContext'
 import { toast } from 'react-toastify'
+import axios from 'axios'
 
 const AddProvider = () => {
-
   const [provImg, setProvImg] = useState(false)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -16,116 +16,190 @@ const AddProvider = () => {
   const [address1, setAddress1] = useState('')
   const [address2, setAddress2] = useState('')
 
-
-
   const {backendURL, aToken} = useContext(AdminContext)
-  
-  const onSubmitHandler = (e) => {
-    e.preventDefault();
 
+  const onSubmitHandler = async (e) => {
+    e.preventDefault()
     try {
-      if (!provImg){
+      if (!provImg) {
         return toast.error('Image Not Selected')
       }
-
       const formData = new FormData()
-
       formData.append('image', provImg)
       formData.append('name', name)
       formData.append('email', email)
       formData.append('password', password)
       formData.append('experience', experience)
-      formData.append('fee', Number(fee))
+      formData.append('fees', Number(fee))
       formData.append('service', service)
       formData.append('about', about)
-      formData.append('address', JSON.stringify({line1 : address1, line2 : address2}))
+      formData.append('address', JSON.stringify({line1: address1, line2: address2}))
 
-
+      const {data} = await axios.post(`${backendURL}/api/admin/add-provider`, formData, {headers: {aToken}})
+      if (data.success) {
+        toast.success(data.message)
+        setProvImg(false)
+        setName('')
+        setEmail('')
+        setPassword('')
+        setExperience('1 Year')
+        setFee('')
+        setAddress1('')
+        setAddress2('')
+        setAbout('')
+      } else {
+        toast.error(data.message)
+      }
     } catch (error) {
-      
+      toast.error(error.message)
+      console.error(error)
     }
   }
 
   return (
-    <div>
-      <form className='m-5 w-full' onSubmit={onSubmitHandler}>
-        <p className='mb-3 text-lg font-medium'>Add Provider</p>
+    <div className="px-6 py-8 max-w-5xl mx-auto">
+      <form onSubmit={onSubmitHandler} className="space-y-6">
+        <h2 className="text-2xl font-semibold text-gray-800">Add Provider</h2>
 
-        <div className='bg-white px-8 py-8 rounded w-full max-w-4xl max-h-[80vh] overflow-y-scroll'>
-          <div className='flex items-center gap-4 mb-8 text-gray-500'>
-            <label htmlFor="provImg">
-              <img className='w-16 bg-gray-100 rounded-full cursor-pointer' src={provImg ? URL.createObjectURL(provImg) : assets.upload_area} />
+        <div className="bg-white shadow-md rounded-lg p-6 overflow-y-auto max-h-[75vh]">
+          <div className="flex items-center gap-6 mb-8 text-gray-600">
+            <label htmlFor="provImg" className="cursor-pointer">
+              <img
+                src={provImg ? URL.createObjectURL(provImg) : assets.upload_area}
+                alt="Provider"
+                className="w-20 h-20 object-cover rounded-full border border-gray-300"
+              />
             </label>
-            <input type="file" onChange={(e) => setProvImg(e.target.files[0])} id="provImg" hidden />
-            <p>Upload Provider <br /> Picture</p>
+            <input
+              type="file"
+              id="provImg"
+              accept="image/*"
+              hidden
+              onChange={(e) => setProvImg(e.target.files[0])}
+            />
+            <p className="text-gray-700 text-base">Upload Provider <br /> Picture</p>
           </div>
 
-          <div className='flex flex-col lg:flex-row items-start gap-10 text-gray-600'>
-            <div className='w-full lg:flex-1 flex flex-col gap-4'>
-              <div className='flex-1 flex flex-col gap-1'>
-                <p>Provider Name</p>
-                <input className='border rounded px-3 py-2' type="text" placeholder='Name' required onChange={(e) => setName(e.target.value)} value={name} />
+          <div className="flex flex-col lg:flex-row gap-12 text-gray-700">
+            <div className="flex-1 flex flex-col gap-5">
+              <div>
+                <label className="block mb-1 font-medium">Provider Name</label>
+                <input
+                  type="text"
+                  placeholder="Name"
+                  className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
               </div>
 
-              <div className='flex-1 flex flex-col gap-1'>
-                <p>Provider Email</p>
-                <input className='border rounded px-3 py-2' type="email" placeholder='Email' required onChange={(e) => setEmail(e.target.value)} value={email} />
+              <div>
+                <label className="block mb-1 font-medium">Provider Email</label>
+                <input
+                  type="email"
+                  placeholder="Email"
+                  className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </div>
 
-              <div className='flex-1 flex flex-col gap-1'>
-                <p>Provider Password</p>
-                <input className='border rounded px-3 py-2' type="password" placeholder='Password' required onChange={(e) => setPassword(e.target.value)} value={password} />
+              <div>
+                <label className="block mb-1 font-medium">Provider Password</label>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
               </div>
 
-              <div className='flex-1 flex flex-col gap-1'>
-                <p>Experience</p>
-                <select className='border rounded px-3 py-2' onChange={(e) => setExperience(e.target.value)} value={experience}>
-                  <option value="1 Year">1 Year</option>
-                  <option value="2 Year">2 Year</option>
-                  <option value="3 Year">3 Year</option>
-                  <option value="4 Year">4 Year</option>
-                  <option value="5 Year">5 Year</option>
-                  <option value="6 Year">6 Year</option>
-                  <option value="7 Year">7 Year</option>
-                  <option value="8 Year">8 Year</option>
-                  <option value="9 Year">9 Year</option>
-                  <option value="10 Year">10 Year</option>
+              <div>
+                <label className="block mb-1 font-medium">Experience</label>
+                <select
+                  className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                  value={experience}
+                  onChange={(e) => setExperience(e.target.value)}
+                >
+                  {[...Array(10)].map((_, i) => (
+                    <option key={i} value={`${i + 1} Year`}>{`${i + 1} Year`}</option>
+                  ))}
                 </select>
               </div>
 
-              <div className='flex-1 flex flex-col gap-1'>
-                <p>Fee</p>
-                <input className='border rounded px-3 py-2' type="number" placeholder='Fee' required onChange={(e) => setFee(e.target.value)} value={fee} />
+              <div>
+                <label className="block mb-1 font-medium">Fee</label>
+                <input
+                  type="number"
+                  placeholder="Fee"
+                  className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                  required
+                  value={fee}
+                  onChange={(e) => setFee(e.target.value)}
+                />
               </div>
-
             </div>
 
-            <div className='w-full lg:flex-1 flex flex-col gap-4'>
-              <div className='flex-1 flex flex-col gap-1'>
-                <p>Service</p>
-                <select className='border rounded px-3 py-2' onChange={(e) => setSrvice(e.target.value)} value={service}>
-                  <option value="Plumber">Plumber</option>
-                  <option value="Electrician">Electrician</option>
-                  <option value="Tailor">Tailor</option>
-                  <option value="Painter">Painter</option>
-                  <option value="Carpenter">Carpenter</option>
-                  <option value="Beautician">Beautician</option>
+            <div className="flex-1 flex flex-col gap-5">
+              <div>
+                <label className="block mb-1 font-medium">Service</label>
+                <select
+                  className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                  value={service}
+                  onChange={(e) => setSrvice(e.target.value)}
+                >
+                  <option>Plumber</option>
+                  <option>Electrician</option>
+                  <option>Tailor</option>
+                  <option>Painter</option>
+                  <option>Carpenter</option>
+                  <option>Beautician</option>
                 </select>
               </div>
 
-              <div className='flex-1 flex flex-col gap-1'>
-                <p>Address</p>
-                <input className='border rounded px-3 py-2' type="text" placeholder='Address line 1' required onChange={(e) => setAddress1(e.target.value)} value={address1} />
-                <input className='border rounded px-3 py-2' type="text" placeholder='Address line 2' required onChange={(e) => setAddress2(e.target.value)} value={address2} />
+              <div>
+                <label className="block mb-1 font-medium">Address</label>
+                <input
+                  type="text"
+                  placeholder="Address line 1"
+                  className="w-full border border-gray-300 rounded-md px-4 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                  required
+                  value={address1}
+                  onChange={(e) => setAddress1(e.target.value)}
+                />
+                <input
+                  type="text"
+                  placeholder="Address line 2"
+                  className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                  required
+                  value={address2}
+                  onChange={(e) => setAddress2(e.target.value)}
+                />
               </div>
-
             </div>
           </div>
-          <div className='flex-1 flex flex-col gap-1'>
-            <p className='mt-4 mb-2'>About Provider</p>
-            <textarea className='w-full px-4 pt-2 border rounded' placeholder='Write about provider ..' rows='5' onChange={(e) => setAbout(e.target.value)} value={about}></textarea>
+
+          <div className="mt-6">
+            <label className="block mb-2 font-medium text-gray-700">About Provider</label>
+            <textarea
+              rows={5}
+              placeholder="Write about provider .."
+              className="w-full border border-gray-300 rounded-md px-4 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+              value={about}
+              onChange={(e) => setAbout(e.target.value)}
+            ></textarea>
           </div>
-          <button type='submit' className='bg-primary px-10 py-3 mt-4 text-white rounded-full'>Add Provider</button>
+
+          <button
+            type="submit"
+            className="mt-6 w-full lg:w-auto bg-primary text-white font-semibold rounded-full px-12 py-3 transition hover:bg-primary-dark focus:outline-none focus:ring-4 focus:ring-primary-light"
+          >
+            Add Provider
+          </button>
         </div>
       </form>
     </div>

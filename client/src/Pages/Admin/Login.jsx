@@ -15,7 +15,7 @@ function Login() {
 
         try {
             if (state === 'Admin') {
-                const {data} = await axios.post(`${backendURL}/api/admin/login`, {email, password})
+                const {data} = await axios.post(`${backendURL}/api/admin/login`, {email, password}, { withCredentials: true })
                 if (data.success){
                     localStorage.setItem('aToken', data.token)
                     setAToken(data.token)

@@ -28,7 +28,6 @@ const providerSchema = new mongoose.Schema({
     },
     about: {
         type: String,
-        required: true
     },
     available: {
         type: Boolean,
@@ -39,8 +38,8 @@ const providerSchema = new mongoose.Schema({
         required: true
     },
     address: {
-        type: String,
-        required: true
+        line1: { type: String, required: true },
+        line2: { type: String },
     },
     slots_booked: {
         type: Object,
@@ -49,6 +48,6 @@ const providerSchema = new mongoose.Schema({
 }, { timestamps: true }, { minimize: false })
 
 
-const providerModel = mongoose.model.provider || mongoose.model('provider', providerSchema)
+const providerModel = mongoose.models.provider || mongoose.model('provider', providerSchema)
 
 export default providerModel;

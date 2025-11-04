@@ -9,8 +9,8 @@ const authAdmin = async (req, res, next) => {
 
         const tokenDecode = JWT.verify(atoken, process.env.SECRET_KEY)
 
-        if(!tokenDecode !== process.env.ADMIN_EMAIL + process.env.ADMIN_PASSWORD){
-            return res.json({success : false, message : 'Not Authorized'})
+        if(tokenDecode !== process.env.ADMIN_EMAIL + process.env.ADMIN_PASSWORD){
+            return res.json({success : false, message : 'Not Authorized!'})
         }
 
         next()
