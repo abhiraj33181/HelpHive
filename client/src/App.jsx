@@ -1,7 +1,7 @@
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation, Navigate } from 'react-router-dom'
 import Home from './Pages/Home'
 import Auth from './Pages/Auth'
-import Dashboard from './Pages/Dashboard'
+import Dashboard from './Pages/Admin/Admin/Dashboard'
 import Providers from './Pages/Providers'
 import About from './Pages/About'
 import Contact from './Pages/Contact'
@@ -11,26 +11,55 @@ import Appointment from './Pages/Appointment'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollTop'
+import Login from './Pages/Admin/Login'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { useContext } from 'react'
+import { AdminContext } from './context/AdminContext'
+import AdminDashboard from './Pages/Admin/AdminDashboard'
+import AllAppointments from './Pages/Admin/Admin/AllAppointments'
+import AddProvider from './Pages/Admin/Admin/AddProvider'
+import ProviderList from './Pages/Admin/Admin/ProviderList'
+import ProtectedRoutes from './components/ProtectedRoutes'
 
 const App = () => {
+
+  const location = useLocation()
+  const { aToken } = useContext(AdminContext)
+
+  const isAdminRoute = location.pathname.startsWith('/admin')
   return (
     // mx-4 sm:mx-[10%]
     <>
-    <ScrollToTop/>
-    <Header/>
-    <Routes>
-      <Route path='/' element={<Home/>}/>
-      <Route path='/about' element={<About/>}/>
-      <Route path='/providers' element={<Providers/>}/>
-      <Route path='/providers/:service' element={<Providers/>}/>
-      <Route path='/contact' element={<Contact/>}/>
-      <Route path='/my-appointment' element={<MyAppointments/>}/>
-      <Route path='/appointment/:provId' element={<Appointment/>}/>
-      <Route path='/my-profile' element={<MyProfile/>}/>
-      <Route path='/auth/:authType' element={<Auth/>}/>
-      <Route path='/onboarding/user/dashboard' element={<Dashboard/>}/>
-    </Routes>
-    <Footer/>
+      <ScrollToTop />
+
+      {!isAdminRoute && <Header />}
+
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/about' element={<About />} />
+        <Route path='/providers' element={<Providers />} />
+        <Route path='/providers/:service' element={<Providers />} />
+        <Route path='/contact' element={<Contact />} />
+        <Route path='/my-appointment' element={<MyAppointments />} />
+        <Route path='/appointment/:provId' element={<Appointment />} />
+        <Route path='/my-profile' element={<MyProfile />} />
+        <Route path='/auth/:authType' element={<Auth />} />
+        <Route path='/onboarding/user/dashboard' element={<Dashboard />} />
+
+        <Route path='/admin'>
+          <Route index element={aToken ? <Navigate to='/admin/dashboard' /> : <Login />} />
+          <Route element={<ProtectedRoutes><AdminDashboard /></ProtectedRoutes>}>
+            <Route path='dashboard' element={<Dashboard />} />
+            <Route path='all-appointments' element={<AllAppointments />} />
+            <Route path='add-provider' element={<AddProvider />} />
+            <Route path='provider-list' element={<ProviderList />} />
+          </Route>
+        </Route>
+      </Routes>
+
+      {!isAdminRoute && <Footer />}
+      <ToastContainer />
     </>
   )
 }
