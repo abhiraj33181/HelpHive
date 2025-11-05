@@ -5,6 +5,8 @@ import { toast } from 'react-toastify'
 import axios from 'axios'
 
 const AddProvider = () => {
+
+  const [loading, setLoading] = useState(false)
   const [provImg, setProvImg] = useState(false)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -16,9 +18,10 @@ const AddProvider = () => {
   const [address1, setAddress1] = useState('')
   const [address2, setAddress2] = useState('')
 
-  const {backendURL, aToken} = useContext(AdminContext)
+  const { backendURL, aToken } = useContext(AdminContext)
 
   const onSubmitHandler = async (e) => {
+    setLoading(true)
     e.preventDefault()
     try {
       if (!provImg) {
@@ -33,9 +36,9 @@ const AddProvider = () => {
       formData.append('fees', Number(fee))
       formData.append('service', service)
       formData.append('about', about)
-      formData.append('address', JSON.stringify({line1: address1, line2: address2}))
+      formData.append('address', JSON.stringify({ line1: address1, line2: address2 }))
 
-      const {data} = await axios.post(`${backendURL}/api/admin/add-provider`, formData, {headers: {aToken}})
+      const { data } = await axios.post(`${backendURL}/api/admin/add-provider`, formData, { headers: { aToken } })
       if (data.success) {
         toast.success(data.message)
         setProvImg(false)
@@ -53,8 +56,13 @@ const AddProvider = () => {
     } catch (error) {
       toast.error(error.message)
       console.error(error)
+    } finally {
+      setLoading(false)
     }
   }
+
+  const localServices = ["Plumber", "Electrician", "Carpenter", "Painter", "AC Technician", "Refrigerator Mechanic", "Washing Machine Repair", "TV Repair", "House Cleaning", "Gardener", "Pest Control", "CCTV Technician", "Laptop Repair", "Mobile Repair", "Vehicle Mechanic", "Water Purifier Service", "Gas Stove Repair", "Tile & Marble Worker", "Welder", "Mason (Rajmistri)", "Interior Designer", "Driver", "Cook", "Home Tutor", "Laundry & Dry Cleaning", "Salon & Hairdresser", "Packer and Mover", "Furniture Polishing", "Roofer", "Security Guard", "Painter (Wall Art & Texture)", "Tailor", "Beautician", "Computer Technician", "Water Tank Cleaner", "Solar Panel Technician", "Window Glass Fitter", "Locksmith", "Pest & Termite Control", "House Shifting Helper", "Handyman"];
+
 
   return (
     <div className="px-6 py-8 max-w-5xl mx-auto">
@@ -152,12 +160,7 @@ const AddProvider = () => {
                   value={service}
                   onChange={(e) => setSrvice(e.target.value)}
                 >
-                  <option>Plumber</option>
-                  <option>Electrician</option>
-                  <option>Tailor</option>
-                  <option>Painter</option>
-                  <option>Carpenter</option>
-                  <option>Beautician</option>
+                  {localServices.map((val, index) => <option key={index}>{val}</option>)}
                 </select>
               </div>
 
@@ -196,10 +199,16 @@ const AddProvider = () => {
 
           <button
             type="submit"
-            className="mt-6 w-full lg:w-auto bg-primary text-white font-semibold rounded-full px-12 py-3 transition hover:bg-primary-dark focus:outline-none focus:ring-4 focus:ring-primary-light"
+            disabled={loading}
+            className={`mt-6 w-full lg:w-auto font-semibold rounded-full px-12 py-3 transition focus:outline-none focus:ring-4
+    ${loading
+                ? 'bg-gray-400 text-white cursor-not-allowed'
+                : 'bg-primary text-white hover:bg-primary-dark focus:ring-primary-light'
+              }`}
           >
-            Add Provider
+            {loading ? 'Creating...' : 'Add Provider'}
           </button>
+
         </div>
       </form>
     </div>

@@ -64,3 +64,14 @@ export const loginAdmin = async (req,res) => {
         res.json({success: false, message : error.message})
     }
 }
+
+export const allProvider = async (req,res) => {
+    try {
+        const providers = await providerModel.find({}).select('-password')
+        res.json({success : true, providers})
+    } catch (error) {
+        console.log(error)
+        res.json({success: false, message : error.message})
+    }
+}
+

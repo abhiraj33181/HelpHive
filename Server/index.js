@@ -4,6 +4,7 @@ import 'dotenv/config'
 import connectDB from './src/config/db.js'
 import connectCloudinary from './src/config/cloudinary.js'
 import adminRouter from './src/routes/adminRoutes.js'
+import providerRouter from './src/routes/providerRoute.js'
 
 connectCloudinary();
 
@@ -21,6 +22,7 @@ app.use(express.json())
 // API Endpoints 
 
 app.use('/api/admin', adminRouter)
+app.use('/api/provider', providerRouter)
 
 
 connectDB()

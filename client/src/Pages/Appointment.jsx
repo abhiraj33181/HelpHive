@@ -68,7 +68,6 @@ const Appointment = () => {
 
   return provInfo && (
     <div className='mx-4 sm:mx-[10%] py-20 px-4'>
-      {/* details of the provider  */}
       <div className='flex flex-col sm:flex-row gap-4'>
         <div>
           <img className='bg-primary w-full sm:max-w-72 rounded-lg' src={provInfo.image} />
@@ -86,7 +85,7 @@ const Appointment = () => {
             <p className='flex items-center gap-1 text-sm font-medium text-gray-900 mt-3'>About <img src={assets.info_icon} /></p>
             <p className='text-sm text-gray-500 max-w-[700px] mt-1'>{provInfo.about}</p>
           </div>
-          <p>Approx. Charge:  <span className='text-gray-600'>{currencySymbol} {provInfo.price}</span></p>
+          <p>Approx. Charge:  <span className='text-gray-600'>{currencySymbol} {provInfo.fees}</span></p>
         </div>
       </div>
 
