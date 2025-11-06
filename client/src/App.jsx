@@ -25,15 +25,19 @@ import ProtectedRoutes from './components/ProtectedRoutes'
 const App = () => {
 
   const location = useLocation()
+  
   const { aToken } = useContext(AdminContext)
-
+  
+  const noHeaderFooterRoutes = ['/auth/login', '/auth/signup']
   const isAdminRoute = location.pathname.startsWith('/admin')
+
+  const hideLayout = noHeaderFooterRoutes.includes(location.pathname) || isAdminRoute;
   return (
     // mx-4 sm:mx-[10%]
     <>
       <ScrollToTop />
 
-      {!isAdminRoute && <Header />}
+      {!hideLayout && <Header />}
 
       <Routes>
         <Route path='/' element={<Home />} />
@@ -58,7 +62,7 @@ const App = () => {
         </Route>
       </Routes>
 
-      {!isAdminRoute && <Footer />}
+      {!hideLayout && <Footer />}
       <ToastContainer />
     </>
   )

@@ -1,8 +1,14 @@
 import { Eye, EyeOff, HandHelpingIcon } from 'lucide-react';
 import React, { useState } from 'react';
+import { useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { AppContext } from '../../context/AppContext';
+import { toast } from 'react-toastify';
+import { useEffect } from 'react';
 
 const Login = ({ type = "login" }) => {
+  const {backendURL, token, setToken, axios, navigate} = useContext(AppContext)
+
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
@@ -15,31 +21,64 @@ const Login = ({ type = "login" }) => {
   const altTextLink = isSignUp ? 'Already a member? ' : "Don’t have an account? ";
   const altLinkAction = isSignUp ? 'Sign In' : 'Sign Up';
   const altLink = isSignUp ? '/auth/login' : '/auth/signup'
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
 
-    setTimeout(() => {
-      setLoading(false);
-      alert(isSignUp ? 'Account Created!' : 'Signed In!');
-    }, 1500);
+
+  const handleSubmit = async (e) => {
+    setLoading(true);
+    e.preventDefault();
+
+    const {name, email, password} = formData
+
+    try {
+      if (isSignUp){
+        const {data} = await axios.post(`${backendURL}/api/user/register`, {name, email, password})
+        if(data.success){
+          localStorage.setItem('token', data.token)
+          setToken(data.token)
+          toast.success("Account Created!")
+          navigate('/')
+        }else{
+          toast.error(data.message)
+        }
+      }else{
+        const {data} = await axios.post(`${backendURL}/api/user/login`, {email, password})
+        if(data.success){
+          localStorage.setItem('token', data.token)
+          setToken(data.token)
+          toast.success("Login Successfull!")
+          navigate('/')
+        }else{
+          toast.error(data.message)
+        }
+      }
+    } catch (error) {
+        toast.error(error.message)
+    }finally{
+      setLoading(false)
+    }
+    
   };
 
   const handleGoogleAuth = () => {
     alert(`Google ${isSignUp ? 'Sign Up' : 'Sign In'} clicked`);
   };
 
+  useEffect(() => {
+    if (token) {
+      navigate('/')
+    }
+  }, [])
+
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className='flex items-center space-x-2 justify-center mb-4'>
+      <Link to='/' className='flex items-center space-x-2 justify-center mb-4'>
         <div className='w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center'>
           <HandHelpingIcon className='w-6 h-6 text-white' />
         </div>
         <div className='heading text-4xl font-bold bg-gradient-to-br from-blue-600 to-blue-800 bg-clip-text text-transparent'>
           HelpHive
         </div>
-      </div>
+      </Link>
 
       <div className="shadow-2xl rounded-2xl border border-gray-200 bg-white">
         <div className="p-8">

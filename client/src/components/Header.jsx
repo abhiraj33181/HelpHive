@@ -2,13 +2,21 @@ import { Calendar, HandHelpingIcon } from 'lucide-react'
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { assets } from '../assets/assets';
+import { useContext } from 'react';
+import { AppContext } from '../context/AppContext';
 
 function Header() {
     const navigate = useNavigate();
     const [showMenu, setShowMenu] = useState(false)
     const [showDropdown, setShowDropdown] = useState(false)
-    const [token, setToken] = useState(true)
 
+    const {token, setToken} = useContext(AppContext)
+
+    const logout = async () => {
+        setToken(false)
+        localStorage.removeItem('token')
+        navigate('/')
+    }
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -89,11 +97,7 @@ function Header() {
                                         My Appointments
                                     </p>
                                     <p
-                                        onClick={() => {
-                                            setToken(false)
-                                            setShowDropdown(false)
-                                            navigate('/')
-                                        }}
+                                        onClick={logout}
                                         className="hover:text-black cursor-pointer font-semibold"
                                     >
                                         Logout
