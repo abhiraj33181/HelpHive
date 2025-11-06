@@ -53,7 +53,8 @@ const AppContextProvider = (props) => {
         navigate,
         userData,
         setUserData,
-        loadUserProfileData
+        loadUserProfileData,
+        getProvidersData
     }
 
     useEffect(() => {

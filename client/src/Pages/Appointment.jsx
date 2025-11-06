@@ -3,19 +3,23 @@ import { useParams } from 'react-router-dom'
 import { AppContext } from '../context/AppContext'
 import { assets } from '../assets/assets'
 import RelatedProvider from '../components/RelatedProviders'
+import { toast } from 'react-toastify'
 
 const Appointment = () => {
   const { provId } = useParams()
-  const { providers, currencySymbol } = useContext(AppContext);
+  const { providers, currencySymbol, backendURL, token, getProvidersData, navigate, axios } = useContext(AppContext);
+
+
   const [provInfo, setProvInfo] = useState(null)
   const [providerSlots, setDoctorSlot] = useState([])
-  const [slotTIme, setSlotTime] = useState()
+  const [slotTime, setSlotTime] = useState()
   const [slotIndex, setSlotIndex] = useState(0)
   const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 
-  const fetchDocInfo = async () => {
-    const provInfo = providers.find((doc) => doc._id === provId)
+  const fetchProvInfo = async () => {
+    const provInfo = providers.find((prov) => prov._id === provId)
     setProvInfo(provInfo)
+    console.log(provInfo)
   }
 
   const getAvailableSlots = async () => {
@@ -43,10 +47,23 @@ const Appointment = () => {
       while (currentDate < endTime) {
         let formattedTime = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
-        timeSlot.push({
-          dateTime: new Date(currentDate),
-          time: formattedTime
-        })
+        let day = currentDate.getDate()
+        let month = currentDate.getMonth()+1
+        let year = currentDate.getFullYear()
+
+        const slotDate = day + "_" + month + "_" + year 
+        const slotTime = formattedTime
+
+        const isSlotAvailable = !(provInfo?.slots_booked?.[slotDate]?.includes(slotTime))
+
+        if (isSlotAvailable){
+          timeSlot.push({
+            dateTime: new Date(currentDate),
+            time: formattedTime
+          })
+
+        }
+
 
         currentDate.setMinutes(currentDate.getMinutes() + 30)
 
@@ -56,9 +73,36 @@ const Appointment = () => {
     }
   }
 
+  const bookAppointment = async () => {
+    if (!token) {
+      toast.warn('Login to book the appointment')
+      return navigate('/auth/login')
+    }
+    try {
+      const date = providerSlots[slotIndex][0].dateTime
+
+      let day = date.getDate()
+      let month = date.getMonth()+1
+      let year = date.getFullYear()
+
+      const slotDate = day + "_" + month + "_" + year
+
+      const {data} = await axios.post(`${backendURL}/api/user/bookAppointment`, {provId, slotDate, slotTime}, {headers : {token}})
+      if(data.success){
+        toast.success(data.message)
+        getProvidersData()
+        navigate('/my-appointment')
+      }else{
+        toast.error(data.message)
+      }
+    } catch (error) {
+        toast.error(error.message)
+        console.log(error.message)
+    }
+  }
 
   useEffect(() => {
-    fetchDocInfo()
+    fetchProvInfo()
   }, [providers, provId])
 
   useEffect(() => {
@@ -104,16 +148,16 @@ const Appointment = () => {
 
         <div className='flex items-center gap-3 w-full overflow-x-scroll mt-4'>
           {providerSlots.length && providerSlots[slotIndex].map((item, index) => (
-            <p onClick={() => setSlotTime(item.time)} key={index} className={`text-sm font-light flex-shrink-0 px-5 py-2 rounded-full cursor-pointer ${item.time === slotTIme ? 'bg-primary text-white' : 'text-gray-400 border border-gray-300'}`}>
+            <p onClick={() => setSlotTime(item.time)} key={index} className={`text-sm font-light flex-shrink-0 px-5 py-2 rounded-full cursor-pointer ${item.time === slotTime ? 'bg-primary text-white' : 'text-gray-400 border border-gray-300'}`}>
               {item.time.toLowerCase()}
             </p>
           ))}
         </div>
 
-          <button className='bg-primary text-white text-sm font-light px-14 py-3 rounded-full my-6'>Book an Appointment</button>
+        <button className='bg-primary text-white text-sm font-light px-14 py-3 rounded-full my-6' onClick={bookAppointment}>Book an Appointment</button>
       </div>
 
-      <RelatedProvider provId={provId} service={provInfo.service}/>
+      <RelatedProvider provId={provId} service={provInfo.service} />
     </div>
   )
 }
