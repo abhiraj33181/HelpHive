@@ -7,6 +7,7 @@ export const AppContext = createContext();
 
 const AppContextProvider = (props) => {
     const [providers, setProviders] = useState([])
+    const [userData, setUserData] = useState([])
     const currencySymbol = '₹'
     const backendURL = import.meta.env.VITE_BACKEND_URL
     const navigate = useNavigate()
@@ -28,6 +29,20 @@ const AppContextProvider = (props) => {
         }
     }
 
+    const loadUserProfileData = async () => {
+        try {
+            const {data} = await axios.get(`${backendURL}/api/user/getProfile`, {headers : {token}})
+            if(data.success){
+                setUserData(data.userData)
+            }else{
+                toast.error(data.message)
+            }
+        } catch (error) {
+            toast.error(error.messsage)
+            console.log(error)
+        }
+    }
+
     const value = {
         providers,
         currencySymbol,
@@ -35,13 +50,24 @@ const AppContextProvider = (props) => {
         setToken,
         backendURL,
         axios,
-        navigate
+        navigate,
+        userData,
+        setUserData,
+        loadUserProfileData
     }
 
     useEffect(() => {
         getProvidersData()
     }, [])
 
+    useEffect(() => {
+        if(token){
+            loadUserProfileData()
+            console.log(userData)
+        }else{
+            setUserData(false)
+        }
+    }, [token])
 
     return (
         <AppContext.Provider value={value}>

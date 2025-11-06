@@ -10,7 +10,7 @@ function Header() {
     const [showMenu, setShowMenu] = useState(false)
     const [showDropdown, setShowDropdown] = useState(false)
 
-    const {token, setToken} = useContext(AppContext)
+    const {token, setToken, userData} = useContext(AppContext)
 
     const logout = async () => {
         setToken(false)
@@ -64,12 +64,12 @@ function Header() {
                 </ul>
 
                 <div className='flex items-center gap-4'>
-                    {token ? (
+                    {token  && userData ? (
                         <div
                             className="flex items-center gap-2 cursor-pointer relative profile-menu"
                             onClick={() => setShowDropdown(prev => !prev)}
                         >
-                            <img src={assets.profile_pic} className="w-10 rounded-full" />
+                            <img src={userData.image} className="w-10 h-10 object-cover rounded-full" />
                             <img src={assets.dropdown_icon} className="w-2.5" />
 
                             {/* Dropdown */}
