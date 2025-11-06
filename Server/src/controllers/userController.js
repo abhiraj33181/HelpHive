@@ -34,7 +34,7 @@ export const registerUser = async (req, res) => {
         const newUser = new userModel(userData)
         const user = await newUser.save()
 
-        const token = JWT.sign({ _id: user._id }, process.env.SECRET_KEY)
+        const token = JWT.sign({ id: user._id }, process.env.SECRET_KEY)
 
         res.json({ success: true, token })
     } catch (error) {
