@@ -3,7 +3,7 @@ import { localServiceCategories } from "../../assets/constant";
 import { useNavigate } from "react-router-dom";
 
 function Hero() {
-    const isAuthenticated = false;
+    const isAuthenticated = true;
     const nvaigate = useNavigate()
 
     return (

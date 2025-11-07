@@ -5,16 +5,37 @@ import { toast } from 'react-toastify'
 import { useEffect } from 'react'
 
 const MyAppointments = () => {
-  const { backendURL, token, axios } = useContext(AppContext)
+  const { backendURL, token, axios, getProvidersData} = useContext(AppContext)
 
   const [appointments, setAppointments] = useState([])
+  const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  const slotDateFormat = (slotDate) => {
+    const dateArray = slotDate.split('_')
+    return dateArray[0] + " " + months[Number(dateArray[1])] + " " + dateArray[2]
+  }
 
   const getUserAppointments = async () => {
     try {
-      const {data} = await axios.get(`${backendURL}/api/user/listAppointment`, {headers : {token}})
-      if(data.success){
+      const { data } = await axios.get(`${backendURL}/api/user/listAppointment`, { headers: { token } })
+      if (data.success) {
         setAppointments(data.appointments.reverse())
-        console.log(data.appointments);
+      }
+    } catch (error) {
+      toast(error.message)
+      console.log(error.message)
+    }
+  }
+
+  const cancelAppointment = async (appointmentId) => {
+    try {
+      const { data } = await axios.post(`${backendURL}/api/user/cancelAppointment`, { appointmentId }, { headers: { token } })
+      if (data.success) {
+        toast.success(data.message)
+        getUserAppointments()
+        getProvidersData()
+      } else {
+        toast.error(data.message)
       }
     } catch (error) {
       toast(error.message)
@@ -23,10 +44,8 @@ const MyAppointments = () => {
   }
 
   useEffect(() => {
-    if(token){
+    if (token) {
       getUserAppointments()
-      console.log(appointments)
-      
     }
   }, [token])
   return (
@@ -58,17 +77,21 @@ const MyAppointments = () => {
                     </div>
                     <div className="text-xs mt-2">
                       <span className="font-medium text-neutral-800">Date & Time:</span>{" "}
-                      {item.slotDate} | {item.slotTime}
+                      {slotDateFormat(item.slotDate)} | {item.slotTime}
                     </div>
                   </div>
-                  <div className="mt-4 flex gap-3">
-                    <button className="w-1/2 py-2 rounded-lg border border-blue-600 text-blue-600 font-semibold bg-blue-50 hover:bg-blue-600 hover:text-white transition-colors">
-                      Pay Online
-                    </button>
-                    <button className="w-1/2 py-2 rounded-lg border border-red-500 text-red-600 font-semibold bg-red-50 hover:bg-red-600 hover:text-white transition-colors">
-                      Cancel
-                    </button>
-                  </div>
+                  {item.cancelled ? (
+                    <p className='w-fit py-1 px-3 text-red-800 italic font-semibold bg-red-200 rounded '>Appointment Cancelled.</p>
+                  ) : (
+                    <div className="mt-4 flex gap-3">
+                      <button className="w-1/2 py-2 rounded-lg border border-blue-600 text-blue-600 font-semibold bg-blue-50 hover:bg-blue-600 hover:text-white transition-colors">
+                        Pay Online
+                      </button>
+                      <button className="w-1/2 py-2 rounded-lg border border-red-500 text-red-600 font-semibold bg-red-50 hover:bg-red-600 hover:text-white transition-colors" onClick={() => (cancelAppointment(item._id))}>
+                        Cancel
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

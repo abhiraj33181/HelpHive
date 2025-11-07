@@ -67,7 +67,7 @@ const Login = ({ type = "login" }) => {
     if (token) {
       navigate('/')
     }
-  }, [])
+  }, [token])
 
   return (
     <div className="w-full max-w-md mx-auto">

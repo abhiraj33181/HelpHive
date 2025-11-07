@@ -77,13 +77,13 @@ const MyProfile = () => {
         <p className="text-gray-500 text-sm">{userData.email}</p>
         <div className="w-full mt-6 space-y-4">
           <div className="flex flex-col space-y-1">
-            <span className="text-gray-400 text-xs uppercase">Contact</span>
+            <span className="text-gray-400 text-md font-semibold uppercase">Contact</span>
             <div className="text-gray-700">
               Phone:
               {isEdit ?
                 <input className="w-full border-b-2 border-blue-300 bg-transparent px-2 py-2 focus:outline-none focus:border-blue-600 text-gray-900 transition" type="text" value={userData.phone}
                   onChange={e => setUserData(prev => ({ ...prev, phone: e.target.value }))} /> :
-                <span className="ml-2">{userData.phone}</span>
+                <span className="ml-2 font-semibold">{userData.phone}</span>
               }
             </div>
             <div className="text-gray-700">
@@ -107,15 +107,15 @@ const MyProfile = () => {
                     }
                   />
                 </span> :
-                <span className="ml-2">
-                  {userData?.address?.line1 || ''}<br />{userData?.address?.line2 || ''}
+                <span className="ml-2 font-semibold">
+                  {userData?.address?.line1 || ''}, {userData?.address?.line2 || ''}
                 </span>
               }
             </div>
           </div>
 
           <div className="flex flex-col space-y-1">
-            <span className="text-gray-400 text-xs uppercase">Basic Info</span>
+            <span className="text-gray-400 text-md font-semibold uppercase">Basic Info</span>
             <div className="text-gray-700">
               Gender:
               {isEdit ? (
@@ -130,7 +130,7 @@ const MyProfile = () => {
                   <option value="Female">Female</option>
                 </select>
               ) : (
-                <span className="ml-2">{userData.gender}</span>
+                <span className="ml-2 font-semibold">{userData.gender}</span>
               )}
             </div>
             <div className="text-gray-700">
@@ -145,7 +145,7 @@ const MyProfile = () => {
                   }
                 />
               ) : (
-                <span className="ml-2">{userData.dob}</span>
+                <span className="ml-2 font-semibold">{userData.dob}</span>
               )}
             </div>
           </div>

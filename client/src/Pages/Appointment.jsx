@@ -19,7 +19,6 @@ const Appointment = () => {
   const fetchProvInfo = async () => {
     const provInfo = providers.find((prov) => prov._id === provId)
     setProvInfo(provInfo)
-    console.log(provInfo)
   }
 
   const getAvailableSlots = async () => {
