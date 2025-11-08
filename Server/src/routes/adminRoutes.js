@@ -1,5 +1,5 @@
 import express from 'express'
-import { addProvider, allProvider, loginAdmin } from '../controllers/adminController.js';
+import { addProvider, adminDashboard, allProvider, appointmentAdmin, appointmentCancel, loginAdmin } from '../controllers/adminController.js';
 import upload from '../middlewares/multer.js';
 import authAdmin from '../middlewares/authAdmin.js';
 import { changeAvailablity } from '../controllers/providerController.js';
@@ -11,5 +11,8 @@ adminRouter.post('/add-provider', authAdmin, upload.single('image'), addProvider
 adminRouter.post('/login', loginAdmin)
 adminRouter.get('/all-providers', authAdmin, allProvider)
 adminRouter.post('/change-availablity', authAdmin, changeAvailablity)
+adminRouter.get('/appointments', authAdmin, appointmentAdmin)
+adminRouter.post('/appointment-cancel', authAdmin, appointmentCancel)
+adminRouter.get('/dashboard', authAdmin, adminDashboard)
 
 export default adminRouter;
