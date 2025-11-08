@@ -22,55 +22,62 @@ const Appointment = () => {
   }
 
   const getAvailableSlots = async () => {
-    setDoctorSlot([])
+    setDoctorSlot([]);
 
-    let today = new Date()
+    const today = new Date();
 
     for (let i = 0; i < 7; i++) {
-      let currentDate = new Date(today)
+      const currentDate = new Date(today);
+      currentDate.setDate(today.getDate() + i);
 
-      currentDate.setDate(today.getDate() + i)
-      let endTime = new Date()
-      endTime.setDate(today.getDate() + i)
-      endTime.setHours(21, 0, 0, 0)
+      const endTime = new Date(currentDate);
+      endTime.setHours(21, 0, 0, 0); // 9:00 PM end time
 
-      // hours 
-      if (today.getDate() === currentDate.getDate()) {
-        currentDate.setHours(currentDate.getHours() > 10 ? currentDate.getHours() + 1 : 10)
-        currentDate.setMinutes(currentDate.getMinutes() > 30 ? 30 : 0)
+      // 🔹 If it's today, skip past times
+      if (i === 0) {
+        // Round up to next 30-min slot
+        const now = new Date();
+        const minutes = now.getMinutes();
+
+        const nextHalfHour = minutes < 30 ? 30 : 0;
+        const nextHour = minutes < 30 ? now.getHours() : now.getHours() + 1;
+
+        currentDate.setHours(nextHour);
+        currentDate.setMinutes(nextHalfHour);
+        currentDate.setSeconds(0);
+        currentDate.setMilliseconds(0);
       } else {
-        currentDate.setHours(10)
-        currentDate.setMinutes(0)
+        // For future days, start from 10:00 AM
+        currentDate.setHours(10, 0, 0, 0);
       }
-      let timeSlot = []
+
+      const timeSlot = [];
+
       while (currentDate < endTime) {
-        let formattedTime = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        const formattedTime = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const day = currentDate.getDate();
+        const month = currentDate.getMonth() + 1;
+        const year = currentDate.getFullYear();
 
-        let day = currentDate.getDate()
-        let month = currentDate.getMonth()+1
-        let year = currentDate.getFullYear()
+        const slotDate = `${day}_${month}_${year}`;
+        const slotTime = formattedTime;
 
-        const slotDate = day + "_" + month + "_" + year 
-        const slotTime = formattedTime
+        const isSlotAvailable = !(provInfo?.slots_booked?.[slotDate]?.includes(slotTime));
 
-        const isSlotAvailable = !(provInfo?.slots_booked?.[slotDate]?.includes(slotTime))
-
-        if (isSlotAvailable){
+        if (isSlotAvailable) {
           timeSlot.push({
             dateTime: new Date(currentDate),
-            time: formattedTime
-          })
-
+            time: formattedTime,
+          });
         }
 
-
-        currentDate.setMinutes(currentDate.getMinutes() + 30)
-
+        currentDate.setMinutes(currentDate.getMinutes() + 30);
       }
 
-      setDoctorSlot(prev => ([...prev, timeSlot]))
+      setDoctorSlot(prev => [...prev, timeSlot]);
     }
-  }
+  };
+
 
   const bookAppointment = async () => {
     if (!token) {
@@ -81,22 +88,22 @@ const Appointment = () => {
       const date = providerSlots[slotIndex][0].dateTime
 
       let day = date.getDate()
-      let month = date.getMonth()+1
+      let month = date.getMonth() + 1
       let year = date.getFullYear()
 
       const slotDate = day + "_" + month + "_" + year
 
-      const {data} = await axios.post(`${backendURL}/api/user/bookAppointment`, {provId, slotDate, slotTime}, {headers : {token}})
-      if(data.success){
+      const { data } = await axios.post(`${backendURL}/api/user/bookAppointment`, { provId, slotDate, slotTime }, { headers: { token } })
+      if (data.success) {
         toast.success(data.message)
         getProvidersData()
         navigate('/my-appointment')
-      }else{
+      } else {
         toast.error(data.message)
       }
     } catch (error) {
-        toast.error(error.message)
-        console.log(error.message)
+      toast.error(error.message)
+      console.log(error.message)
     }
   }
 
