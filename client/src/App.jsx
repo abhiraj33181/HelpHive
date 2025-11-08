@@ -21,17 +21,24 @@ import AllAppointments from './Pages/Admin/Admin/AllAppointments'
 import AddProvider from './Pages/Admin/Admin/AddProvider'
 import ProviderList from './Pages/Admin/Admin/ProviderList'
 import ProtectedRoutes from './components/ProtectedRoutes'
+import { ProviderContext } from './context/ProviderContext'
+import ProviderDashboard from './Pages/Admin/Provider/ProviderDashboard'
+import ProviderLayout from './Pages/Admin/Provider/ProviderLayout'
+import ProviderAppointments from './Pages/Admin/Provider/ProviderAppointments'
+import ProviderProfile from './Pages/Admin/Provider/ProviderProfile'
 
 const App = () => {
 
   const location = useLocation()
-  
+
   const { aToken } = useContext(AdminContext)
-  
+  const { pToken } = useContext(ProviderContext)
+
   const noHeaderFooterRoutes = ['/auth/login', '/auth/signup']
   const isAdminRoute = location.pathname.startsWith('/admin')
+  const isProviderRoute = location.pathname.startsWith('/provider')
 
-  const hideLayout = noHeaderFooterRoutes.includes(location.pathname) || isAdminRoute;
+  const hideLayout = noHeaderFooterRoutes.includes(location.pathname) || isAdminRoute || isProviderRoute;
   return (
     // mx-4 sm:mx-[10%]
     <>
@@ -53,11 +60,20 @@ const App = () => {
 
         <Route path='/admin'>
           <Route index element={aToken ? <Navigate to='/admin/dashboard' /> : <Login />} />
-          <Route element={<ProtectedRoutes><AdminDashboard /></ProtectedRoutes>}>
+          <Route element={<ProtectedRoutes role="admin"><AdminDashboard /></ProtectedRoutes>}>
             <Route path='dashboard' element={<Dashboard />} />
             <Route path='all-appointments' element={<AllAppointments />} />
             <Route path='add-provider' element={<AddProvider />} />
             <Route path='provider-list' element={<ProviderList />} />
+          </Route>
+        </Route>
+
+        <Route path='/provider'>
+          <Route index element={pToken ? <Navigate to='/provider/dashboard' /> : <Login />} />
+          <Route element={<ProtectedRoutes role="provider"><ProviderLayout /></ProtectedRoutes>}>
+          <Route path='dashboard' element={<ProviderDashboard />} />
+          <Route path='all-appointments' element={<ProviderAppointments />} />
+          <Route path='my-profile' element={<ProviderProfile />} />
           </Route>
         </Route>
       </Routes>

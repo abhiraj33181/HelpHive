@@ -13,14 +13,14 @@ const AppContextProvider = (props) => {
     const navigate = useNavigate()
 
     const [token, setToken] = useState(localStorage.getItem('token') ? localStorage.getItem('token') : false)
-    
-    
+
+
     const getProvidersData = async () => {
         try {
-            const {data} = await axios.get(`${backendURL}/api/provider/list`)
-            if(data.success) {
+            const { data } = await axios.get(`${backendURL}/api/provider/list`)
+            if (data.success) {
                 setProviders(data.providers)
-            }else{
+            } else {
                 toast.error(data.messsage)
             }
         } catch (error) {
@@ -31,16 +31,23 @@ const AppContextProvider = (props) => {
 
     const loadUserProfileData = async () => {
         try {
-            const {data} = await axios.get(`${backendURL}/api/user/getProfile`, {headers : {token}})
-            if(data.success){
+            const { data } = await axios.get(`${backendURL}/api/user/getProfile`, { headers: { token } })
+            if (data.success) {
                 setUserData(data.userData)
-            }else{
+            } else {
                 toast.error(data.message)
             }
         } catch (error) {
             toast.error(error.messsage)
             console.log(error)
         }
+    }
+
+    const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    const slotDateFormat = (slotDate) => {
+        const dateArray = slotDate.split('_')
+        return dateArray[0] + " " + months[Number(dateArray[1])] + " " + dateArray[2]
     }
 
     const calculateAge = (dob) => {
@@ -65,16 +72,18 @@ const AppContextProvider = (props) => {
         loadUserProfileData,
         getProvidersData,
         calculateAge,
+        slotDateFormat
     }
+
 
     useEffect(() => {
         getProvidersData()
     }, [])
 
     useEffect(() => {
-        if(token){
+        if (token) {
             loadUserProfileData()
-        }else{
+        } else {
             setUserData(false)
         }
     }, [token])

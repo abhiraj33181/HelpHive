@@ -2,12 +2,15 @@ import React, { useContext, useState } from 'react'
 import { AdminContext } from '../../context/AdminContext'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import { ProviderContext } from '../../context/ProviderContext'
 
 function Login() {
     const [state, setState] = useState('Admin')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+
     const {setAToken, backendURL} = useContext(AdminContext)
+    const {pToken, setPToken} = useContext(ProviderContext)
 
 
     const onSubmitHandler = async (e) => {
@@ -19,14 +22,23 @@ function Login() {
                 if (data.success){
                     localStorage.setItem('aToken', data.token)
                     setAToken(data.token)
+                    console.log(data.token)
                 }else{
                     toast.error(data.message)
                 }
             }else{
-
+                const {data} = await axios.post(`${backendURL}/api/provider/login`, {email, password})
+                if (data.success){
+                    localStorage.setItem('pToken', data.token)
+                    setPToken(data.token)
+                    toast.success("Access Granted")
+                }else{
+                    toast.error(data.message)
+                }
             }
         } catch (error) {
-            
+            console.log(error.message)
+            toast.error(error.message)
         }
     }
     
