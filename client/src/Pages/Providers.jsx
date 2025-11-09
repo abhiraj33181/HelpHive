@@ -12,9 +12,9 @@ const Providers = () => {
   const [filterProv, setFilterProv] = useState([])
 
   const applyFilter = () => {
-    if (service){
+    if (service) {
       setFilterProv(providers.filter(prov => prov.service === service))
-    }else{
+    } else {
       setFilterProv(providers)
     }
   }
@@ -39,18 +39,18 @@ const Providers = () => {
         </div>
 
         <div className='w-full grid [grid-template-columns:var(--grid-cols-auto)]  gap-4 gap-y-6'>
-          {filterProv.map((doctor, index) => (
-            <div onClick={() => navigate(`/appointment/${doctor._id}`)} key={index} className='border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500'>
-              <img src={doctor.image} className='bg-blue-50 w-full object-cover' />
+          {filterProv.map((provider, index) => (
+            <div onClick={() => navigate(`/appointment/${provider._id}`)} key={index} className='border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500'>
+              <img src={provider.image} className='bg-blue-50 w-full object-cover' />
               <div className='p-4'>
                 <div className='flex items-center gap-2 text-sm text-center text-green-500'>
-                  <p className='w-2 h-2 bg-green-500 rounded-full'></p>
-                  <p>
-                    Available
+                  <p className={`w-2 h-2 ${provider.available ? 'bg-green-500' : 'bg-red-500'} rounded-full`}></p>
+                  <p className={`${provider.available ? 'text-green-500' : 'text-red-500'}`}>
+                    {provider.available ? 'Available' : 'Not Available'}
                   </p>
                 </div>
-                <p className='text-gray-900 text-lg font-medium'>{doctor.name}</p>
-                <p className='text-gray-600 text-sm'>{doctor.service}</p>
+                <p className='text-gray-900 text-lg font-medium'>{provider.name}</p>
+                <p className='text-gray-600 text-sm'>{provider.service}</p>
               </div>
             </div>
           ))}

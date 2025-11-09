@@ -128,19 +128,19 @@ const MyAppointments = () => {
                   </div>
 
                   <div className="flex items-center gap-2 mt-3">
-                    {!item.cancelled && item.payment && (
+                    {!item.cancelled && item.payment && !item.isCompleted && (
                       <span className="px-3 py-1 bg-green-50 text-green-600 text-xs rounded-full border border-green-200">
                         Paid
                       </span>
                     )}
-                    {item.cancelled && (
+                    {item.cancelled && !item.isCompleted && (
                       <span className="px-3 py-1 bg-red-50 text-red-500 text-xs rounded-full border border-red-200">
                         Cancelled
                       </span>
                     )}
                   </div>
                   <div className="flex flex-col sm:flex-row gap-2 mt-3">
-                    {!item.cancelled && !item.payment && (
+                    {!item.cancelled && !item.payment && !item.isCompleted &&  (
                       <button
                         className="flex-1 px-4 py-2 rounded-lg border border-blue-500 text-blue-500 bg-blue-50 hover:bg-blue-500 hover:text-white transition"
                         onClick={() => appointmentRazorpay(item._id)}
@@ -148,13 +148,18 @@ const MyAppointments = () => {
                         Pay Online
                       </button>
                     )}
-                    {!item.cancelled && (
+                    {!item.cancelled && !item.isCompleted && (
                       <button
                         className="flex-1 px-4 py-2 rounded-lg border border-red-600 text-red-600 font-semibold bg-red-100 hover:bg-red-600 hover:text-white transition"
                         onClick={() => cancelAppointment(item._id)}
                       >
                         Cancel
                       </button>
+                    )}
+                    {item.isCompleted && (
+                      <span className="px-3 py-1 bg-green-50 text-green-600 text-xs rounded-full border border-green-200">
+                        Completed
+                      </span>
                     )}
                   </div>
                 </div>

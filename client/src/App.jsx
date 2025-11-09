@@ -36,7 +36,8 @@ const App = () => {
 
   const noHeaderFooterRoutes = ['/auth/login', '/auth/signup']
   const isAdminRoute = location.pathname.startsWith('/admin')
-  const isProviderRoute = location.pathname.startsWith('/provider')
+  const isProviderRoute =location.pathname === '/provider' || location.pathname.startsWith('/provider/');
+
 
   const hideLayout = noHeaderFooterRoutes.includes(location.pathname) || isAdminRoute || isProviderRoute;
   return (

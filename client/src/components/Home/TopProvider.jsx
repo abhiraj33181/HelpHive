@@ -16,9 +16,9 @@ const TopProvider = () => {
                         <img src={provider.image} className='bg-blue-50' />
                         <div className='p-4'>
                             <div className='flex items-center gap-2 text-sm text-center text-green-500'>
-                                <p className='w-2 h-2 bg-green-500 rounded-full'></p>
-                                <p>
-                                    Available
+                                <p className={`w-2 h-2 ${provider.available ? 'bg-green-500' : 'bg-red-500'} rounded-full`}></p>
+                                <p className={`${provider.available ? 'text-green-500' : 'text-red-500'}`}>
+                                    {provider.available ? 'Available' : 'Not Available'}
                                 </p>
                             </div>
                             <p className='text-gray-900 text-lg font-medium'>{provider.name}</p>

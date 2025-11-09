@@ -157,8 +157,6 @@ export const updateProviderProfile = async (req, res) => {
         await providerModel.findByIdAndUpdate(provId, {fees, address, available})
 
         res.json({success : true, message : 'Profile Updated!!'})
-
-        res.json({ success: true, profileData })
     } catch (error) {
         console.log(error)
         res.json({ success: false, message: error.message })

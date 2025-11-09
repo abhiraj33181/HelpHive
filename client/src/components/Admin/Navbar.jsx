@@ -2,6 +2,7 @@ import { HandHelpingIcon } from 'lucide-react'
 import React, { useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { AdminContext } from '../../context/AdminContext'
+import { ProviderContext } from '../../context/ProviderContext'
 
 function Navbar() {
 
@@ -9,10 +10,14 @@ function Navbar() {
     const logOut = () => {
         aToken && setAToken('')
         aToken && localStorage.removeItem('aToken')
+
+        pToken && setPToken('')
+        pToken && localStorage.removeItem('pToken')
     }
 
 
     const { aToken, setAToken } = useContext(AdminContext)
+    const { pToken, setPToken } = useContext(ProviderContext)
     return (
         <nav className="flex justify-between items-center px-5 sm:px-12 py-3 border-b border-gray-200 bg-white shadow-sm sticky top-0 z-30">
             <div className="flex items-center gap-3 text-sm sm:text-base">
