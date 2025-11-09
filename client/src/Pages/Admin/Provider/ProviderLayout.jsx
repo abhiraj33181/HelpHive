@@ -1,5 +1,5 @@
-import Navbar from '../../../components/admin/Navbar'
-import Sidebar from '../../../components/admin/Sidebar'
+import Navbar from '../../../components/Admin/Navbar'
+import Sidebar from '../../../components/Admin/Sidebar'
 import { Outlet } from 'react-router-dom'
 
 function adminDashboard() {
