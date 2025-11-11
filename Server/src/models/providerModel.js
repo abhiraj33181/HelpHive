@@ -47,6 +47,19 @@ const providerSchema = new mongoose.Schema({
     }
 }, { timestamps: true }, { minimize: false })
 
+providerSchema.methods.getJWT = function (){
+    const user = this;
+    const token = JWT.sign({id :user._id}, process.env.SECRET_KEY, {
+        expiresIn : '7d'
+    })
+
+    return token;
+}
+
+providerSchema.methods.isPasswordMatch = function (password) {
+    const user = this;
+    return bcrypt.compare(password, user.password)
+}
 
 const providerModel = mongoose.models.provider || mongoose.model('provider', providerSchema)
 

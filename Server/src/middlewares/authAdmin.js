@@ -2,7 +2,7 @@ import JWT from 'jsonwebtoken';
 
 const authAdmin = async (req, res, next) => {
     try {
-        const {atoken} = req.headers;
+        const {atoken} = req.cookies;
         if (!atoken){
             return res.json({success : false, message : 'Not Authorized'})
         }

@@ -23,68 +23,79 @@ export const addProvider = async (req, res) => {
             return res.json({ success: false, message: "Please Enter a Strong Password" })
         }
 
+        const existingProvider = await providerModel({ email })
+        if (existingProvider) {
+            return res.json({ success: false, message: 'Provider Already Exist!!' })
+        }
+
         const hashPassword = await bcrypt.hash(password, 10)
 
 
-        const imageUpload = await cloudinary.uploader.upload(imageFile.path, {resource_type : "image"})
+        const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" })
         const imageURL = imageUpload.secure_url
 
         const providerData = {
             name,
             email,
-            image : imageURL,
-            password : hashPassword,
+            image: imageURL,
+            password: hashPassword,
             service,
             experience,
             fees,
-            address : JSON.parse(address),
+            address: JSON.parse(address),
             about
         }
 
         const newProvider = new providerModel(providerData)
         await newProvider.save()
 
-        res.json({success : true, message : 'Provider Added'})
+        res.json({ success: true, message: 'Provider Added' })
     } catch (error) {
         console.log(error)
-        res.json({success : false, message: error.message})
+        res.json({ success: false, message: error.message })
     }
 }
 
-export const loginAdmin = async (req,res) => {
+export const loginAdmin = async (req, res) => {
     try {
-        const {email, password} = req.body;
+        const { email, password } = req.body;
 
-        if(email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD){
-            const token = JWT.sign(email+password, process.env.SECRET_KEY)
-            res.json({success : true, token})
-        }else{
-            res.json({success : false, message : 'Invalid Credentials'})
+        if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+            const token = JWT.sign(email + password, process.env.SECRET_KEY)
+            res.cookie('aToken', token, {
+                httpOnly: true,
+                sameSite: 'strict',
+                secure: process.env.NODE_ENV === 'production',
+                expires: new Date(Date.now() + 24 * 7 * 60 * 60 * 1000)
+            })
+            res.json({ success: true, token })
+        } else {
+            res.json({ success: false, message: 'Invalid Credentials' })
         }
     } catch (error) {
         console.log(error)
-        res.json({success: false, message : error.message})
+        res.json({ success: false, message: error.message })
     }
 }
 
-export const allProvider = async (req,res) => {
+export const allProvider = async (req, res) => {
     try {
         const providers = await providerModel.find({}).select('-password')
-        res.json({success : true, providers})
+        res.json({ success: true, providers })
     } catch (error) {
         console.log(error)
-        res.json({success: false, message : error.message})
+        res.json({ success: false, message: error.message })
     }
 }
 
 
-export const appointmentAdmin = async (req,res) => {
+export const appointmentAdmin = async (req, res) => {
     try {
         const appointments = await appointmentModel.find({})
-        res.json({success : true, appointments})
+        res.json({ success: true, appointments })
     } catch (error) {
         console.log(error)
-        res.json({success: false, message : error.message})
+        res.json({ success: false, message: error.message })
     }
 }
 
@@ -94,7 +105,7 @@ export const appointmentCancel = async (req, res) => {
 
         const appointmentData = await appointmentModel.findById(appointmentId)
 
-        
+
         await appointmentModel.findByIdAndUpdate(appointmentId, { cancelled: true })
 
         const { provId, slotDate, slotTime } = appointmentData
@@ -103,7 +114,9 @@ export const appointmentCancel = async (req, res) => {
 
         let slots_booked = providerData.slots_booked;
 
-        slots_booked[slotDate] = slots_booked[slotDate].filter(e => e !== slotTime)
+        if (slots_booked[slotDate]) {
+            slots_booked[slotDate] = slots_booked[slotDate].filter(e => e !== slotTime);
+        }
 
         await providerModel.findByIdAndUpdate(provId, { slots_booked })
 
@@ -116,20 +129,20 @@ export const appointmentCancel = async (req, res) => {
 
 // fetch => dashboard data
 
-export const adminDashboard = async (req,res) => {
+export const adminDashboard = async (req, res) => {
     try {
-        const providers = await providerModel.find({})
-        const users = await userModel.find({})
-        const appointments = await appointmentModel.find({})
+        const providersCount = await providerModel.countDocuments();
+        const usersCount = await userModel.countDocuments();
+        const appointments = await appointmentModel.find({});
 
         const dashData = {
-            providers : providers.length,
-            appointments : appointments.length,
-            users : users.length,
-            latestAppointments : appointments.reverse().slice(0,5)
+            providers: providersCount,
+            appointments: appointments.length,
+            users: usersCount,
+            latestAppointments: [...appointments].reverse().slice(0, 5)
         }
 
-        res.json({success : true, dashData})
+        res.json({ success: true, dashData })
     } catch (error) {
         console.log(error)
         res.json({ success: false, message: error.message })

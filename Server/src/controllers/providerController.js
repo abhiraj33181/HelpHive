@@ -8,6 +8,10 @@ export const changeAvailablity = async (req, res) => {
 
         const { provId } = req.body;
 
+        if (!provId) {
+            return res.json({ success: false, message: "Provider not found!" })
+        }
+
         const provData = await providerModel.findById(provId)
 
         await providerModel.findByIdAndUpdate(provId, { available: !provData.available })
@@ -22,7 +26,7 @@ export const changeAvailablity = async (req, res) => {
 
 export const providerList = async (req, res) => {
     try {
-        const providers = await providerModel.find({}).select(['-password', '-email'])
+        const providers = await providerModel.find({}, { password: 0, email: 0 })
 
         res.json({ success: true, providers })
     } catch (error) {
@@ -34,18 +38,29 @@ export const providerList = async (req, res) => {
 export const loginProvider = async (req, res) => {
     try {
         const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.json({ success: false, message: "Missing Credentails!!" })
+        }
         const provider = await providerModel.findOne({ email });
 
         if (!provider) {
             return res.json({ success: false, message: "Invalid Credentials" })
         }
 
-        const isMatch = await bcrypt.compare(password, provider.password)
+        const isMatch = await provider.isPasswordMatch(password);
 
         if (isMatch) {
-            const token = JWT.sign({ id: provider._id }, process.env.SECRET_KEY)
+            const token = await provider.getJWT()
 
-            res.json({ success: true, token })
+            res.cookie('pToken', token, {
+                httpOnly: true,
+                sameSite: 'strict',
+                secure: process.env.NODE_ENV === 'production',
+                expires: new Date(Date.now() + 24 * 7 * 60 * 60 * 1000)
+            })
+
+            res.json({ success: true, provider })
         } else {
             res.json({ success: false, message: "Invalid Credentials" })
         }
@@ -58,8 +73,8 @@ export const loginProvider = async (req, res) => {
 
 export const appointmentProvider = async (req, res) => {
     try {
-        let provId = req.provId;
-        const appointments = await appointmentModel.find({ provId })
+        let provId = req.provider._id;
+        const appointments = await appointmentModel.find({ provId }).sort({ createdAt: -1 })
 
         res.json({ success: true, appointments })
     } catch (error) {
@@ -70,11 +85,12 @@ export const appointmentProvider = async (req, res) => {
 
 export const appointmentComplete = async (req, res) => {
     try {
-        const provId = req.provId;
+        let provId = req.provider._id;
+
         const { appointmentId } = req.body;
         const appointmentData = await appointmentModel.findById(appointmentId)
 
-        if (appointmentData && appointmentData.provId === provId) {
+        if (appointmentData && appointmentData.provId.toString() === provId) {
             await appointmentModel.findByIdAndUpdate(appointmentId, { isCompleted: true })
             return res.json({ success: true, message: 'Appointment Completed!' })
         } else {
@@ -88,11 +104,12 @@ export const appointmentComplete = async (req, res) => {
 
 export const appointmentCancel = async (req, res) => {
     try {
-        const provId = req.provId;
+        let provId = req.provider._id;
+
         const { appointmentId } = req.body;
         const appointmentData = await appointmentModel.findById(appointmentId)
 
-        if (appointmentData && appointmentData.provId === provId) {
+        if (appointmentData && appointmentData.provId.toString() === provId) {
             await appointmentModel.findByIdAndUpdate(appointmentId, { cancelled: true })
             return res.json({ success: true, message: 'Appointment Cancelled!' })
         } else {
@@ -107,7 +124,8 @@ export const appointmentCancel = async (req, res) => {
 
 export const providerDashboard = async (req, res) => {
     try {
-        let provId = req.provId
+        let provId = req.provider._id;
+
         const appointments = await appointmentModel.find({ provId })
 
         let earning = 0
@@ -140,9 +158,7 @@ export const providerDashboard = async (req, res) => {
 
 export const providerProfile = async (req, res) => {
     try {
-        let provId = req.provId;
-        const profileData = await providerModel.findById(provId).select('-password')
-        res.json({ success: true, profileData })
+        res.json({ success: true, profileData: req.provider })
     } catch (error) {
         console.log(error)
         res.json({ success: false, message: error.message })
@@ -152,11 +168,11 @@ export const providerProfile = async (req, res) => {
 
 export const updateProviderProfile = async (req, res) => {
     try {
-        const provId = req.provId;
-        const {fees, address, available} = req.body; 
-        await providerModel.findByIdAndUpdate(provId, {fees, address, available})
+        let provId = req.provider._id;
+        const { fees, address, available } = req.body;
+        await providerModel.findByIdAndUpdate(provId, { $set: { fees, address, available } });
 
-        res.json({success : true, message : 'Profile Updated!!'})
+        res.json({ success: true, message: 'Profile Updated!!' })
     } catch (error) {
         console.log(error)
         res.json({ success: false, message: error.message })
