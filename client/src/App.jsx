@@ -26,6 +26,7 @@ import ProviderDashboard from './Pages/Admin/Provider/ProviderDashboard'
 import ProviderLayout from './Pages/Admin/Provider/ProviderLayout'
 import ProviderAppointments from './Pages/Admin/Provider/ProviderAppointments'
 import ProviderProfile from './Pages/Admin/Provider/ProviderProfile'
+import { UserOnboarding } from './Pages/UserOnboarding'
 
 const App = () => {
 
@@ -58,6 +59,7 @@ const App = () => {
         <Route path='/my-profile' element={<MyProfile />} />
         <Route path='/auth/:authType' element={<Auth />} />
         <Route path='/onboarding/user/dashboard' element={<Dashboard />} />
+        <Route path='/admin/onboarding/user' element={<UserOnboarding />} />
 
         <Route path='/admin'>
           <Route index element={aToken ? <Navigate to='/admin/dashboard' /> : <Login />} />

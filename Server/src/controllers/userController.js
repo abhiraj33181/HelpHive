@@ -35,9 +35,17 @@ export const registerUser = async (req, res) => {
         const newUser = new userModel(userData)
         const user = await newUser.save()
 
-        const token = JWT.sign({ id: user._id }, process.env.SECRET_KEY)
+        const token = await user.getJWT()
 
-        res.json({ success: true, token })
+        res.cookie('token', token, {
+            httpOnly: true,
+            sameSite: 'strict',
+            secure: process.env.NODE_ENV === 'production',
+            expires: new Date(Date.now() + 24 * 7 * 60 * 60 * 1000)
+        })
+
+        res.cookie
+        res.json({ success: true, user })
     } catch (error) {
         console.log(error)
         res.json({ success: false, message: error.message })
@@ -48,18 +56,29 @@ export const registerUser = async (req, res) => {
 export const userLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
+        
+        if (!email, !password) {
+            return res.json({success : true, message : 'Missing Credentials!'})
+        }
         const user = await userModel.findOne({ email })
 
         if (!user) {
             return res.json({ success: false, message: "Invalid Credentials!!" })
         }
 
-        const isMatch = await bcrypt.compare(password, user.password)
+
+        const isMatch = await user.isPasswordMatch(password)
 
         if (isMatch) {
-            const token = JWT.sign({ id: user._id }, process.env.SECRET_KEY)
+            const token = await user.getJWT()
 
-            res.json({ success: true, token })
+            res.cookie('token', token, {
+                httpOnly: true,
+                sameSite: 'strict',
+                secure: process.env.NODE_ENV === 'production',
+                expires: new Date(Date.now() + 24 * 7 * 60 * 60 * 1000)
+            })
+            res.json({ success: true, user })
         } else {
             res.json({ success: false, message: 'Invalid Credentials!!' })
         }
@@ -71,10 +90,7 @@ export const userLogin = async (req, res) => {
 
 export const getProfile = async (req, res) => {
     try {
-        const userId = req.userId;
-        const userData = await userModel.findById(userId).select('-password')
-
-        res.json({ success: true, userData })
+        res.json({ success: true, userData: req.user })
 
     } catch (error) {
         console.log(error)
@@ -85,7 +101,7 @@ export const getProfile = async (req, res) => {
 export const updateProfile = async (req, res) => {
     try {
         const { name, phone, line1, line2, dob, gender } = req.body;
-        const userId = req.userId
+        const userId = req.user._id;
 
         const imageFile = req.file;
 
@@ -93,14 +109,15 @@ export const updateProfile = async (req, res) => {
             return res.json({ success: false, message: "Data Missing.." })
         }
 
-        await userModel.findByIdAndUpdate(userId, { name, phone, address: { line1, line2 }, dob, gender })
-
+        const updateData =  { name, phone, address: { line1, line2 }, dob, gender }
+        
         if (imageFile) {
             const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: 'image' })
-            const imageURL = (await imageUpload).secure_url
-
-            await userModel.findByIdAndUpdate(userId, { image: imageURL })
+            updateData.image = imageUpload.secure_url
         }
+        
+        await userModel.findByIdAndUpdate(userId, { $set: updateData })
+
 
         res.json({ success: true, message: 'Profile Updated!!' })
     } catch (error) {
@@ -113,7 +130,7 @@ export const updateProfile = async (req, res) => {
 
 export const bookAppointment = async (req, res) => {
     try {
-        const userId = req.userId
+        const user = req.user;
         const { provId, slotDate, slotTime } = req.body
 
         const provData = await providerModel.findById(provId).select('-password')
@@ -134,14 +151,12 @@ export const bookAppointment = async (req, res) => {
             slots_booked[slotDate].push(slotTime)
         }
 
-        const userData = await userModel.findById(userId).select('-password')
-
         delete provData.slots_booked
 
         const appointmentData = {
-            userId,
+            userId: user._id,
             provId,
-            userData,
+            user,
             provData,
             amount: provData.fees,
             slotTime,
@@ -162,8 +177,8 @@ export const bookAppointment = async (req, res) => {
 
 export const listAppointment = async (req, res) => {
     try {
-        let userId = req.userId
-        const appointments = await appointmentModel.find({ userId })
+        let user = req.user;
+        const appointments = await appointmentModel.find({ userId: user._id })
 
         res.json({ success: true, appointments })
     } catch (error) {
@@ -174,12 +189,12 @@ export const listAppointment = async (req, res) => {
 
 export const cancelAppointment = async (req, res) => {
     try {
-        const userId = req.userId;
+        const userId = req.user._id;
         const { appointmentId } = req.body;
 
         const appointmentData = await appointmentModel.findById(appointmentId)
 
-        if (appointmentData.userId !== userId) {
+        if (appointmentData.userId.toString() !== userId) {
             return res.json({ success: false, message: 'Unauthorized action.' })
         }
         await appointmentModel.findByIdAndUpdate(appointmentId, { cancelled: true })
@@ -234,17 +249,17 @@ export const paymentRazorpay = async (req, res) => {
 
 export const verifyRazorpay = async (req, res) => {
     try {
-        const {razorpay_order_id} = req.body.response
+        const { razorpay_order_id } = req.body.response
         const orderInfo = await razorypayInstance.orders.fetch(razorpay_order_id)
 
-        if(orderInfo.status === 'paid'){
-            await appointmentModel.findByIdAndUpdate(orderInfo.receipt, {payment : true})
-            res.json({success : true, message : 'Payment Successfull!!'})
-        }else{
-            res.json({success : false, message : 'Payment Failed!!'})
+        if (orderInfo.status === 'paid') {
+            await appointmentModel.findByIdAndUpdate(orderInfo.receipt, { payment: true })
+            res.json({ success: true, message: 'Payment Successfull!!' })
+        } else {
+            res.json({ success: false, message: 'Payment Failed!!' })
         }
     } catch (error) {
         console.log(error)
         res.json({ success: false, message: error.message })
     }
-} 
+}

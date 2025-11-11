@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { ProviderContext } from "../../../context/ProviderContext";
 import { AppContext } from "../../../context/AppContext";
 import { assets } from "../../../assets/assets";
+import { X } from "lucide-react";
 
 const ProviderAppointments = () => {
   const { pToken, getAppointments, appointments, completeAppointment, cancelAppointment } = useContext(ProviderContext);
@@ -84,21 +85,17 @@ const ProviderAppointments = () => {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => cancelAppointment(item._id)}
-                          className="p-2 rounded-lg hover:bg-red-50 transition"
+                          className="w-4 h-4 bg-red-600 transition"
                           title="Cancel Appointment"
                         >
-                          <img
-                            src={assets.cancel_icon}
-                            alt="Cancel"
-                            className="w-5 md:w-6"
-                          />
+                          <X />
                         </button>
                         <button
                           onClick={() => completeAppointment(item._id)}
                           className="p-2 rounded-lg hover:bg-green-50 transition"
                           title="Approve Appointment"
                         >
-                          <img src={assets.tick_icon} alt="Approve" className="w-5 md:w-6" />
+                          <check />
                         </button>
                       </div>
 

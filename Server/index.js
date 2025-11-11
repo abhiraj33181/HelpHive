@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 import 'dotenv/config'
 import connectDB from './src/config/db.js'
 import connectCloudinary from './src/config/cloudinary.js'
@@ -18,13 +19,15 @@ app.use(cors({
     origin : ['http://localhost:5173', 'https://helphive-liard.vercel.app'],
     credentials: true
 }))
-app.use(express.json())
 
+app.use(express.json())
+app.use(cookieParser())
 // API Endpoints 
 
 app.use('/api/admin', adminRouter)
 app.use('/api/provider', providerRouter)
 app.use('/api/user', userRouter)
+
 
 
 connectDB()
