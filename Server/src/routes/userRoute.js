@@ -1,5 +1,5 @@
 import express from 'express'
-import { bookAppointment, cancelAppointment, getProfile, listAppointment, paymentRazorpay, registerUser, updateProfile, userLogin, verifyRazorpay } from '../controllers/userController.js';
+import { bookAppointment, cancelAppointment, getProfile, listAppointment, logOutUser, paymentRazorpay, registerUser, updateProfile, userLogin, verifyRazorpay } from '../controllers/userController.js';
 import authUser from '../middlewares/authUser.js';
 import upload from '../middlewares/multer.js';
 
@@ -7,6 +7,7 @@ const userRouter = express.Router()
 
 userRouter.post("/register", registerUser)
 userRouter.post("/login", userLogin)
+userRouter.get("/logout", logOutUser)
 
 userRouter.get('/getProfile',authUser ,getProfile)
 userRouter.post("/updateProfile", upload.single('image'), authUser, updateProfile)

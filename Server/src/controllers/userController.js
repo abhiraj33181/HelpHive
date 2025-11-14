@@ -88,6 +88,21 @@ export const userLogin = async (req, res) => {
     }
 }
 
+export const logOutUser = async (req, res) => {
+    try {
+        res.clearCookie('token', {
+            httpOnly : true,
+            secure : true,
+            sameSite : 'none'
+        })
+
+        res.json({success : true, message : 'Logged out Successfully'})
+    } catch (error) {
+        console.log(error.message)
+        res.json({success : false, message : error.message})
+    }
+}
+
 export const getProfile = async (req, res) => {
     try {
         res.json({ success: true, userData: req.user })
@@ -156,7 +171,7 @@ export const bookAppointment = async (req, res) => {
         const appointmentData = {
             userId: user._id,
             provId,
-            user,
+            userData : user,
             provData,
             amount: provData.fees,
             slotTime,

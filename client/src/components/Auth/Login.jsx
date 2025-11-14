@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import { useEffect } from 'react';
 
 const Login = ({ type = "login" }) => {
-  const {backendURL, token, setToken, axios, navigate} = useContext(AppContext)
+  const { backendURL, token, setToken, axios, navigate, loadUserProfileData } = useContext(AppContext)
 
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
@@ -27,36 +27,34 @@ const Login = ({ type = "login" }) => {
     setLoading(true);
     e.preventDefault();
 
-    const {name, email, password} = formData
+    const { name, email, password } = formData
 
     try {
-      if (isSignUp){
-        const {data} = await axios.post(`${backendURL}/api/user/register`, {name, email, password})
-        if(data.success){
-          localStorage.setItem('token', data.token)
-          setToken(data.token)
+      if (isSignUp) {
+        const { data } = await axios.post(`${backendURL}/api/user/register`, { name, email, password })
+        if (data.success) {
+          await loadUserProfileData()
           toast.success("Account Created!")
           navigate('/')
-        }else{
+        } else {
           toast.error(data.message)
         }
-      }else{
-        const {data} = await axios.post(`${backendURL}/api/user/login`, {email, password})
-        if(data.success){
-          localStorage.setItem('token', data.token)
-          setToken(data.token)
+      } else {
+        const { data } = await axios.post(`${backendURL}/api/user/login`, { email, password })
+        if (data.success) {
+          await loadUserProfileData()
           toast.success("Login Successfull!")
           navigate('/')
-        }else{
+        } else {
           toast.error(data.message)
         }
       }
     } catch (error) {
-        toast.error(error.message)
-    }finally{
+      toast.error(error.message)
+    } finally {
       setLoading(false)
     }
-    
+
   };
 
   const handleGoogleAuth = () => {
@@ -178,7 +176,7 @@ const Login = ({ type = "login" }) => {
             </button>
           </form>
 
-            {/* or - line break  */}
+          {/* or - line break  */}
           <div className="mt-8 relative flex items-center justify-center">
             <div className="h-px bg-gray-300 w-full"></div>
             <span className="absolute bg-white px-3 text-gray-500 text-sm">OR</span>

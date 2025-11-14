@@ -3,27 +3,32 @@ import userModel from '../models/userModel.js';
 
 const authUser = async (req, res, next) => {
     try {
-        const {token} = req.cookies;
-        if (!token){
-            return res.json({success : false, message : 'Not Authorized'})
+        const token = req.cookies.token;
+
+        if (!token) {
+            return res.status(401).json({ success: false, message: 'Not Authorized' });
         }
 
-        const tokenDecode = JWT.verify(token, process.env.SECRET_KEY)
+        const decoded = JWT.verify(token, process.env.SECRET_KEY);
 
-        const {id} = tokenDecode
+        if (!decoded.id) {
+            return res.status(401).json({ success: false, message: 'Invalid Token' });
+        }
 
-        const user = await userModel.findById(id)
+        const user = await userModel.findById(decoded.id);
 
         if (!user) {
-            return res.json({sucess : true, message : 'Unauthorized Access!'})
+            return res.status(401).json({ success: false, message: 'Unauthorized Access!' });
         }
+
         req.user = user;
 
-        next()
+        next();
+
     } catch (error) {
-        console.log(error)
-        res.json({success: false, message : error.message})
+        console.log(error);
+        return res.status(401).json({ success: false, message: 'Token Expired or Invalid' });
     }
-}
+};
 
 export default authUser;

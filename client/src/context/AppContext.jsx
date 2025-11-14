@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react"
+import { createContext, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -6,64 +6,76 @@ import { useNavigate } from "react-router-dom";
 export const AppContext = createContext();
 
 const AppContextProvider = (props) => {
-    const [providers, setProviders] = useState([])
-    const [userData, setUserData] = useState([])
-    const currencySymbol = '₹'
-    const backendURL = import.meta.env.VITE_BACKEND_URL
-    const navigate = useNavigate()
 
-    const [token, setToken] = useState(localStorage.getItem('token') ? localStorage.getItem('token') : false)
+    const [providers, setProviders] = useState([]);
+    const [userData, setUserData] = useState(null);
 
+    const currencySymbol = "₹";
+    const backendURL = import.meta.env.VITE_BACKEND_URL;
+    const navigate = useNavigate();
+
+    axios.defaults.withCredentials = true;
+
+    const [token, setToken] = useState(false);
 
     const getProvidersData = async () => {
         try {
-            const { data } = await axios.get(`${backendURL}/api/provider/list`)
+            const { data } = await axios.get(`${backendURL}/api/provider/list`);
+
             if (data.success) {
-                setProviders(data.providers)
+                setProviders(data.providers);
             } else {
-                toast.error(data.messsage)
+                toast.error(data.message);
             }
         } catch (error) {
-            toast.error(error.messsage)
-            console.log(error)
+            toast.error(error.message);
+            console.log(error);
         }
-    }
+    };
 
     const loadUserProfileData = async () => {
         try {
-            const { data } = await axios.get(`${backendURL}/api/user/getProfile`, { headers: { token } })
+            const { data } = await axios.get(
+                `${backendURL}/api/user/getProfile`
+            );
+
             if (data.success) {
-                setUserData(data.userData)
+                setUserData(data.userData);
+                setToken(true);
             } else {
-                toast.error(data.message)
+                setUserData(null);
+                setToken(false);
             }
         } catch (error) {
-            toast.error(error.messsage)
-            console.log(error)
+            setUserData(null);
+            setToken(false);
         }
-    }
+    };
 
-    const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = ["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec",];
 
     const slotDateFormat = (slotDate) => {
-        const dateArray = slotDate.split('_')
-        return dateArray[0] + " " + months[Number(dateArray[1])] + " " + dateArray[2]
-    }
+        const dateArray = slotDate.split("_");
+        return (
+            dateArray[0] +
+            " " +
+            months[Number(dateArray[1])] +
+            " " +
+            dateArray[2]
+        );
+    };
 
     const calculateAge = (dob) => {
-        const today = new Date()
-        const birthDate = new Date(dob)
+        const today = new Date();
+        const birthDate = new Date(dob);
 
-        let age = today.getFullYear() - birthDate.getFullYear()
-
-        return age
-    }
+        let age = today.getFullYear() - birthDate.getFullYear();
+        return age;
+    };
 
     const value = {
         providers,
         currencySymbol,
-        token,
-        setToken,
         backendURL,
         axios,
         navigate,
@@ -72,27 +84,24 @@ const AppContextProvider = (props) => {
         loadUserProfileData,
         getProvidersData,
         calculateAge,
-        slotDateFormat
-    }
-
-
-    useEffect(() => {
-        getProvidersData()
-    }, [])
+        slotDateFormat,
+        token,
+        setToken
+    };
 
     useEffect(() => {
-        if (token) {
-            loadUserProfileData()
-        } else {
-            setUserData(false)
-        }
-    }, [token])
+        getProvidersData();
+    }, []);
+
+    useEffect(() => {
+        loadUserProfileData();
+    }, []);
 
     return (
         <AppContext.Provider value={value}>
             {props.children}
         </AppContext.Provider>
-    )
-}
+    );
+};
 
-export default AppContextProvider
+export default AppContextProvider;

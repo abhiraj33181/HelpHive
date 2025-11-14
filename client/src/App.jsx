@@ -47,6 +47,7 @@ const App = () => {
       <ScrollToTop />
 
       {!hideLayout && <Header />}
+      <ToastContainer />
 
       <Routes>
         <Route path='/' element={<Home />} />
@@ -82,7 +83,6 @@ const App = () => {
       </Routes>
 
       {!hideLayout && <Footer />}
-      <ToastContainer />
     </>
   )
 }

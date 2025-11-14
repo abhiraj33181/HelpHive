@@ -4,18 +4,26 @@ import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { assets } from '../assets/assets';
 import { useContext } from 'react';
 import { AppContext } from '../context/AppContext';
+import { toast } from 'react-toastify';
 
 function Header() {
     const navigate = useNavigate();
     const [showMenu, setShowMenu] = useState(false)
     const [showDropdown, setShowDropdown] = useState(false)
 
-    const {token, setToken, userData} = useContext(AppContext)
+    const {token, setToken, userData, axios, backendURL, loadUserProfileData} = useContext(AppContext)
 
     const logout = async () => {
-        setToken(false)
-        localStorage.removeItem('token')
-        navigate('/')
+        try {
+            const {data} = await axios.get(`${backendURL}/api/user/logout`)
+            if(data.success){
+                toast.success(data.message)
+                await loadUserProfileData()
+                navigate('/')
+            }
+        } catch (error) {
+            toast.error(error.message)
+        }
     }
 
     useEffect(() => {

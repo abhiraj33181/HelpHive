@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import bcrypt from 'bcrypt'
+import JWT from 'jsonwebtoken'
 
 const providerSchema = new mongoose.Schema({
     name: {
