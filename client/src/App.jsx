@@ -65,11 +65,11 @@ const App = () => {
 
         <Route path='/admin'>
           <Route index element={aToken ? <Navigate to='/admin/dashboard' /> : <Login />} />
-          <Route element={<AdminDashboard />}>
-            <Route path='dashboard' element={<Dashboard />} />
-            <Route path='all-appointments' element={<AllAppointments />} />
-            <Route path='add-provider' element={<AddProvider />} />
-            <Route path='provider-list' element={<ProviderList />} />
+          <Route element={<ProtectedRoutes role='admin'><AdminDashboard /></ProtectedRoutes>}>
+            <Route path='dashboard' element={<ProtectedRoutes role='admin'><Dashboard /></ProtectedRoutes>} />
+            <Route path='all-appointments' element={<ProtectedRoutes role='admin'><AllAppointments /></ProtectedRoutes>} />
+            <Route path='add-provider' element={<ProtectedRoutes role='admin'><AddProvider /></ProtectedRoutes>} />
+            <Route path='provider-list' element={<ProtectedRoutes role='admin'><ProviderList /></ProtectedRoutes>} />
           </Route>
         </Route>
 

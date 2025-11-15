@@ -83,8 +83,6 @@ const ProviderContextProvider = (props) => {
                 setProfileData(data.profileData)
                 setPToken(true)
                 console.log(data.profileData)
-            } else {
-                toast.error(data.message)
             }
         } catch (error) {
             console.log(error.message)

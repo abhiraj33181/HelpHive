@@ -7,16 +7,26 @@ import { toast } from 'react-toastify'
 import axios from 'axios'
 
 function Navbar() {
-    const {backendURL, getProfileData} = useContext(ProviderContext)
+    const { backendURL, getProfileData } = useContext(ProviderContext)
+    const {getProfile} = useContext(AdminContext)
 
     const navigate = useNavigate()
     const logOut = async () => {
         try {
-            const { data } = await axios.get(`${backendURL}/api/provider/logout`, {withCredentials : true})
+            if (aToken) {
+                const { data } = await axios.get(`${backendURL}/api/admin/logout`, { withCredentials: true })
+                if (data.success) {
+                    toast.success(data.message)
+                    await getProfile()
+                    navigate('/')
+                }
+            }else{
+                const { data } = await axios.get(`${backendURL}/api/provider/logout`, {withCredentials : true})
             if (data.success) {
                 toast.success(data.message)
                 await getProfileData()
                 navigate('/')
+            }
             }
         } catch (error) {
             toast.error(error.message)

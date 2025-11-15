@@ -1,12 +1,14 @@
-import { createContext, useState } from "react"
+import { createContext, useEffect, useState } from "react"
 import axios from 'axios'
 import { toast } from 'react-toastify'
+
+axios.defaults.withCredentials = true;
 
 export const AdminContext = createContext();
 
 const AdminContextProvider = (props) => {
 
-    const [aToken, setAToken] = useState(localStorage.getItem('aToken') ? localStorage.getItem('aToken') : '')
+    const [aToken, setAToken] = useState(false)
     const [providers, setProviders] = useState([])
     const [appointments, setAppointments] = useState([])
     const [dashData, setDashData] = useState(false)
@@ -15,7 +17,7 @@ const AdminContextProvider = (props) => {
 
     const getAllProviders = async () => {
         try {
-            const { data } = await axios.get(`${backendURL}/api/admin/all-providers`, { headers: { aToken } })
+            const { data } = await axios.get(`${backendURL}/api/admin/all-providers`, { withCredentials: true })
             if (data.success) {
                 setProviders(data.providers)
                 console.log(providers)
@@ -27,9 +29,20 @@ const AdminContextProvider = (props) => {
         }
     }
 
+    const getProfile = async () => {
+        try {
+            const { data } = await axios.get(`${backendURL}/api/admin/profile`, { withCredentials: true })
+            if (data.success) {
+                setAToken(true)
+            }
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+
     const changeAvailablity = async (provId) => {
         try {
-            const { data } = await axios.post(`${backendURL}/api/admin/change-availablity`, { provId }, { headers: { aToken } })
+            const { data } = await axios.post(`${backendURL}/api/admin/change-availablity`, { provId }, { withCredentials: true })
             if (data.success) {
                 toast.success(data.message)
                 getAllProviders()
@@ -43,7 +56,7 @@ const AdminContextProvider = (props) => {
 
     const getAllAppointments = async () => {
         try {
-            const { data } = await axios.get(`${backendURL}/api/admin/appointments`, { headers: { aToken } })
+            const { data } = await axios.get(`${backendURL}/api/admin/appointments`, { withCredentials: true })
             if (data.success) {
                 setAppointments(data.appointments);
                 console.log(data.appointments)
@@ -80,7 +93,7 @@ const AdminContextProvider = (props) => {
 
     const getDashData = async () => {
         try {
-            const {data} = await axios.get(`${backendURL}/api/admin/dashboard`, {headers : {aToken}})
+            const {data} = await axios.get(`${backendURL}/api/admin/dashboard`, { withCredentials: true })
             if(data.success){
                 setDashData(data.dashData)
                 console.log(data.dashData);
@@ -95,8 +108,12 @@ const AdminContextProvider = (props) => {
     }
 
 
+    useEffect(() => {
+        getProfile()
+    }, [])
+
     const value = {
-        aToken, setAToken, backendURL, providers, getAllProviders, changeAvailablity, appointments, setAppointments, getAllAppointments, slotDateFormat, cancelAppointment, getDashData, dashData, setDashData
+        aToken, setAToken, backendURL, providers, getAllProviders, changeAvailablity, appointments, setAppointments, getAllAppointments, slotDateFormat, cancelAppointment, getDashData, dashData, setDashData, getProfile
     }
 
 
