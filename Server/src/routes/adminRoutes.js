@@ -15,5 +15,6 @@ adminRouter.post('/change-availablity', authAdmin, changeAvailablity)
 adminRouter.get('/appointments', authAdmin, appointmentAdmin)
 adminRouter.post('/appointment-cancel', authAdmin, appointmentCancel)
 adminRouter.get('/dashboard', authAdmin, adminDashboard)
+adminRouter.get('/profile', authAdmin, (req,res) => res.json({success : true, user : req.user}))
 
 export default adminRouter;
