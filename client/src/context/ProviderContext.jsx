@@ -1,14 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createContext } from "react"
 import axios from 'axios'
 import { toast } from 'react-toastify'
+
+axios.defaults.withCredentials = true;
 
 export const ProviderContext = createContext();
 
 const ProviderContextProvider = (props) => {
 
     const backendURL = import.meta.env.VITE_BACKEND_URL
-    const [pToken, setPToken] = useState(localStorage.getItem('pToken') ? localStorage.getItem('pToken') : '')
+    const [pToken, setPToken] = useState(false)
     const [appointments, setAppointments] = useState([])
     const [dashData, setDashData] = useState(false)
     const [profileData, setProfileData] = useState(false)
@@ -17,7 +19,7 @@ const ProviderContextProvider = (props) => {
 
     const getAppointments = async () => {
         try {
-            const { data } = await axios.get(`${backendURL}/api/provider/appointments`, { headers: { pToken } })
+            const { data } = await axios.get(`${backendURL}/api/provider/appointments`, { withCredentials: true })
             if (data.success) {
                 setAppointments(data.appointments)
                 console.log(data.appointments)
@@ -32,7 +34,7 @@ const ProviderContextProvider = (props) => {
 
     const completeAppointment = async (appointmentId) => {
         try {
-            const { data } = await axios.post(`${backendURL}/api/provider/complete-appointment`, { appointmentId }, { headers: { pToken } })
+            const { data } = await axios.post(`${backendURL}/api/provider/complete-appointment`, { appointmentId }, { withCredentials: true })
             if (data.success) {
                 toast.success(data.message)
                 getAppointments()
@@ -47,7 +49,7 @@ const ProviderContextProvider = (props) => {
 
     const cancelAppointment = async (appointmentId) => {
         try {
-            const { data } = await axios.post(`${backendURL}/api/provider/cancel-appointment`, { appointmentId }, { headers: { pToken } })
+            const { data } = await axios.post(`${backendURL}/api/provider/cancel-appointment`, { appointmentId }, { withCredentials: true })
             if (data.success) {
                 toast.success(data.message)
                 getAppointments()
@@ -62,7 +64,7 @@ const ProviderContextProvider = (props) => {
 
     const getDashData = async () => {
         try {
-            const { data } = await axios.get(`${backendURL}/api/provider/dashboard`, { headers: { pToken } })
+            const { data } = await axios.get(`${backendURL}/api/provider/dashboard`, { withCredentials: true })
             if (data.success) {
                 setDashData(data.dashData)
             } else {
@@ -76,9 +78,10 @@ const ProviderContextProvider = (props) => {
 
     const getProfileData = async () => {
         try {
-            const { data } = await axios.get(`${backendURL}/api/provider/profile`, { headers: { pToken } })
+            const { data } = await axios.get(`${backendURL}/api/provider/profile`, { withCredentials: true })
             if (data.success) {
                 setProfileData(data.profileData)
+                setPToken(true)
                 console.log(data.profileData)
             } else {
                 toast.error(data.message)
@@ -89,7 +92,12 @@ const ProviderContextProvider = (props) => {
         }
     }
 
-    
+    useEffect(() => {
+        getProfileData()
+    }, [])
+
+
+
     const value = {
         pToken, setPToken, backendURL, getAppointments, appointments, setAppointments, completeAppointment, cancelAppointment, dashData, setDashData, getDashData, profileData, setProfileData, getProfileData
     }

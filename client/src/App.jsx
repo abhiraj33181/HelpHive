@@ -11,7 +11,7 @@ import Appointment from './Pages/Appointment'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollTop'
-import Login from './Pages/Admin/Login'
+import Login from './Pages/Admin/Admin/Login'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { useContext } from 'react'
@@ -20,13 +20,14 @@ import AdminDashboard from './Pages/Admin/AdminDashboard'
 import AllAppointments from './Pages/Admin/Admin/AllAppointments'
 import AddProvider from './Pages/Admin/Admin/AddProvider'
 import ProviderList from './Pages/Admin/Admin/ProviderList'
-import ProtectedRoutes from './components/ProtectedRoutes'
 import { ProviderContext } from './context/ProviderContext'
 import ProviderDashboard from './Pages/Admin/Provider/ProviderDashboard'
 import ProviderLayout from './Pages/Admin/Provider/ProviderLayout'
 import ProviderAppointments from './Pages/Admin/Provider/ProviderAppointments'
 import ProviderProfile from './Pages/Admin/Provider/ProviderProfile'
 import { UserOnboarding } from './Pages/UserOnboarding'
+import ProviderLogin from './Pages/Admin/Provider/ProviderLogin'
+import ProtectedRoutes from './components/ProtectedRoutes'
 
 const App = () => {
 
@@ -64,7 +65,7 @@ const App = () => {
 
         <Route path='/admin'>
           <Route index element={aToken ? <Navigate to='/admin/dashboard' /> : <Login />} />
-          <Route element={<ProtectedRoutes role="admin"><AdminDashboard /></ProtectedRoutes>}>
+          <Route element={<AdminDashboard />}>
             <Route path='dashboard' element={<Dashboard />} />
             <Route path='all-appointments' element={<AllAppointments />} />
             <Route path='add-provider' element={<AddProvider />} />
@@ -73,9 +74,9 @@ const App = () => {
         </Route>
 
         <Route path='/provider'>
-          <Route index element={pToken ? <Navigate to='/provider/dashboard' /> : <Login />} />
-          <Route element={<ProtectedRoutes role="provider"><ProviderLayout /></ProtectedRoutes>}>
-          <Route path='dashboard' element={<ProviderDashboard />} />
+          <Route index element={pToken ? <Navigate to='/provider/dashboard' /> : <ProviderLogin />} />
+          <Route element={<ProtectedRoutes role='provider'><ProviderLayout /></ProtectedRoutes>}>
+          <Route path='dashboard' element={<ProtectedRoutes role='provider'><ProviderDashboard /></ProtectedRoutes>} />
           <Route path='all-appointments' element={<ProviderAppointments />} />
           <Route path='my-profile' element={<ProviderProfile />} />
           </Route>

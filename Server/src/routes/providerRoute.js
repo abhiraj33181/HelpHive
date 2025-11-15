@@ -1,10 +1,11 @@
 import express from 'express'
-import { appointmentCancel, appointmentComplete, appointmentProvider, loginProvider, providerDashboard, providerList, providerProfile, updateProviderProfile } from '../controllers/providerController.js'
+import { appointmentCancel, appointmentComplete, appointmentProvider, loginProvider, logOutUser, providerDashboard, providerList, providerProfile, updateProviderProfile } from '../controllers/providerController.js'
 import authProvider from '../middlewares/authProvider.js'
 
 const providerRouter = express.Router()
 
 providerRouter.get('/list', providerList)
+providerRouter.get('/logout', logOutUser)
 providerRouter.post('/login', loginProvider)
 providerRouter.get('/appointments', authProvider ,appointmentProvider)
 providerRouter.post('/complete-appointment', authProvider ,appointmentComplete)

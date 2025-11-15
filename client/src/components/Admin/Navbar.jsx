@@ -3,16 +3,24 @@ import React, { useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { AdminContext } from '../../context/AdminContext'
 import { ProviderContext } from '../../context/ProviderContext'
+import { toast } from 'react-toastify'
+import axios from 'axios'
 
 function Navbar() {
+    const {backendURL, getProfileData} = useContext(ProviderContext)
 
     const navigate = useNavigate()
-    const logOut = () => {
-        aToken && setAToken('')
-        aToken && localStorage.removeItem('aToken')
-
-        pToken && setPToken('')
-        pToken && localStorage.removeItem('pToken')
+    const logOut = async () => {
+        try {
+            const { data } = await axios.get(`${backendURL}/api/provider/logout`, {withCredentials : true})
+            if (data.success) {
+                toast.success(data.message)
+                await getProfileData()
+                navigate('/')
+            }
+        } catch (error) {
+            toast.error(error.message)
+        }
     }
 
 

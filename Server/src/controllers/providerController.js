@@ -70,6 +70,21 @@ export const loginProvider = async (req, res) => {
     }
 }
 
+export const logOutUser = async (req, res) => {
+    try {
+        res.clearCookie('pToken', {
+            httpOnly : true,
+            secure : true,
+            sameSite : 'none'
+        })
+
+        res.json({success : true, message : 'Logged out Successfully'})
+    } catch (error) {
+        console.log(error.message)
+        res.json({success : false, message : error.message})
+    }
+}
+
 
 export const appointmentProvider = async (req, res) => {
     try {

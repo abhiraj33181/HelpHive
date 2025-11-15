@@ -1,18 +1,31 @@
+import { Navigate } from "react-router-dom";
 import { useContext } from "react";
 import { AdminContext } from "../context/AdminContext";
 import { ProviderContext } from "../context/ProviderContext";
-import { Navigate } from "react-router-dom";
+import { AppContext } from "../context/AppContext";
 
-const ProtectedRoutes = ({ children, role }) => {
+const ProtectedRoutes = ({ role, children }) => {
+
     const { aToken } = useContext(AdminContext);
     const { pToken } = useContext(ProviderContext);
+    const { token } = useContext(AppContext);
 
-    if (role === "admin" && !aToken) {
-        return <Navigate to="/admin" replace />;
-    }
+    const roleTokens = {
+        admin: aToken,
+        provider: pToken,
+        user: token,
+    };
 
-    if (role === "provider" && !pToken) {
-        return <Navigate to="/provider" replace />;
+    const loginRoutes = {
+        admin: "/admin",
+        provider: "/provider",
+        user: "/auth/login",
+    };
+
+    const isAuthenticated = roleTokens[role];
+
+    if (!isAuthenticated) {
+        return <Navigate to={loginRoutes[role]} replace />;
     }
 
     return children;

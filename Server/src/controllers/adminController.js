@@ -78,6 +78,21 @@ export const loginAdmin = async (req, res) => {
     }
 }
 
+export const logOutUser = async (req, res) => {
+    try {
+        res.clearCookie('aToken', {
+            httpOnly : true,
+            secure : true,
+            sameSite : 'none'
+        })
+
+        res.json({success : true, message : 'Logged out Successfully'})
+    } catch (error) {
+        console.log(error.message)
+        res.json({success : false, message : error.message})
+    }
+}
+
 export const allProvider = async (req, res) => {
     try {
         const providers = await providerModel.find({}).select('-password')
