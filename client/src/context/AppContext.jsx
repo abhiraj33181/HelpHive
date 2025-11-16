@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 export const AppContext = createContext();
+axios.defaults.withCredentials = true;
 
 const AppContextProvider = (props) => {
 
@@ -14,13 +15,12 @@ const AppContextProvider = (props) => {
     const backendURL = import.meta.env.VITE_BACKEND_URL;
     const navigate = useNavigate();
 
-    axios.defaults.withCredentials = true;
 
     const [token, setToken] = useState(false);
 
     const getProvidersData = async () => {
         try {
-            const { data } = await axios.get(`${backendURL}/api/provider/list`);
+            const { data } = await axios.get(`${backendURL}/api/provider/list`, {withCredentials : true});
 
             if (data.success) {
                 setProviders(data.providers);
@@ -36,7 +36,7 @@ const AppContextProvider = (props) => {
     const loadUserProfileData = async () => {
         try {
             const { data } = await axios.get(
-                `${backendURL}/api/user/getProfile`
+                `${backendURL}/api/user/getProfile` , {withCredentials : true}
             );
 
             if (data.success) {
