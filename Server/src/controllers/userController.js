@@ -39,8 +39,9 @@ export const registerUser = async (req, res) => {
 
         res.cookie('token', token, {
             httpOnly: true,
-            sameSite: 'strict',
-            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'none',
+            secure: true,
+            path: "/",
             expires: new Date(Date.now() + 24 * 7 * 60 * 60 * 1000)
         })
 
@@ -56,9 +57,9 @@ export const registerUser = async (req, res) => {
 export const userLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
-        
+
         if (!email, !password) {
-            return res.json({success : true, message : 'Missing Credentials!'})
+            return res.json({ success: true, message: 'Missing Credentials!' })
         }
         const user = await userModel.findOne({ email })
 
@@ -74,8 +75,9 @@ export const userLogin = async (req, res) => {
 
             res.cookie('token', token, {
                 httpOnly: true,
-                sameSite: 'strict',
-                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'none',
+                secure: true,
+                path: "/",
                 expires: new Date(Date.now() + 24 * 7 * 60 * 60 * 1000)
             })
             res.json({ success: true, user })
@@ -91,15 +93,16 @@ export const userLogin = async (req, res) => {
 export const logOutUser = async (req, res) => {
     try {
         res.clearCookie('token', {
-            httpOnly : true,
-            secure : true,
-            sameSite : 'none'
+            httpOnly: true,
+            sameSite: 'none',
+            secure: true,
+            path: "/",
         })
 
-        res.json({success : true, message : 'Logged out Successfully'})
+        res.json({ success: true, message: 'Logged out Successfully' })
     } catch (error) {
         console.log(error.message)
-        res.json({success : false, message : error.message})
+        res.json({ success: false, message: error.message })
     }
 }
 
@@ -124,13 +127,13 @@ export const updateProfile = async (req, res) => {
             return res.json({ success: false, message: "Data Missing.." })
         }
 
-        const updateData =  { name, phone, address: { line1, line2 }, dob, gender }
-        
+        const updateData = { name, phone, address: { line1, line2 }, dob, gender }
+
         if (imageFile) {
             const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: 'image' })
             updateData.image = imageUpload.secure_url
         }
-        
+
         await userModel.findByIdAndUpdate(userId, { $set: updateData })
 
 
@@ -171,7 +174,7 @@ export const bookAppointment = async (req, res) => {
         const appointmentData = {
             userId: user._id,
             provId,
-            userData : user,
+            userData: user,
             provData,
             amount: provData.fees,
             slotTime,

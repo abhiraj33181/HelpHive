@@ -64,8 +64,9 @@ export const loginAdmin = async (req, res) => {
             const token = JWT.sign(email + password, process.env.SECRET_KEY)
             res.cookie('aToken', token, {
                 httpOnly: true,
-                sameSite: 'strict',
-                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'none',
+                secure: true,
+                path: "/",
                 expires: new Date(Date.now() + 24 * 7 * 60 * 60 * 1000)
             })
             res.json({ success: true, token })
@@ -81,15 +82,16 @@ export const loginAdmin = async (req, res) => {
 export const logOutUser = async (req, res) => {
     try {
         res.clearCookie('aToken', {
-            httpOnly : true,
-            secure : true,
-            sameSite : 'none'
+            httpOnly: true,
+            sameSite: 'none',
+            secure: true,
+            path: "/",
         })
 
-        res.json({success : true, message : 'Logged out Successfully'})
+        res.json({ success: true, message: 'Logged out Successfully' })
     } catch (error) {
         console.log(error.message)
-        res.json({success : false, message : error.message})
+        res.json({ success: false, message: error.message })
     }
 }
 
