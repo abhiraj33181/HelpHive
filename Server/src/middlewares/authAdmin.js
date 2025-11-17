@@ -2,12 +2,12 @@ import JWT from 'jsonwebtoken';
 
 const authAdmin = async (req, res, next) => {
     try {
-        const {aToken} = req.cookies;
-        if (!aToken){
+        const {atoken} = req.cookies;
+        if (!atoken){
             return res.json({success : false, message : 'Not Authorized'})
         }
 
-        const tokenDecode = JWT.verify(aToken, process.env.SECRET_KEY)
+        const tokenDecode = JWT.verify(atoken, process.env.SECRET_KEY)
 
         if(tokenDecode !== process.env.ADMIN_EMAIL + process.env.ADMIN_PASSWORD){
             return res.json({success : false, message : 'Not Authorized!'})

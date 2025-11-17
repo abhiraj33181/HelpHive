@@ -62,7 +62,7 @@ export const loginAdmin = async (req, res) => {
 
         if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
             const token = JWT.sign(email + password, process.env.SECRET_KEY)
-            res.cookie('aToken', token, {
+            res.cookie('atoken', token, {
                 httpOnly: true,
                 sameSite: 'none',
                 secure: true,
@@ -81,7 +81,7 @@ export const loginAdmin = async (req, res) => {
 
 export const logOutUser = async (req, res) => {
     try {
-        res.clearCookie('aToken', {
+        res.clearCookie('atoken', {
             httpOnly: true,
             sameSite: 'none',
             secure: true,
