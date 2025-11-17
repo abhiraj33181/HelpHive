@@ -53,7 +53,7 @@ export const loginProvider = async (req, res) => {
         if (isMatch) {
             const token = await provider.getJWT()
 
-            res.cookie('ptoken', token, {
+            res.cookie('pToken', token, {
                 httpOnly: true,
                 sameSite: 'none',
                 secure: true,
@@ -73,7 +73,7 @@ export const loginProvider = async (req, res) => {
 
 export const logOutUser = async (req, res) => {
     try {
-        res.clearCookie('ptoken', {
+        res.clearCookie('pToken', {
             httpOnly: true,
             sameSite: 'none',
             secure: true,

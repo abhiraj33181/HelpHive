@@ -3,12 +3,12 @@ import providerModel from '../models/providerModel.js';
 
 const authProvider = async (req, res, next) => {
     try {
-        const {ptoken} = req.cookies;
-        if (!ptoken){
+        const {pToken} = req.cookies;
+        if (!pToken){
             return res.json({success : false, message : 'Not Authorized'})
         }
 
-        const tokenDecode = JWT.verify(ptoken, process.env.SECRET_KEY)
+        const tokenDecode = JWT.verify(pToken, process.env.SECRET_KEY)
 
         const {id} = tokenDecode;
         
