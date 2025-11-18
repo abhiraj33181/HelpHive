@@ -38,7 +38,7 @@ const AddProvider = () => {
       formData.append('about', about)
       formData.append('address', JSON.stringify({ line1: address1, line2: address2 }))
 
-      const { data } = await axios.post(`${backendURL}/api/admin/add-provider`, formData, { headers: { aToken } })
+      const { data } = await axios.post(`${backendURL}/api/admin/add-provider`, formData, { withCredentials: true })
       if (data.success) {
         toast.success(data.message)
         setProvImg(false)

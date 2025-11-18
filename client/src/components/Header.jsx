@@ -15,7 +15,7 @@ function Header() {
 
     const logout = async () => {
         try {
-            const {data} = await axios.get(`${backendURL}/api/user/logout`, {withCredentials : true})
+            const {data} = await axios.post(`${backendURL}/api/user/logout`, {withCredentials : true})
             if(data.success){
                 toast.success(data.message)
                 await loadUserProfileData()

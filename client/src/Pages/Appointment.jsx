@@ -93,7 +93,7 @@ const Appointment = () => {
 
       const slotDate = day + "_" + month + "_" + year
 
-      const { data } = await axios.post(`${backendURL}/api/user/bookAppointment`, { provId, slotDate, slotTime})
+      const { data } = await axios.post(`${backendURL}/api/user/bookAppointment`, { provId, slotDate, slotTime}, { withCredentials: true })
       if (data.success) {
         toast.success(data.message)
         getProvidersData()

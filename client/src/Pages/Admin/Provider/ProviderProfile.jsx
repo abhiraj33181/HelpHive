@@ -17,7 +17,7 @@ const ProviderProfile = () => {
         available: profileData.available
       }
 
-      const { data } = await axios.post(`${backendURL}/api/provider/update-profile`, updateData, { headers: { pToken } })
+      const { data } = await axios.post(`${backendURL}/api/provider/update-profile`, updateData, { withCredentials: true })
       if (data.success) {
         toast.success(data.message)
         setIsEdit(false)

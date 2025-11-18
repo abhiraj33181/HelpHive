@@ -22,7 +22,7 @@ const MyProfile = () => {
 
       image && formData.append('image', image)
 
-      const { data } = await axios.post(`${backendURL}/api/user/updateProfile`, formData, { headers: { token } })
+      const { data } = await axios.post(`${backendURL}/api/user/updateProfile`, formData, { withCredentials: true })
       if (data.success) {
         toast.success(data.message)
         await loadUserProfileData()
