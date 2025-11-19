@@ -28,6 +28,7 @@ import ProviderProfile from './Pages/Admin/Provider/ProviderProfile'
 import { UserOnboarding } from './Pages/UserOnboarding'
 import ProviderLogin from './Pages/Admin/Provider/ProviderLogin'
 import ProtectedRoutes from './components/ProtectedRoutes'
+import UserDashboard from './Pages/User/UserDashboard'
 
 const App = () => {
 
@@ -39,9 +40,10 @@ const App = () => {
   const noHeaderFooterRoutes = ['/auth/login', '/auth/signup']
   const isAdminRoute = location.pathname.startsWith('/admin')
   const isProviderRoute =location.pathname === '/provider' || location.pathname.startsWith('/provider/');
+  const isUserRoute =location.pathname === '/dashboard' || location.pathname.startsWith('/dashboard/');
 
 
-  const hideLayout = noHeaderFooterRoutes.includes(location.pathname) || isAdminRoute || isProviderRoute;
+  const hideLayout = noHeaderFooterRoutes.includes(location.pathname) || isAdminRoute || isProviderRoute || isUserRoute;
   return (
     // mx-4 sm:mx-[10%]
     <>
@@ -60,7 +62,7 @@ const App = () => {
         <Route path='/appointment/:provId' element={<Appointment />} />
         <Route path='/my-profile' element={<MyProfile />} />
         <Route path='/auth/:authType' element={<Auth />} />
-        <Route path='/onboarding/user/dashboard' element={<Dashboard />} />
+        <Route path='/dashboard' element={<UserDashboard />} />
         <Route path='/admin/onboarding/user' element={<UserOnboarding />} />
 
         <Route path='/admin'>
