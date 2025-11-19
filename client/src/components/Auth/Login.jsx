@@ -35,7 +35,7 @@ const Login = ({ type = "login" }) => {
         if (data.success) {
           await loadUserProfileData()
           toast.success("Account Created!")
-          navigate('/')
+          navigate('/dashboard')
         } else {
           toast.error(data.message)
         }
@@ -44,7 +44,7 @@ const Login = ({ type = "login" }) => {
         if (data.success) {
           await loadUserProfileData()
           toast.success("Login Successfull!")
-          navigate('/')
+          navigate('/dashboard')
         } else {
           toast.error(data.message)
         }
@@ -63,7 +63,7 @@ const Login = ({ type = "login" }) => {
 
   useEffect(() => {
     if (token) {
-      navigate('/')
+      navigate('/dashboard')
     }
   }, [token])
 

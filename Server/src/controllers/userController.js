@@ -212,7 +212,7 @@ export const cancelAppointment = async (req, res) => {
 
         const appointmentData = await appointmentModel.findById(appointmentId)
 
-        if (appointmentData.userId.toString() !== userId) {
+        if (appointmentData.userId.toString() !== req.user._id.toString()) {
             return res.json({ success: false, message: 'Unauthorized action.' })
         }
         await appointmentModel.findByIdAndUpdate(appointmentId, { cancelled: true })

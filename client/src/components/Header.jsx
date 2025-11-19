@@ -88,21 +88,21 @@ function Header() {
                                 <div className="min-w-48 bg-white rounded-lg flex flex-col gap-4 p-4 shadow-lg" onClick={(e) => e.stopPropagation()}>
                                     <p
                                         onClick={() => {
-                                            navigate('/my-profile');
+                                            navigate('/dashboard');
+                                            setShowDropdown(false)
+                                        }}
+                                        className="hover:text-black cursor-pointer font-semibold"
+                                    >
+                                        Dashboard
+                                    </p>
+                                    <p
+                                        onClick={() => {
+                                            navigate('/my-profile')
                                             setShowDropdown(false)
                                         }}
                                         className="hover:text-black cursor-pointer font-semibold"
                                     >
                                         My Profile
-                                    </p>
-                                    <p
-                                        onClick={() => {
-                                            navigate('/my-appointment')
-                                            setShowDropdown(false)
-                                        }}
-                                        className="hover:text-black cursor-pointer font-semibold"
-                                    >
-                                        My Appointments
                                     </p>
                                     <p
                                         onClick={logout}
