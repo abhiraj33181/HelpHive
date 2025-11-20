@@ -35,8 +35,8 @@ const MyAppointment = () => {
                 const { data } = await axios.post(`${backendURL}/api/user/cancelAppointment`, { appointmentId }, { withCredentials: true })
                 if (data.success) {
                     toast.success(data.message)
-                    getUserAppointments()
-                    getProvidersData()
+                    await getUserAppointments()
+                    await getProvidersData()
                 } else {
                     toast.error(data.message)
                 }

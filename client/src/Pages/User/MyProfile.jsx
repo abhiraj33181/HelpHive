@@ -75,7 +75,7 @@ const MyProfile = () => {
   }
 
   return userData && (
-    <div className="mx-4 my-5 md:my-20 sm:mx-[10%]">
+    <div className="mx-4 my-5 sm:mx-[10%]">
       <div>
         <h1 className='text-3xl font-semibold'>My Profile</h1>
         <p className='text-md md:text-xl text-zinc-600'>Refresh your personal details</p>
@@ -86,7 +86,7 @@ const MyProfile = () => {
         {/* left side  */}
         <div className=" bg-white rounded-xl md:w-1/3 p-5">
           <div className="mb-10 flex flex-col items-center">
-            <img src={userData.image} className="w-40 h-40 rounded-full" />
+            <img src={userData.image} className="w-40 h-40 rounded-full object-cover" />
             <p className="text-2xl font-semibold">{userData.name}</p>
           </div>
 
@@ -157,7 +157,7 @@ const MyProfile = () => {
 
               <div className="flex flex-col mb-5 w-full">
                 <label htmlFor="dob" className="font-semibold">Date of Birth</label>
-                <input type="date" id="dob" className="md:w-1/3 py-1 px-2 rounded border border-gray-400 outline-0" disabled={!isEdit} value={userData.dob} />
+                <input type="date" id="dob" className="w-full md:w-1/3 py-1 px-2 rounded border border-gray-400 outline-0" disabled={!isEdit} value={userData.dob} />
               </div>
 
 
