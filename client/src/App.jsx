@@ -6,7 +6,7 @@ import Providers from './Pages/Providers'
 import About from './Pages/About'
 import Contact from './Pages/Contact'
 import MyAppointments from './Pages/MyAppointments'
-import MyProfile from './Pages/MyProfile'
+import MyProfile from './Pages/User/MyProfile'
 import Appointment from './Pages/Appointment'
 import Header from './components/Header'
 import Footer from './components/Footer'
@@ -29,6 +29,7 @@ import { UserOnboarding } from './Pages/UserOnboarding'
 import ProviderLogin from './Pages/Admin/Provider/ProviderLogin'
 import ProtectedRoutes from './components/ProtectedRoutes'
 import UserDashboard from './Pages/User/UserDashboard'
+import MyAppointment from './Pages/User/MyAppointment'
 
 const App = () => {
 
@@ -60,9 +61,11 @@ const App = () => {
         <Route path='/contact' element={<Contact />} />
         <Route path='/my-appointment' element={<MyAppointments />} />
         <Route path='/appointment/:provId' element={<Appointment />} />
-        <Route path='/my-profile' element={<MyProfile />} />
         <Route path='/auth/:authType' element={<Auth />} />
-        <Route path='/dashboard' element={<UserDashboard />} />
+        <Route path='/dashboard' element={<UserDashboard />}>
+          <Route index element={<MyAppointment/>}/>
+          <Route path='my-profile' element={<MyProfile />} />
+        </Route>
         <Route path='/admin/onboarding/user' element={<UserOnboarding />} />
 
         <Route path='/admin'>
