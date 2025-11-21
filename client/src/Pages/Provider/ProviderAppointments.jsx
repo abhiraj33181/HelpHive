@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from "react";
-import { ProviderContext } from "../../../context/ProviderContext";
-import { AppContext } from "../../../context/AppContext";
-import { assets } from "../../../assets/assets";
+import { ProviderContext } from "../../context/ProviderContext";
+import { AppContext } from "../../context/AppContext";
+import { assets } from "../../assets/assets";
 import { X } from "lucide-react";
 
 const ProviderAppointments = () => {

@@ -5,7 +5,6 @@ import Dashboard from './Pages/Admin/Admin/Dashboard'
 import Providers from './Pages/Providers'
 import About from './Pages/About'
 import Contact from './Pages/Contact'
-import MyAppointments from './Pages/MyAppointments'
 import MyProfile from './Pages/User/MyProfile'
 import Appointment from './Pages/Appointment'
 import Header from './components/Header'
@@ -21,12 +20,12 @@ import AllAppointments from './Pages/Admin/Admin/AllAppointments'
 import AddProvider from './Pages/Admin/Admin/AddProvider'
 import ProviderList from './Pages/Admin/Admin/ProviderList'
 import { ProviderContext } from './context/ProviderContext'
-import ProviderDashboard from './Pages/Admin/Provider/ProviderDashboard'
-import ProviderLayout from './Pages/Admin/Provider/ProviderLayout'
-import ProviderAppointments from './Pages/Admin/Provider/ProviderAppointments'
-import ProviderProfile from './Pages/Admin/Provider/ProviderProfile'
+import ProviderDashboard from './Pages/Provider/ProviderDashboard'
+import ProviderLayout from './Pages/Provider/ProviderLayout'
+import ProviderAppointments from './Pages/Provider/ProviderAppointments'
+import ProviderProfile from './Pages/Provider/ProviderProfile'
 import { UserOnboarding } from './Pages/UserOnboarding'
-import ProviderLogin from './Pages/Admin/Provider/ProviderLogin'
+import ProviderLogin from './Pages/Provider/ProviderLogin'
 import ProtectedRoutes from './components/ProtectedRoutes'
 import UserDashboard from './Pages/User/UserDashboard'
 import MyAppointment from './Pages/User/MyAppointment'
@@ -59,13 +58,19 @@ const App = () => {
         <Route path='/providers' element={<Providers />} />
         <Route path='/providers/:service' element={<Providers />} />
         <Route path='/contact' element={<Contact />} />
-        <Route path='/my-appointment' element={<MyAppointments />} />
         <Route path='/appointment/:provId' element={<Appointment />} />
         <Route path='/auth/:authType' element={<Auth />} />
+
         <Route path='/dashboard' element={<UserDashboard />}>
           <Route index element={<MyAppointment/>}/>
           <Route path='my-profile' element={<MyProfile />} />
         </Route>
+
+        <Route path='/provider' element={pToken ? <Navigate to='/provider/dashboard' /> : <ProviderLogin />} />
+        <Route path='/provider/dashboard' element={<ProviderLayout />}>
+          <Route index element={<ProviderDashboard/>}/>
+        </Route>
+        
         <Route path='/admin/onboarding/user' element={<UserOnboarding />} />
 
         <Route path='/admin'>
@@ -78,14 +83,13 @@ const App = () => {
           </Route>
         </Route>
 
-        <Route path='/provider'>
-          <Route index element={pToken ? <Navigate to='/provider/dashboard' /> : <ProviderLogin />} />
+        {/* <Route path='/provider'>
           <Route element={<ProtectedRoutes role='provider'><ProviderLayout /></ProtectedRoutes>}>
           <Route path='dashboard' element={<ProtectedRoutes role='provider'><ProviderDashboard /></ProtectedRoutes>} />
           <Route path='all-appointments' element={<ProviderAppointments />} />
           <Route path='my-profile' element={<ProviderProfile />} />
           </Route>
-        </Route>
+        </Route> */}
       </Routes>
 
       {!hideLayout && <Footer />}

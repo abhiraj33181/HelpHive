@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { ProviderContext } from '../../../context/ProviderContext'
-import { AppContext } from '../../../context/AppContext'
+import { ProviderContext } from '../../context/ProviderContext'
+import { AppContext } from '../../context/AppContext'
 import { toast } from 'react-toastify'
 import axios from 'axios'
 

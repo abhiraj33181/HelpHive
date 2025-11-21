@@ -1,8 +1,8 @@
 import React, { useContext, useEffect } from 'react'
-import { ProviderContext } from '../../../context/ProviderContext'
-import { assets } from "../../../assets/assets";
+import { ProviderContext } from '../../context/ProviderContext'
+import { assets } from "../../assets/assets";
 import { X } from "lucide-react";
-import { AppContext } from '../../../context/AppContext';
+import { AppContext } from '../../context/AppContext';
 
 const ProviderDashboard = () => {
   const { pToken, dashData, setDashData, getDashData, completeAppointment, cancelAppointment } = useContext(ProviderContext)

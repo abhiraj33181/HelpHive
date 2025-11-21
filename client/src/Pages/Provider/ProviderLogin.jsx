@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
-import { ProviderContext } from '../../../context/ProviderContext'
+import { ProviderContext } from '../../context/ProviderContext'
 
 function ProviderLogin() {
     const [email, setEmail] = useState('')

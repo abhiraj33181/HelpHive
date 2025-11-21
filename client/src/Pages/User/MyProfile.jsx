@@ -98,10 +98,10 @@ const MyProfile = () => {
             <img src={image ? URL.createObjectURL(image) : userData.image} className="w-40 h-40 rounded-full object-cover" />
             <div className="absolute top-0 right-0 flex flex-col gap-2">
               <label htmlFor="image" className="flex items-center justify-center bg-white border border-salte-900 h-10 w-10 rounded-full hover:bg-gray-100 cursor-pointer">
-              <Camera />
-              <input onChange={(e) => setImage(e.target.files[0])} type="file" id="image" hidden />
-            </label>
-            {image && <div onClick={() => updateUserProfileData()} className="flex items-center justify-center bg-green-600 text-white h-10 w-10 rounded-full hover:bg-green-700 cursor-pointer"><Check /></div>}
+                <Camera />
+                <input onChange={(e) => setImage(e.target.files[0])} type="file" id="image" hidden />
+              </label>
+              {image && <div onClick={() => updateUserProfileData()} className="flex items-center justify-center bg-green-600 text-white h-10 w-10 rounded-full hover:bg-green-700 cursor-pointer"><Check /></div>}
             </div>
             <p className="text-2xl font-semibold">{userData.name}</p>
           </div>
@@ -110,7 +110,7 @@ const MyProfile = () => {
           <div className="flex flex-col gap-2">
             <p className={`flex gap-2 items-center ${activeTab === 'About' ? 'bg-[#DBEAFF] text-[#355DFC]  hover:bg-[#DBEAFF] border border-[#355DFC]' : 'bg-[#F3F4F6] border border-[#F3F4F6] hover:bg-[#dddddd]'}  rounded p-3 cursor-pointer font-semibold`} onClick={() => changeTab('About')}><User /> About</p>
             <p className={`flex gap-2 items-center ${activeTab === 'Contact Information' ? 'bg-[#DBEAFF] text-[#355DFC]  border-[#355DFC] border' : 'bg-[#F3F4F6] hover:bg-[#dddddd] border border-[#F3F4F6]'}  rounded p-3 cursor-pointer font-semibold`} onClick={() => changeTab('Contact Information')}><Phone /> Contact Information</p>
-            <p className={`flex gap-2 items-center ${activeTab === 'Rating' ? 'bg-[#DBEAFF] text-[#355DFC]  border-[#355DFC] border' : 'bg-[#F3F4F6] hover:bg-[#dddddd] border border-[#F3F4F6]'} rounded p-3 cursor-pointer font-semibold`} onClick={() => changeTab('Rating')}><Star />Ratings & Review</p>
+            <p className={`flex gap-2 items-center ${activeTab === 'Rating' ? 'bg-[#DBEAFF] text-[#355DFC]  border-[#355DFC] border' : 'bg-[#F3F4F6] hover:bg-[#dddddd] border border-[#F3F4F6]'} rounded p-3 cursor-pointer font-semibold`} onClick={() => setActiveTab('Rating')}><Star />Ratings & Review</p>
           </div>
         </div>
 
