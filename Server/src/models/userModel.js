@@ -21,14 +21,25 @@ const userSchema = new mongoose.Schema({
         default: 'https://cutiedp.com/wp-content/uploads/2025/07/cute-cat-dp%E2%80%8B-16.webp'
     },
     address: {
-        line1 : {
+        street : {
             type : String,
             default : ''
         },
-        line2 : {
+        city : {
             type : String,
             default : ''
-        }
+        },
+        state : {
+            type : String,
+            default : ''
+        },
+        pincode : {
+            type : String,
+            maxlength : 6,
+            minlength : 6,
+            default : '',
+            match: /^[0-9]{6}$/
+        },
     },
     gender: {
         type: String,

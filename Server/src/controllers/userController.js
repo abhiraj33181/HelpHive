@@ -118,7 +118,7 @@ export const getProfile = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
     try {
-        const { name, phone, line1, line2, dob, gender } = req.body;
+        const { name, phone, street, city, state, pincode, dob, gender } = req.body;
         const userId = req.user._id;
 
         const imageFile = req.file;
@@ -127,7 +127,7 @@ export const updateProfile = async (req, res) => {
             return res.json({ success: false, message: "Data Missing.." })
         }
 
-        const updateData = { name, phone, address: { line1, line2 }, dob, gender }
+        const updateData = { name, phone, address: { street, city, state, pincode }, dob, gender }
 
         if (imageFile) {
             const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: 'image' })
