@@ -9,18 +9,18 @@ import { toast } from 'react-toastify';
 
 function dashboardLayout() {
   const navigate = useNavigate()
-  const { profileData, backendURL, getProfileData } = useContext(ProviderContext)
+  const { pToken, profileData, backendURL, getProfileData } = useContext(ProviderContext)
 
   const [showDropdown, setShowDropdown] = useState(false)
 
 
   const logout = async () => {
     try {
-      const { data } = await axios.post(`${backendURL}/api/provider/logout`, { withCredentials: true })
+      const { data } = await axios.get(`${backendURL}/api/provider/logout`, { withCredentials: true })
       if (data.success) {
         toast.success(data.message)
         await getProfileData()
-        navigate('/')
+        navigate('/provider')
       }
     } catch (error) {
       toast.error(error.message)
@@ -37,9 +37,15 @@ function dashboardLayout() {
     return () => document.removeEventListener('click', handleClickOutside)
   }, [])
 
+  useEffect(() => {
+    if(!pToken){
+      navigate('/provider')
+    }
+  }, [])
+
   return (
     <div className='bg-zinc-100 min-h-screen max-w-full'>
-      <nav className='w-full bg-white py-3 px-6 flex justify-between items-center'>
+      <nav className='w-full bg-white py-3 px-6 flex justify-between items-center sticky top-0 border-b border-gray-200 shadow'>
         {/* left part  */}
         <div className='flex items-center gap-10'>
           <div className='flex items-center space-x-8'>
@@ -82,7 +88,7 @@ function dashboardLayout() {
               <div className="min-w-48 bg-white rounded-lg flex flex-col gap-4 p-4 shadow-lg" onClick={(e) => e.stopPropagation()}>
                 <p
                   onClick={() => {
-                    navigate('/dashboard');
+                    navigate('/provider/dashboard');
                     setShowDropdown(false)
                   }}
                   className="hover:text-black cursor-pointer font-semibold"
@@ -91,7 +97,7 @@ function dashboardLayout() {
                 </p>
                 <p
                   onClick={() => {
-                    navigate('/dashboard/my-profile')
+                    navigate('/provider/dashboard/my-profile')
                     setShowDropdown(false)
                   }}
                   className="hover:text-black cursor-pointer font-semibold"

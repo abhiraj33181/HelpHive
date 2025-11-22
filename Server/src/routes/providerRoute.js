@@ -1,6 +1,7 @@
 import express from 'express'
 import { appointmentCancel, appointmentComplete, appointmentProvider, loginProvider, logOutUser, providerDashboard, providerList, providerProfile, updateProviderProfile } from '../controllers/providerController.js'
 import authProvider from '../middlewares/authProvider.js'
+import upload from '../middlewares/multer.js'
 
 const providerRouter = express.Router()
 
@@ -12,6 +13,6 @@ providerRouter.post('/complete-appointment', authProvider ,appointmentComplete)
 providerRouter.post('/cancel-appointment', authProvider ,appointmentCancel)
 providerRouter.get('/dashboard', authProvider , providerDashboard)
 providerRouter.get('/profile', authProvider , providerProfile)
-providerRouter.post('/update-profile', authProvider , updateProviderProfile)
+providerRouter.post('/update-profile', upload.single('image'), authProvider , updateProviderProfile)
 
 export default providerRouter

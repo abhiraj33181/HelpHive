@@ -40,8 +40,27 @@ const providerSchema = new mongoose.Schema({
         required: true
     },
     address: {
-        line1: { type: String, required: true },
-        line2: { type: String },
+        street : {
+            type : String,
+            default : ''
+        },
+        city : {
+            type : String,
+            default : ''
+        },
+        state : {
+            type : String,
+            default : ''
+        },
+        pincode : {
+            type : String,
+            default : '',
+            match: /^[0-9]{6}$/
+        },
+    },
+    dob: {
+        type: String,
+        default: 'Not Selected'
     },
     slots_booked: {
         type: Object,

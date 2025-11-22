@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react'
 import { ProviderContext } from '../../context/ProviderContext'
 import { assets } from "../../assets/assets";
-import { BadgeInfo, Calendar, CalendarCheck, CheckCircle2, ChevronRight, Clock, IndianRupee, MapPin, Plus, Star, TrendingUp, X } from "lucide-react";
+import { BadgeInfo, Calendar, CalendarCheck, CheckCircle2, ChevronRight, Clock, IndianRupee, MapPin, Phone, Plus, Star, TrendingUp, X } from "lucide-react";
 import { AppContext } from '../../context/AppContext';
 
 const ProviderDashboard = () => {
@@ -22,7 +22,7 @@ const ProviderDashboard = () => {
       getDashData()
     }
   }, [])
-  return dashData && (
+  return profileData && (
     <div className='px-4 py-10 sm:mx-[10%] md:mx-10 '>
       <div className='flex flex-col md:flex-row gap-10 md:gap-0 justify-between items-center'>
         {/* left section */}
@@ -51,7 +51,7 @@ const ProviderDashboard = () => {
         <div className='bg-white flex py-10 px-5 justify-between items-center rounded-xl shadow-2xl'>
           <div>
             <p className='font-semibold'>Today’s Appointments</p>
-            <p className='text-3xl font-bold my-2'>26</p>
+            <p className='text-3xl font-bold my-2'>{dashData.appointments}</p>
             <p className='text-green-600'><TrendingUp className='inline w-5 h-5' /> +12% from last week</p>
           </div>
           <div className='h-15 text-green-600 w-15 flex items-center justify-center bg-[#F0FDF4] rounded-xl'>
@@ -62,7 +62,7 @@ const ProviderDashboard = () => {
         <div className='bg-white flex py-10 px-5 justify-between items-center rounded-xl shadow-2xl'>
           <div>
             <p className='font-semibold'>Pending Request</p>
-            <p className='text-3xl font-bold my-2'>26</p>
+            <p className='text-3xl font-bold my-2'>2</p>
             <p className='text-green-600'><TrendingUp className='inline w-5 h-5' /> +12% from last week</p>
           </div>
           <div className='h-15 text-[#355DFC] w-15 flex items-center justify-center bg-[#EFF6FF] rounded-xl'>
@@ -73,7 +73,7 @@ const ProviderDashboard = () => {
         <div className='bg-white flex py-10 px-5 justify-between items-center rounded-xl shadow-2xl'>
           <div>
             <p className='font-semibold'>Completed Appointments</p>
-            <p className='text-3xl font-bold my-2'>26</p>
+            <p className='text-3xl font-bold my-2'>7</p>
             <p className='text-green-600'><TrendingUp className='inline w-5 h-5' /> +12% from last week</p>
           </div>
           <div className='h-15 text-[#9819FA] w-15 flex items-center justify-center bg-[#FAF5FF] rounded-xl'>
@@ -84,7 +84,7 @@ const ProviderDashboard = () => {
         <div className='bg-white flex py-10 px-5 justify-between items-center rounded-xl shadow-2xl'>
           <div>
             <p className='font-semibold'>Today’s Earning</p>
-            <p className='text-3xl font-bold my-2'>26</p>
+            <p className='text-3xl font-bold my-2'>₹{(dashData?.earning ?? 0).toLocaleString('en-IN')}</p>
             <p className='text-green-600'><TrendingUp className='inline w-5 h-5' /> +12% from last week</p>
           </div>
           <div className='h-15 text-[#E7502F] w-15 flex items-center justify-center bg-[#FDF7ED] rounded-xl'>
@@ -94,23 +94,50 @@ const ProviderDashboard = () => {
       </div>
 
       {/* details part */}
-      <div className='flex flex-col md:flex-row gap-10 w-full my-12 h-[70vh]'>
+      <div className='flex flex-col md:flex-row gap-10 w-full my-12 h-[70vh] overflow-hidden'>
         {/* left part */}
-        <div className='md:w-[70%] bg-white shadow-xl py-5 px-3 rounded-xl'>
+        <div className='md:w-[70%] bg-white shadow-xl pt-5 px-3 rounded-xl'>
           <div className='flex items-center justify-between'>
             <div className='flex gap-5 '>
-              <p className='text-sm md:font-base flex items-center gap-2 font-semibold'><Calendar strokeWidth='2.2' className='text-[#2540C8]' /> Today's Schedule</p>
-              <p className='text-xs md:text-sm bg-zinc-100 rounded-full py-1 px-3'>3 Appointments</p>
+              <p className='flex items-center gap-2 font-semibold'><Calendar strokeWidth='2.2' className='text-[#2540C8]' /> Today's Schedule</p>
+              <p className='hidden md:block text-xs md:text-sm bg-zinc-100 rounded-full py-1 px-3'>3 Appointments</p>
             </div>
-            <button className='text-sm md:text-base flex items-center justify-center gap-2 text-slate-800 hover:bg-zinc-100 cursor-pointer py-1 px-3 duration-300 rounded-xl'>
+            <button className='text-sm md:text-base flex items-center justify-center  gap1 text-slate-800 hover:bg-zinc-100 cursor-pointer py-1 px-3 duration-300 rounded-xl'>
               View All <ChevronRight />
             </button>
           </div>
-          <div className='h-[50vh] flex flex-col items-center justify-center'>
-            <Calendar className='w-25 h-25 text-zinc-400' />
-            <h1 className='text-2xl font-semibold text-zinc-400 my-2'>No Appointments Today</h1>
-            <p className='text-xl text-zinc-400'>Enjoy your free day!</p>
-          </div>
+          {dashData?.latestAppointments?.length > 0 ? (
+            <div className='h-full p-5 grid grid-cols-2 gap-6 overflow-y-scroll'>
+              {dashData.latestAppointments.map((item, index) => (
+                <div key={index} className='border shadow-md hover:shadow-xl duration-200 border-slate-400 rounded-xl py-2 px-3 relative'>
+                  <div className='flex items-center'>
+                    <div className='flex gap-5 h-full'>
+                    <img src={item.userData.image} className='h-23 w-23 rounded-full object-cover' />
+                    <div>
+                      <p className='text-xl font-semibold'>{item.userData.name}</p>
+                      <p className='flex items-center gap-1 text-slate-700'><BadgeInfo className='w-5 h-5' />{item.provData.service} . <span className='font-semibold'>₹{item.amount.toLocaleString('en-IN')}</span></p>
+                      <p className='flex items-center gap-1 text-slate-700'><Phone className='w-5 h-5' />{item.userData.phone}</p>
+                      <p className='flex items-center gap-1 text-slate-700'><MapPin className='w-5 h-5' />Near Bus Stand Fatehpur, Gaya</p>
+
+                    </div>
+                  </div>
+                  </div>
+                  <div className='flex gap-3 border-t-1 border-slate-400 py-2 justify-end mt-2'>
+                    <button className='bg-[#3d73f4] text-semibold text-white rounded py-1 px-3'>Accept</button>
+                    <button className='text-semibold border border-slate-slate-700 rounded py-1 px-3'>Reject</button>
+                  </div>
+                  <p className='absolute top-3 right-3 bg-amber-400 py-1 px-3 rounded-md font-semibold text-sm'>Pending</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className='h-[50vh] flex flex-col items-center justify-center'>
+              <Calendar className='w-25 h-25 text-zinc-400' />
+              <h1 className='text-2xl font-semibold text-zinc-400 my-2'>No Appointments Today</h1>
+              <p className='text-xl text-zinc-400'>Enjoy your free day!</p>
+            </div>
+          )}
+
         </div>
 
         {/* right part  */}
@@ -154,8 +181,8 @@ const ProviderDashboard = () => {
               </div>
 
               <div>
-              <hr className='outline-0 border-0 h-[1px] bg-slate-400'/>
-              <button className='text-center font-semibold border border-slate-400 hover:bg-zinc-100 cursor-pointer w-full py-2 mt-5 rounded-xl'>View Fll Analytics</button>
+                <hr className='outline-0 border-0 h-[1px] bg-slate-400' />
+                <button className='text-center font-semibold border border-slate-400 hover:bg-zinc-100 cursor-pointer w-full py-2 mt-5 rounded-xl'>View Fll Analytics</button>
               </div>
             </div>
           </div>

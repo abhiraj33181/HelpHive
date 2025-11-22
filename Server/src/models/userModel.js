@@ -35,23 +35,18 @@ const userSchema = new mongoose.Schema({
         },
         pincode : {
             type : String,
-            maxlength : 6,
-            minlength : 6,
             default : '',
             match: /^[0-9]{6}$/
         },
     },
     gender: {
         type: String,
-        default: 'Not Selected'
     },
     dob: {
         type: String,
-        default: 'Not Selected'
     },
     phone: {
         type: String,
-        default: '0000000000'
     }
 }, { timestamps: true })
 

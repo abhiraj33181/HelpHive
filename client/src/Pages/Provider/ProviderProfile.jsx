@@ -1,173 +1,299 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { ProviderContext } from '../../context/ProviderContext'
-import { AppContext } from '../../context/AppContext'
-import { toast } from 'react-toastify'
+import React, { useState } from "react";
+import { useContext } from "react";
+import { AppContext } from "../../context/AppContext";
+import { assets } from "../../assets/assets";
+import { toast } from "react-toastify";
+import { Camera, Check, Phone, Star, User } from "lucide-react";
 import axios from 'axios'
+import { ProviderContext } from "../../context/ProviderContext";
 
-const ProviderProfile = () => {
+const MyProfile = () => {
+
+  const [activeTab, setActiveTab] = useState('About')
+  const [isEdit, setIsEdit] = useState(false);
   const { pToken, profileData, setProfileData, getProfileData, backendURL } = useContext(ProviderContext)
-  const { currencySymbol } = useContext(AppContext)
-  const [isEdit, setIsEdit] = useState(false)
+    const { currencySymbol } = useContext(AppContext)
 
-  const updateProfile = async () => {
+  const [image, setImage] = useState(false)
+
+
+  const statesOfIndia = [
+    "Andhra Pradesh",
+    "Arunachal Pradesh",
+    "Assam",
+    "Bihar",
+    "Chhattisgarh",
+    "Goa",
+    "Gujarat",
+    "Haryana",
+    "Himachal Pradesh",
+    "Jharkhand",
+    "Karnataka",
+    "Kerala",
+    "Madhya Pradesh",
+    "Maharashtra",
+    "Manipur",
+    "Meghalaya",
+    "Mizoram",
+    "Nagaland",
+    "Odisha",
+    "Punjab",
+    "Rajasthan",
+    "Sikkim",
+    "Tamil Nadu",
+    "Telangana",
+    "Tripura",
+    "Uttar Pradesh",
+    "Uttarakhand",
+    "West Bengal"
+  ];
+
+  const inputCSS = `md:w-1/3 py-1 px-2 rounded border border-gray-400 outline-0 ${isEdit ? '' : 'bg-gray-100 text-gray-500 cursor-not-allowed disabled:opacity-75'} `
+
+  const changeTab = async (tabname) => {
+    setIsEdit(false)
+    await getProfileData()
+    setActiveTab(tabname)
+  }
+
+  const updateUserProfileData = async () => {
     try {
-      const updateData = {
-        address: profileData.address,
-        fees: profileData.fees,
-        available: profileData.available
-      }
+      const formData = new FormData()
+      formData.append('name', profileData.name)
+      formData.append('phone', profileData.phone)
+      formData.append('street', profileData.address.street)
+      formData.append('city', profileData.address.city)
+      formData.append('state', profileData.address.state)
+      formData.append('pincode', profileData.address.pincode)
+      formData.append('gender', profileData.gender)
+      formData.append('dob', profileData.dob)
 
-      const { data } = await axios.post(`${backendURL}/api/provider/update-profile`, updateData, { withCredentials: true })
+      image && formData.append('image', image)
+
+      const { data } = await axios.post(`${backendURL}/api/provider/update-profile`, formData, { withCredentials: true })
       if (data.success) {
         toast.success(data.message)
+        await getProfileData()
         setIsEdit(false)
+        setImage(false)
       } else {
         toast.error(data.message)
       }
+
     } catch (error) {
       console.log(error.message)
       toast.error(error.message)
     }
   }
 
-  useEffect(() => {
-    if (pToken) {
-      getProfileData()
-    }
-  }, [pToken])
+  return profileData && (
+    <div className="mx-4 my-5 sm:mx-[10%]">
+      <div>
+        <h1 className='text-3xl font-semibold'>My Profile</h1>
+        <p className='text-md md:text-xl text-zinc-600'>Refresh your personal details</p>
+      </div>
 
-  return (
-    profileData && (
-      <div className="w-full max-w-4xl mx-auto p-4 sm:p-6">
-        <div className="flex flex-col sm:flex-row gap-8 bg-white border border-gray-200 rounded-2xl shadow-md p-6 sm:p-10 transition-all duration-300 hover:shadow-lg">
+      <div className="mt-10 flex flex-col md:flex-row gap-5">
 
-          <div className="flex justify-center sm:justify-start">
-            <img
-              src={profileData.image}
-              alt="Profile"
-              className="w-40 h-40 sm:w-52 sm:h-52 object-cover rounded-2xl border border-gray-200 shadow-sm"
-            />
+        {/* left side  */}
+        <div className=" bg-white rounded-xl md:w-1/3 p-5">
+          <div className="mb-10 flex flex-col items-center relative">
+            <img src={image ? URL.createObjectURL(image) : profileData.image} className="w-40 h-40 rounded-full object-cover" />
+            <div className="absolute top-0 right-0 flex flex-col gap-2">
+              <label htmlFor="image" className="flex items-center justify-center bg-white border border-salte-900 h-10 w-10 rounded-full hover:bg-gray-100 cursor-pointer">
+                <Camera />
+                <input onChange={(e) => setImage(e.target.files[0])} type="file" id="image" hidden />
+              </label>
+              {image && <div onClick={() => updateUserProfileData()} className="flex items-center justify-center bg-green-600 text-white h-10 w-10 rounded-full hover:bg-green-700 cursor-pointer"><Check /></div>}
+            </div>
+            <p className="text-2xl font-semibold">{profileData.name}</p>
           </div>
 
-          <div className="flex-1 space-y-5 text-gray-800">
-            <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
-                {profileData.name}
-              </h2>
-              <div className="flex flex-wrap items-center gap-2 mt-2 text-gray-600">
-                <span className="capitalize bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md text-xs font-medium border border-blue-200">
-                  {profileData.service}
-                </span>
-                <span className="text-xs px-2 py-0.5 border border-gray-300 rounded-md bg-gray-50 font-medium">
-                  {profileData.experience}
-                </span>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-1">About</h3>
-              <p className="text-sm leading-relaxed text-gray-600 bg-gray-50 border border-gray-100 rounded-lg p-3">
-                {profileData.about || 'No description provided.'}
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-1">Appointment Fee</h3>
-              <div className="flex items-center gap-2">
-                {isEdit ? (
-                  <input
-                    type="number"
-                    className="w-24 border border-gray-300 rounded-md px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                    onChange={(e) => setProfileData(prev => ({ ...prev, fees: e.target.value }))}
-                    value={profileData.fees}
-                  />
-                ) : (
-                  <span className="font-semibold text-gray-900">{currencySymbol}{profileData.fees}</span>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-1">Address</h3>
-              <div className="space-y-1">
-                <p className="text-sm text-gray-600">
-                  {isEdit ? (
-                    <input
-                      type="text"
-                      className="border border-gray-300 rounded-md px-2 py-1 text-sm w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                      onChange={(e) =>
-                        setProfileData(prev => ({
-                          ...prev,
-                          address: { ...prev.address, line1: e.target.value },
-                        }))
-                      }
-                      value={profileData.address?.line1 || ""}
-                    />
-                  ) : (
-                    <span className="block bg-gray-50 border border-gray-100 rounded-md px-2 py-1">
-                      {profileData.address?.line1 || "Not Provided"}
-                    </span>
-                  )}
-                </p>
-
-                <p className="text-sm text-gray-600">
-                  {isEdit ? (
-                    <input
-                      type="text"
-                      className="border border-gray-300 rounded-md px-2 py-1 text-sm w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                      onChange={(e) =>
-                        setProfileData(prev => ({
-                          ...prev,
-                          address: { ...prev.address, line2: e.target.value },
-                        }))
-                      }
-                      value={profileData.address?.line2 || ""}
-                    />
-                  ) : (
-                    <span className="block bg-gray-50 border border-gray-100 rounded-md px-2 py-1">
-                      {profileData.address?.line2 || "Not Provided"}
-                    </span>
-                  )}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 mt-2">
-              <input
-                type="checkbox"
-                id="available"
-                checked={profileData.available}
-                className="w-4 h-4 accent-blue-600 cursor-pointer"
-                onChange={(e) => isEdit && setProfileData(prev => ({ ...prev, available: !prev.available }))}
-              />
-              <label htmlFor="available" className="text-sm text-gray-700 select-none">
-                Available for Appointments
-              </label>
-            </div>
-
-            <div className="pt-4">
-              {isEdit ? (
-                <button
-                  onClick={updateProfile}
-                  className="px-6 py-2 text-sm font-semibold bg-green-600 text-white rounded-md hover:bg-green-700 transition-all duration-200 shadow-sm"
-                >
-                  Save Changes
-                </button>
-              ) : (
-                <button
-                  onClick={() => setIsEdit(true)}
-                  className="px-6 py-2 text-sm font-semibold bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all duration-200 shadow-sm"
-                >
-                  Edit Profile
-                </button>
-              )}
-            </div>
-
+          {/* side menu  */}
+          <div className="flex flex-col gap-2">
+            <p className={`flex gap-2 items-center ${activeTab === 'About' ? 'bg-[#DBEAFF] text-[#355DFC]  hover:bg-[#DBEAFF] border border-[#355DFC]' : 'bg-[#F3F4F6] border border-[#F3F4F6] hover:bg-[#dddddd]'}  rounded p-3 cursor-pointer font-semibold`} onClick={() => changeTab('About')}><User /> About</p>
+            <p className={`flex gap-2 items-center ${activeTab === 'Contact Information' ? 'bg-[#DBEAFF] text-[#355DFC]  border-[#355DFC] border' : 'bg-[#F3F4F6] hover:bg-[#dddddd] border border-[#F3F4F6]'}  rounded p-3 cursor-pointer font-semibold`} onClick={() => changeTab('Contact Information')}><Phone /> Contact Information</p>
+            <p className={`flex gap-2 items-center ${activeTab === 'Rating' ? 'bg-[#DBEAFF] text-[#355DFC]  border-[#355DFC] border' : 'bg-[#F3F4F6] hover:bg-[#dddddd] border border-[#F3F4F6]'} rounded p-3 cursor-pointer font-semibold`} onClick={() => setActiveTab('Rating')}><Star />Ratings & Review</p>
           </div>
         </div>
-      </div>
-    )
-  )
-}
 
-export default ProviderProfile
+        {/* right side  */}
+        <div className=" bg-white rounded-xl w-full p-5">
+          <div className="flex items-center justify-between my-5">
+            <p className="text-2xl font-semibold capitalize">{activeTab}</p>
+            {
+              activeTab === 'Rating' || !isEdit && (
+                <button className="text-sm bg-[#2D2E2E] py-2 px-5 rounded text-white flex items-center justify-center gap-2 hover:bg-[#0f0f0f]" onClick={() => setIsEdit(prev => !prev)}>Edit</button>
+              )
+            }
+
+            {
+              isEdit && (
+                <div className="flex gap-2 items-center">
+                  <button className="text-sm border border-[#2D2E2E] py-2 px-5 rounded text-[#2D2E2E] flex items-center justify-center gap-2 hover:bg-[#ececec]" onClick={() => { getProfileData(); setIsEdit(prev => !prev) }}>Cancel</button>
+                  <button className="text-sm bg-[#2D2E2E] py-2 px-5 rounded text-white flex items-center justify-center gap-2 hover:bg-[#0f0f0f]" onClick={() => updateUserProfileData()}>Save</button>
+                </div>
+              )
+            }
+
+          </div>
+
+          {activeTab === 'About' && (
+            <div>
+              <div className="flex flex-col mb-5 w-full">
+                <label htmlFor="name" className="font-semibold">Full Name</label>
+                <input type="text"
+                  placeholder="eg. John Doe"
+                  id="name"
+                  className={inputCSS} disabled={!isEdit} value={profileData.name}
+                  onChange={e => setProfileData(prev => ({ ...prev, name: e.target.value }))}
+                />
+              </div>
+
+
+              <div className="flex flex-col mb-5">
+                <label className="font-semibold">Gender</label>
+
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="Male"
+                    onChange={(e) => setProfileData(prev => ({ ...prev, gender: e.target.value }))}
+                    checked={profileData.gender === "Male"}
+                    className="accent-slate-800"
+                    disabled={!isEdit}
+                  />
+                  Male
+                </label>
+
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="Female"
+                    onChange={(e) => setProfileData(prev => ({ ...prev, gender: e.target.value }))}
+                    checked={profileData.gender === "Female"}
+                    disabled={!isEdit}
+                    className="accent-slate-800"
+                  />
+                  Female
+                </label>
+
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="Others"
+                    onChange={(e) => setProfileData(prev => ({ ...prev, gender: e.target.value }))}
+                    checked={profileData.gender === "Others"}
+                    disabled={!isEdit}
+                    className="accent-slate-800"
+                  />
+                  Others
+                </label>
+              </div>
+
+
+
+              <div className="flex flex-col mb-5 w-full">
+                <label htmlFor="dob" className="font-semibold">Date of Birth</label>
+                <input type="date" id="dob" className={inputCSS} disabled={!isEdit} value={profileData.dob} onChange={e => setProfileData(prev => ({ ...prev, dob: e.target.value }))} />
+              </div>
+
+
+
+            </div>
+          )}
+
+          {activeTab === "Contact Information" && (
+            <div>
+
+              <div className="flex flex-col mb-5 w-full">
+                <label htmlFor="email" className="font-semibold">Email</label>
+                <input
+                  type="email"
+                  placeholder="eg. john@gmail.com"
+                  id="email"
+                  className="md:w-1/3 py-1 px-2 rounded border border-gray-400 bg-gray-100 text-gray-500 cursor-not-allowed disabled:opacity-75"
+                  disabled value={profileData.email}
+                />
+              </div>
+
+              <div className="flex flex-col mb-5 w-full">
+                <label htmlFor="phone" className="font-semibold">Phone</label>
+                <input type="text" placeholder="eg. +91 00000 00000 " id="phone" className={inputCSS} disabled={!isEdit} onChange={e => setProfileData(prev => ({ ...prev, phone: e.target.value }))} value={profileData?.phone ?? ''} />
+              </div>
+
+              <p className="font-bold">Address</p>
+
+
+              <div className="flex flex-col md:flex-row md:gap-5">
+                <div className="flex flex-col mb-5 md:w-1/2">
+                  <label htmlFor="street" className="font-semibold">House No. / Street</label>
+                  <input type="text" placeholder="eg. Near Bus Stand" id="street" className={`py-1 px-2 rounded border border-gray-400 outline-0 w-full ${isEdit ? '' : 'bg-gray-100 text-gray-500 cursor-not-allowed disabled:opacity-75'}`} disabled={!isEdit} value={profileData.address.street} onChange={e => setProfileData(prev => ({ ...prev, address: { ...prev.address, street: e.target.value }, }))} />
+                </div>
+
+                <div className="flex flex-col mb-5 md:w-1/2">
+                  <label htmlFor="city" className="font-semibold">City</label>
+                  <input type="text" placeholder="eg. Gaya" id="city" className={`py-1 px-2 rounded border border-gray-400 outline-0 w-full ${isEdit ? '' : 'bg-gray-100 text-gray-500 cursor-not-allowed disabled:opacity-75'}`} disabled={!isEdit} value={profileData.address.city} onChange={e => setProfileData(prev => ({ ...prev, address: { ...prev.address, city: e.target.value }, }))} />
+                </div>
+              </div>
+
+              <div className="flex flex-col md:flex-row md:gap-5">
+                <div className="flex flex-col mb-5 md:w-1/2">
+                  <label htmlFor="street" className="font-semibold">State</label>
+                  <select className={`py-1 px-2 rounded border border-gray-400 outline-0 w-full ${isEdit ? '' : 'bg-gray-100 text-gray-500 cursor-not-allowed disabled:opacity-75'}`} disabled={!isEdit} value={profileData.address.state} onChange={e => setProfileData(prev => ({ ...prev, address: { ...prev.address, state: e.target.value }, }))}>
+                    {statesOfIndia.map((item, index) => (
+                      <option key={index} value={item}>{item}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex flex-col mb-5 md:w-1/2">
+                  <label htmlFor="pincode" className="font-semibold">Pin Code</label>
+                  <input type="number" placeholder="eg. 856545" id="pincode" className={`py-1 px-2 rounded border border-gray-400 outline-0 w-full ${isEdit ? '' : 'bg-gray-100 text-gray-500 cursor-not-allowed disabled:opacity-75'}`} disabled={!isEdit} value={profileData.address.pincode} onChange={e => setProfileData(prev => ({ ...prev, address: { ...prev.address, pincode: e.target.value }, }))} />
+                </div>
+              </div>
+
+            </div>
+          )}
+
+          {activeTab === 'Rating' && (
+            <div className="grid md:grid-cols-2 gap-5">
+              <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-xl overflow-hidden p-5">
+
+                <div className="flex gap-5 items-center">
+                  <img src="https://i.pinimg.com/736x/05/f3/1c/05f31cf56adba619a88dc524e47a2d89.jpg" className="w-12 h-12 md:w-30 md:h-30 rounded-full object-cover" />
+
+                  <div>
+                    <p className="text-xl md:text-2xl font-semibold">Akshay Kumar</p>
+                    <p className="md:text-md text-gray-700">Great Service , Very Fast!</p>
+                  </div>
+                </div>
+
+
+                <div>
+                  <p className="flex my-3">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-6 h-6 text-yellow-500 fill-yellow-500" />
+                    ))}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <p className="font-semibold text-2xl">4.5 / 5</p>
+                    <p className="font-semibold">25 Dec. 2025</p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          )}
+
+
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MyProfile;

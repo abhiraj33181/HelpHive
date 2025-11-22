@@ -69,6 +69,7 @@ const App = () => {
         <Route path='/provider' element={pToken ? <Navigate to='/provider/dashboard' /> : <ProviderLogin />} />
         <Route path='/provider/dashboard' element={<ProviderLayout />}>
           <Route index element={<ProviderDashboard/>}/>
+          <Route path='my-profile' element={<ProviderProfile />} />
         </Route>
         
         <Route path='/admin/onboarding/user' element={<UserOnboarding />} />
@@ -87,7 +88,6 @@ const App = () => {
           <Route element={<ProtectedRoutes role='provider'><ProviderLayout /></ProtectedRoutes>}>
           <Route path='dashboard' element={<ProtectedRoutes role='provider'><ProviderDashboard /></ProtectedRoutes>} />
           <Route path='all-appointments' element={<ProviderAppointments />} />
-          <Route path='my-profile' element={<ProviderProfile />} />
           </Route>
         </Route> */}
       </Routes>

@@ -1,6 +1,7 @@
 import providerModel from "../models/providerModel.js";
 import bcrypt from 'bcrypt'
 import JWT from 'jsonwebtoken';
+import { v2 as cloudinary } from 'cloudinary'
 import appointmentModel from "../models/appointmentModel.js";
 
 export const changeAvailablity = async (req, res) => {
@@ -185,10 +186,24 @@ export const providerProfile = async (req, res) => {
 
 export const updateProviderProfile = async (req, res) => {
     try {
-        let provId = req.provider._id;
-        const { fees, address, available } = req.body;
-        await providerModel.findByIdAndUpdate(provId, { $set: { fees, address, available } });
+        const { name, phone, street, city, state, pincode, dob, gender, available } = req.body;
+        const provId = req.provider._id;
 
+        const imageFile = req.file;
+
+        if (!name || !gender) {
+            return res.json({ success: false, message: "Data Missing.." })
+        }
+
+        const updateData = { name, phone, address: { street, city, state, pincode }, dob, gender, available }
+
+        if (imageFile) {
+            const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: 'image' })
+            updateData.image = imageUpload.secure_url
+        }
+
+        await providerModel.findByIdAndUpdate(provId, { $set: updateData }, { new: true })
+        console.log(name, phone, street, city, state, pincode, dob, gender, available)
         res.json({ success: true, message: 'Profile Updated!!' })
     } catch (error) {
         console.log(error)
