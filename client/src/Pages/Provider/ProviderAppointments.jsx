@@ -1,10 +1,14 @@
-import React, { useContext, useEffect } from "react";
-import { ProviderContext } from "../../context/ProviderContext";
-import { AppContext } from "../../context/AppContext";
-import { assets } from "../../assets/assets";
-import { X } from "lucide-react";
+import { Bell, Calendar, CalendarDays, ChevronDown, Clock, ContactRound, FileText, HandHelpingIcon, MapPin } from 'lucide-react'
+import React, { useContext, useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { AppContext } from '../../context/AppContext'
+import { ProviderContext } from '../../context/ProviderContext'
 
-const ProviderAppointments = () => {
+const MyAppointment = () => {
+
+  const navigate = useNavigate()
+
   const { pToken, getAppointments, appointments, completeAppointment, cancelAppointment } = useContext(ProviderContext);
   const { calculateAge, slotDateFormat, currencySymbol } = useContext(AppContext);
 
@@ -12,106 +16,180 @@ const ProviderAppointments = () => {
     if (pToken) getAppointments();
   }, [pToken]);
 
+  const [isAppointment, setIsAppointment] = useState(true)
+
+
+  useEffect(() => {
+    if (pToken) {
+      getAppointments()
+    } else {
+      navigate('/provider')
+    }
+  }, [pToken])
+
+
   return (
-    <div className="w-full max-w-6xl mx-auto p-4 sm:p-6">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-        All Appointments
-      </h2>
-
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
-        {/* Header (Hidden on small screens) */}
-        <div className="hidden md:grid grid-cols-[0.5fr_2fr_1fr_1fr_3fr_1fr_1fr] gap-2 px-6 py-3 bg-gray-50 border-b text-sm font-semibold text-gray-700">
-          <p>#</p>
-          <p>User</p>
-          <p>Payment</p>
-          <p>Age</p>
-          <p>Date & Time</p>
-          <p>Fee</p>
-          <p>Action</p>
+    <div>
+      <div className='mx-4 my-10 sm:mx-[10%] flex flex-col md:flex-row gap-5 md:gap-0 items-center justify-between'>
+        <div>
+          <h1 className='text-center text-3xl font-semibold'>My Appointments</h1>
+          <p className='text-center text-md md:text-xl text-zinc-600'>Manage your appointment</p>
         </div>
+        <Link to='/providers' className='text-sm bg-[#2D2E2E] py-2 px-5 rounded-xl text-white flex items-center justify-center gap-2 hover:bg-[#0f0f0f]'><CalendarDays /> Book New Appointment</Link>
+      </div>
 
-        {/* Appointment Rows */}
-        <div className="divide-y divide-gray-100 max-h-[75vh] overflow-y-auto">
-          {appointments.length > 0 ? (
-            appointments.reverse().map((item, index) => (
-              <div
-                key={index}
-                className="flex flex-col md:grid md:grid-cols-[0.5fr_2fr_1fr_1fr_3fr_1fr_1fr] gap-4 items-center px-6 py-4 text-gray-700 hover:bg-gray-50 transition-all duration-200"
-              >
-                <p className="font-medium text-gray-500">{index + 1}</p>
+      <div className='mx-4 mt-5 sm:mx-[10%] flex items-center justify-center gap-5 bg-zinc-200 rounded-xl overflow-hidden p-1'>
+        <button onClick={() => setIsAppointment(prev => !prev)} className={`${isAppointment ? 'bg-white' : ''} cursor-pointer flex flex-1 items-center justify-center gap-3 p-2 rounded-xl`}>Upcoming <Clock /></button>
+        <button onClick={() => setIsAppointment(prev => !prev)} className={`${!isAppointment ? 'bg-white' : ''} cursor-pointer flex flex-1 items-center justify-center gap-3 p-2 rounded-xl`}>Past <Calendar /></button>
+      </div>
 
-                {/* User Info */}
-                <div className="flex items-center gap-3">
-                  <img
-                    src={item.userData.image || assets.default_user}
-                    alt="user"
-                    className="w-10 h-10 rounded-full object-cover border"
-                  />
-                  <p className="font-medium text-gray-800">
-                    {item.userData.name}
-                  </p>
-                </div>
+      {
+        isAppointment ? (
+          <>
+            {!appointments.length ? (
+              <div className='flex flex-col h-100 justify-center items-center mx-4 mt-5 sm:mx-[10%] bg-white rounded-xl'>
+                <Clock className='w-25 h-25 text-zinc-400 mb-5' />
+                <h1 className='text-xl md:text-3xl font-semibold text-zinc-500'>No Upcoming Appointments</h1>
+                <p className='text-md md:text-md text-zinc-500'>You have no upcooming appointment scheduled!</p>
+              </div>
+            ) : (
+              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mx-4 mt-5 sm:mx-[10%]'>
+                {appointments.filter(item => !item.isCompleted && !item.cancelled).map((item, index) => (
+                  <div key={index} className="bg-white rounded-xl shadow p-5 flex flex-col gap-4 hover:shadow-md transition relative">
+                    <div className="flex items-center gap-4">
+                      <img
+                        src={item.userData.image}
+                        className="w-20 h-20 rounded-full object-cover"
+                      />
 
-                {/* Payment Status */}
-                <div>
-                  <span
-                    className={`text-xs px-3 py-1 rounded-full font-medium ${item.payment
-                      ? "bg-green-100 text-green-700 border border-green-300"
-                      : "bg-yellow-100 text-yellow-700 border border-yellow-300"
-                      }`}
-                  >
-                    {item.payment ? "Online" : "Cash"}
-                  </span>
-                </div>
+                      <div className='flex flex-col gap-2'>
+                        <p className="font-semibold text-xl">{item.userData.name}</p>
+                        <p className="text-sm text-zinc-500 flex gap-2 items-center"><ContactRound className='h-5 w-5' />{item.provData.service}</p>
+                        <p className="text-sm text-zinc-600 flex gap-2 items-center">
+                          <MapPin className='h-5 w-5' />{item.userData.address.street}
+                        </p>
+                        <p className="text-sm text-zinc-600 flex gap-2 items-center">
+                          <Calendar className='h-5 w-5' /> {slotDateFormat(item.slotDate)} | {item.slotTime}
+                        </p>
+                        <div className="text-sm text-zinc-700 flex flex-col md:flex-row gap-1 md:gap-10">
+                          <p>Fee : <span className='font-semibold'>₹{item.amount}</span></p>
+                          <p className='font-semibold'><span className='text-red-600 mr-1'>*</span>Wire brunt out!</p>
+                        </div>
+                      </div>
+                    </div>
 
-                {/* Age */}
-                <p className="hidden md:block">{calculateAge(item.userData.dob)}</p>
+                    {item.cancelled ? (
+                      <div>
+                        <p className="text-red-400 text-xs font-medium">Cancelled</p>
+                      </div>
+                    ) : (
+                      <div className="flex gap-3 mt-4">
 
-                {/* Date & Time */}
-                <p className="text-sm text-gray-600">
-                  {slotDateFormat(item.slotDate)}, {item.slotTime}
-                </p>
 
-                {/* Fee */}
-                <p className="font-semibold text-gray-800">
-                  {currencySymbol}
-                  {item.amount}
-                </p>
-
-                {
-                  item.cancelled ?
-                    <p className="text-red-400 text-xs font-medium">Cancelled</p>
-                    : item.isCompleted ? <p className="text-green-500 text-xs font-medium">Completed</p> :
-                      <div className="flex items-center gap-2">
                         <button
-                          onClick={() => cancelAppointment(item._id)}
-                          className="w-4 h-4 bg-red-600 transition"
-                          title="Cancel Appointment"
+                          className="flex-1 px-4 py-2 rounded-lg border border-red-600 text-red-600 bg-red-50 hover:bg-red-600 hover:text-white font-medium transition"
+                          onClick={() =>  cancelAppointment(item._id)}
                         >
-                          <X />
+                          Reject
                         </button>
                         <button
+                          className="flex-1 px-4 py-2 rounded-lg border border-blue-500 text-blue-500 bg-blue-50 hover:bg-blue-500 hover:text-white font-medium transition"
                           onClick={() => completeAppointment(item._id)}
-                          className="p-2 rounded-lg hover:bg-green-50 transition"
-                          title="Approve Appointment"
                         >
-                          <check />
+                          Completed
                         </button>
                       </div>
+                    )}
 
-                }
+                    <div className='flex flex-col gap-2 absolute right-3 top-2'>
 
+                      {!item.cancelled && !item.isCompleted && (
+                        <span className="text-center px-3 py-1 bg-gray-200 text-gray-600 text-xs rounded-full border border-green-200">
+                          Upcoming
+                        </span>
+                      )}
+
+                      {!item.cancelled && item.payment && !item.isCompleted && (
+                        <span className="text-center px-3 py-1 bg-green-50 text-green-600 text-xs rounded-full border border-green-200">
+                          Paid
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                ))}
               </div>
-            ))
-          ) : (
-            <div className="p-8 text-center text-gray-500">
-              No appointments found.
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
+            )}
 
-export default ProviderAppointments;
+          </>
+        ) : (
+          <>
+            {!appointments.length ? (
+              <div className='flex flex-col h-100 justify-center items-center mx-4 mt-5 sm:mx-[10%] bg-white rounded-xl'>
+                <FileText className='w-25 h-25 text-zinc-400 mb-5' />
+                <h1 className='text-xl md:text-3xl font-semibold text-zinc-500'>No Past Appointments</h1>
+                <p className='text-sm md:text-md text-zinc-500'>Your completed appointments will appear here.</p>
+              </div>
+            ) : (
+              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mx-4 mt-5 sm:mx-[10%]'>
+                {appointments.filter(item => item.isCompleted || item.cancelled).map((item, index) => (
+                  <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-4 hover:shadow-md transition">
+                    <div className="flex items-center gap-4">
+                      <img
+                        src={item.provData.image}
+                        className="w-20 h-20 rounded-full object-cover"
+                      />
+
+                      <div className='flex flex-col gap-2'>
+                        <p className="font-semibold text-xl">{item.provData.name}</p>
+                        <p className="text-sm text-zinc-500 flex gap-2 items-center"><ContactRound className='h-5 w-5' />{item.provData.service}</p>
+                        <p className="text-sm text-zinc-600 flex gap-2 items-center">
+                          <MapPin className='h-5 w-5' />{item.provData.address.line1}, {item.provData.address.line2}
+                        </p>
+                        <p className="text-sm text-zinc-600 flex gap-2 items-center">
+                          <Calendar className='h-5 w-5' /> {slotDateFormat(item.slotDate)} | {item.slotTime}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center pt-2">
+                      <div className="text-sm text-zinc-700">
+                        <p>Fee : ₹{item.amount}</p>
+                        <p>Wire brunt out!</p>
+                      </div>
+
+                      <div>
+                        {!item.cancelled && item.payment && !item.isCompleted && (
+                          <span className="px-3 py-1 bg-green-50 text-green-600 text-xs rounded-full border border-green-200">
+                            Paid
+                          </span>
+                        )}
+
+                        {item.cancelled && !item.isCompleted && (
+                          <span className="px-3 py-1 bg-red-50 text-red-500 text-xs rounded-full border border-red-200">
+                            Cancelled
+                          </span>
+                        )}
+
+                        {item.isCompleted && (
+                          <span className="px-3 py-1 bg-green-50 text-green-600 text-xs rounded-full border border-green-200">
+                            Completed
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                ))}
+              </div>
+            )}
+          </>
+        )
+      }
+
+
+    </div>
+  )
+}
+
+export default MyAppointment

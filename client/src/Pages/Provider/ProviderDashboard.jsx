@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react'
 import { ProviderContext } from '../../context/ProviderContext'
 import { assets } from "../../assets/assets";
-import { BadgeInfo, Calendar, CalendarCheck, CheckCircle2, ChevronRight, Clock, IndianRupee, MapPin, Phone, Plus, Star, TrendingUp, X } from "lucide-react";
+import { BadgeInfo, Calendar, CalendarCheck, CheckCircle2, ChevronRight, Clock, DollarSign, IndianRupee, MapPin, Phone, Plus, Star, TrendingUp, X } from "lucide-react";
 import { AppContext } from '../../context/AppContext';
 
 const ProviderDashboard = () => {
@@ -88,7 +88,7 @@ const ProviderDashboard = () => {
             <p className='text-green-600'><TrendingUp className='inline w-5 h-5' /> +12% from last week</p>
           </div>
           <div className='h-15 text-[#E7502F] w-15 flex items-center justify-center bg-[#FDF7ED] rounded-xl'>
-            <IndianRupee className='w-8 h-8' />
+            <DollarSign className='w-8 h-8' />
           </div>
         </div>
       </div>

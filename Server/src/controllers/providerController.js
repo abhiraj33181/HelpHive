@@ -108,7 +108,7 @@ export const appointmentComplete = async (req, res) => {
         const { appointmentId } = req.body;
         const appointmentData = await appointmentModel.findById(appointmentId)
 
-        if (appointmentData && appointmentData.provId.toString() === provId) {
+        if (appointmentData && appointmentData.provId.toString() === provId.toString()) {
             await appointmentModel.findByIdAndUpdate(appointmentId, { isCompleted: true })
             return res.json({ success: true, message: 'Appointment Completed!' })
         } else {
@@ -127,7 +127,7 @@ export const appointmentCancel = async (req, res) => {
         const { appointmentId } = req.body;
         const appointmentData = await appointmentModel.findById(appointmentId)
 
-        if (appointmentData && appointmentData.provId.toString() === provId) {
+        if (appointmentData && appointmentData.provId.toString() === provId.toString()) {
             await appointmentModel.findByIdAndUpdate(appointmentId, { cancelled: true })
             return res.json({ success: true, message: 'Appointment Cancelled!' })
         } else {

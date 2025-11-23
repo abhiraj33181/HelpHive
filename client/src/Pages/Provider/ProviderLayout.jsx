@@ -1,7 +1,7 @@
-import { Bell, CalendarDays, HandHelpingIcon } from 'lucide-react';
+import { Bell, CalendarDays, HandHelpingIcon, LayoutDashboard } from 'lucide-react';
 import Navbar from '../../components/Admin/Navbar'
 import Sidebar from '../../components/Admin/Sidebar'
-import { Link, Outlet, useNavigate } from 'react-router-dom'
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useContext, useEffect, useState } from 'react';
 import { ProviderContext } from '../../context/ProviderContext';
 import axios from 'axios';
@@ -38,7 +38,7 @@ function dashboardLayout() {
   }, [])
 
   useEffect(() => {
-    if(!pToken){
+    if (!pToken) {
       navigate('/provider')
     }
   }, [])
@@ -58,9 +58,14 @@ function dashboardLayout() {
               </div>
             </Link>
           </div>
-          <div className='hidden  md:flex gap-2 items-center justify-center text-[#2E50ED] hover:text-[#0e38f1] font-semibold'>
+          <NavLink to={'/provider/dashboard'} className={({ isActive }) =>
+            `${isActive ? "font-bold" : ""} hidden md:flex gap-2 items-center justify-center text-[#2E50ED] hover:text-[#0e38f1]`}>
+            <LayoutDashboard className='h-10' /><p>Dashboard</p>
+          </NavLink>
+          <NavLink to={'/provider/dashboard/all-appointments'}  className={({ isActive }) =>
+            `${isActive ? "font-bold" : ""} hidden md:flex gap-2 items-center justify-center text-[#2E50ED] hover:text-[#0e38f1]`}>
             <CalendarDays className='h-10' /><p>Appointment</p>
-          </div>
+          </NavLink>
         </div>
 
         {/* right side  */}

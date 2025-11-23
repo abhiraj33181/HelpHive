@@ -39,8 +39,8 @@ const App = () => {
 
   const noHeaderFooterRoutes = ['/auth/login', '/auth/signup']
   const isAdminRoute = location.pathname.startsWith('/admin')
-  const isProviderRoute =location.pathname === '/provider' || location.pathname.startsWith('/provider/');
-  const isUserRoute =location.pathname === '/dashboard' || location.pathname.startsWith('/dashboard/');
+  const isProviderRoute = location.pathname === '/provider' || location.pathname.startsWith('/provider/');
+  const isUserRoute = location.pathname === '/dashboard' || location.pathname.startsWith('/dashboard/');
 
 
   const hideLayout = noHeaderFooterRoutes.includes(location.pathname) || isAdminRoute || isProviderRoute || isUserRoute;
@@ -62,16 +62,17 @@ const App = () => {
         <Route path='/auth/:authType' element={<Auth />} />
 
         <Route path='/dashboard' element={<UserDashboard />}>
-          <Route index element={<MyAppointment/>}/>
+          <Route index element={<MyAppointment />} />
           <Route path='my-profile' element={<MyProfile />} />
         </Route>
 
         <Route path='/provider' element={pToken ? <Navigate to='/provider/dashboard' /> : <ProviderLogin />} />
         <Route path='/provider/dashboard' element={<ProviderLayout />}>
-          <Route index element={<ProviderDashboard/>}/>
+          <Route index element={<ProviderDashboard />} />
           <Route path='my-profile' element={<ProviderProfile />} />
+          <Route path='all-appointments' element={<ProviderAppointments />} />
         </Route>
-        
+
         <Route path='/admin/onboarding/user' element={<UserOnboarding />} />
 
         <Route path='/admin'>
@@ -87,7 +88,6 @@ const App = () => {
         {/* <Route path='/provider'>
           <Route element={<ProtectedRoutes role='provider'><ProviderLayout /></ProtectedRoutes>}>
           <Route path='dashboard' element={<ProtectedRoutes role='provider'><ProviderDashboard /></ProtectedRoutes>} />
-          <Route path='all-appointments' element={<ProviderAppointments />} />
           </Route>
         </Route> */}
       </Routes>
