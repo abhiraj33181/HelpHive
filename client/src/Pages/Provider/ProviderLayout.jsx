@@ -19,8 +19,8 @@ function dashboardLayout() {
       const { data } = await axios.get(`${backendURL}/api/provider/logout`, { withCredentials: true })
       if (data.success) {
         toast.success(data.message)
-        await getProfileData()
         navigate('/provider')
+        await getProfileData()
       }
     } catch (error) {
       toast.error(error.message)

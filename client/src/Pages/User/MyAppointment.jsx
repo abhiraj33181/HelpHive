@@ -1,112 +1,130 @@
-import { Bell, Calendar, CalendarDays, ChevronDown, Clock, ContactRound, FileText, HandHelpingIcon, MapPin } from 'lucide-react'
+import { Bell, Calendar, CalendarDays, ChevronDown, Clock, ContactRound, FileText, HandHelpingIcon, MapPin, RefreshCw } from 'lucide-react'
 import React, { useContext, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { AppContext } from '../../context/AppContext'
 
 const MyAppointment = () => {
-    
-    
-        const [isAppointment, setIsAppointment] = useState(true)
-        const { backendURL, token, axios, getProvidersData, navigate} = useContext(AppContext)
-    
-        const [appointments, setAppointments] = useState([])
-        const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    
-        const slotDateFormat = (slotDate) => {
-            const dateArray = slotDate.split('_')
-            return dateArray[0] + " " + months[Number(dateArray[1])] + " " + dateArray[2]
-        }
-    
-        const getUserAppointments = async () => {
-            try {
-                const { data } = await axios.get(`${backendURL}/api/user/listAppointment`, { withCredentials: true })
-                if (data.success) {
-                    setAppointments(data.appointments.reverse())
-                }
-            } catch (error) {
-                toast(error.message)
-                console.log(error.message)
+
+    const [refresh, setRefresh] = useState(false)
+
+    const [isAppointment, setIsAppointment] = useState(true)
+    const { backendURL, token, axios, getProvidersData, navigate } = useContext(AppContext)
+
+    const [appointments, setAppointments] = useState([])
+    const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    const slotDateFormat = (slotDate) => {
+        const dateArray = slotDate.split('_')
+        return dateArray[0] + " " + months[Number(dateArray[1])] + " " + dateArray[2]
+    }
+
+    const getUserAppointments = async () => {
+        try {
+            const { data } = await axios.get(`${backendURL}/api/user/listAppointment`, { withCredentials: true })
+            if (data.success) {
+                setAppointments(data.appointments.reverse())
             }
+        } catch (error) {
+            toast(error.message)
+            console.log(error.message)
         }
-    
-        const cancelAppointment = async (appointmentId) => {
-            try {
-                const { data } = await axios.post(`${backendURL}/api/user/cancelAppointment`, { appointmentId }, { withCredentials: true })
-                if (data.success) {
-                    toast.success(data.message)
-                    await getUserAppointments()
-                    await getProvidersData()
-                } else {
-                    toast.error(data.message)
-                }
-            } catch (error) {
-                toast(error.message)
-                console.log(error.message)
-            }
-        }
-    
-        const initPay = (order) => {
-            const options = {
-                key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-                amount: order.amount,
-                currency: order.currency,
-                name: "Appointment Payment",
-                description: "Apppointment Payment",
-                order_id: order.id,
-                receipt: order.receipt,
-                handler: async (response) => {
-                    console.log(response)
-    
-                    try {
-                        const { data } = await axios.post(`${backendURL}/api/user/verify-razorpay`, { response }, { withCredentials: true })
-                        if (data.success) {
-                            getUserAppointments()
-                            navigate('/my-appointment')
-                            toast.success(data.message)
-                        } else {
-                            console.log(data.message)
-                            toast.error(data.message)
-                        }
-                    } catch (error) {
-    
-                    }
-                }
-            }
-    
-            const rzp = new window.Razorpay(options)
-            rzp.open()
-        }
-    
-        const appointmentRazorpay = async (appointmentId) => {
-            try {
-                const { data } = await axios.post(`${backendURL}/api/user/payment-razorpay`, { appointmentId }, { withCredentials: true })
-                if (data.success) {
-                    initPay(data.order)
-                } else {
-                    toast.error(data.message)
-                }
-            } catch (error) {
-                toast(error.message)
-                console.log(error.message)
-            }
-        }
-    
-        useEffect(() => {
-            if (token) {
-                getUserAppointments()
+    }
+
+    const cancelAppointment = async (appointmentId) => {
+        try {
+            const { data } = await axios.post(`${backendURL}/api/user/cancelAppointment`, { appointmentId }, { withCredentials: true })
+            if (data.success) {
+                toast.success(data.message)
+                await getUserAppointments()
+                await getProvidersData()
             } else {
-                navigate('/auth/login')
+                toast.error(data.message)
             }
-        }, [token])
-    
+        } catch (error) {
+            toast(error.message)
+            console.log(error.message)
+        }
+    }
+
+    const initPay = (order) => {
+        const options = {
+            key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+            amount: order.amount,
+            currency: order.currency,
+            name: "Appointment Payment",
+            description: "Apppointment Payment",
+            order_id: order.id,
+            receipt: order.receipt,
+            handler: async (response) => {
+                console.log(response)
+
+                try {
+                    const { data } = await axios.post(`${backendURL}/api/user/verify-razorpay`, { response }, { withCredentials: true })
+                    if (data.success) {
+                        getUserAppointments()
+                        navigate('/my-appointment')
+                        toast.success(data.message)
+                    } else {
+                        console.log(data.message)
+                        toast.error(data.message)
+                    }
+                } catch (error) {
+
+                }
+            }
+        }
+
+        const rzp = new window.Razorpay(options)
+        rzp.open()
+    }
+
+    const appointmentRazorpay = async (appointmentId) => {
+        try {
+            const { data } = await axios.post(`${backendURL}/api/user/payment-razorpay`, { appointmentId }, { withCredentials: true })
+            if (data.success) {
+                initPay(data.order)
+            } else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            toast(error.message)
+            console.log(error.message)
+        }
+    }
+
+    const refreshAppointment = async () => {
+        try {
+            setRefresh(true)
+            await getUserAppointments()
+            toast.success('Appointment Updated!')
+        } catch (error) {
+            toast.error(error.message)
+        } finally {
+            setRefresh(false)
+        }
+    }
+
+    useEffect(() => {
+        if (token) {
+            getUserAppointments()
+        } else {
+            navigate('/auth/login')
+        }
+    }, [token])
+
 
     return (
         <div>
             <div className='mx-4 my-10 sm:mx-[10%] flex flex-col md:flex-row gap-5 md:gap-0 items-center justify-between'>
-                <div>
-                    <h1 className='text-center text-3xl font-semibold'>My Appointments</h1>
-                    <p className='text-center text-md md:text-xl text-zinc-600'>Manage your appointment</p>
+                <div className='flex gap-5 items-center'>
+                    <div>
+                        <h1 className='text-center text-3xl font-semibold'>My Appointments</h1>
+                        <p className='text-center text-md md:text-xl text-zinc-600'>Manage your appointment</p>
+                    </div>
+                    <div className='h-full hover:text-blue-600 cursor-pointer'>
+                        <RefreshCw className={`${refresh ? 'loader' : ''}`} onClick={refreshAppointment} />
+                    </div>
                 </div>
                 <Link to='/providers' className='text-sm bg-[#2D2E2E] py-2 px-5 rounded-xl text-white flex items-center justify-center gap-2 hover:bg-[#0f0f0f]'><CalendarDays /> Book New Appointment</Link>
             </div>

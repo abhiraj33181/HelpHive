@@ -1,4 +1,4 @@
-import { Bell, Calendar, CalendarDays, ChevronDown, Clock, ContactRound, FileText, HandHelpingIcon, MapPin } from 'lucide-react'
+import { Bell, Calendar, CalendarDays, ChevronDown, Clock, ContactRound, FileText, HandHelpingIcon, MapPin, RefreshCw } from 'lucide-react'
 import React, { useContext, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -6,6 +6,8 @@ import { AppContext } from '../../context/AppContext'
 import { ProviderContext } from '../../context/ProviderContext'
 
 const MyAppointment = () => {
+
+  const [refresh, setRefresh] = useState(false)
 
   const navigate = useNavigate()
 
@@ -18,6 +20,17 @@ const MyAppointment = () => {
 
   const [isAppointment, setIsAppointment] = useState(true)
 
+  const refreshAppointment = async () => {
+    try {
+      setRefresh(true)
+      await getAppointments()
+      toast.success('Appointment Updated!')
+    } catch (error) {
+      toast.error(error.message)
+    } finally {
+      setRefresh(false)
+    }
+  }
 
   useEffect(() => {
     if (pToken) {
@@ -31,9 +44,14 @@ const MyAppointment = () => {
   return (
     <div>
       <div className='mx-4 my-10 sm:mx-[10%] flex flex-col md:flex-row gap-5 md:gap-0 items-center justify-between'>
-        <div>
-          <h1 className='text-center text-3xl font-semibold'>My Appointments</h1>
-          <p className='text-center text-md md:text-xl text-zinc-600'>Manage your appointment</p>
+        <div className='flex gap-5 items-center'>
+          <div>
+            <h1 className='text-center text-3xl font-semibold'>My Appointments</h1>
+            <p className='text-center text-md md:text-xl text-zinc-600'>Manage your appointment</p>
+          </div>
+          <div className='h-full hover:text-blue-600 cursor-pointer'>
+            <RefreshCw className={`${refresh ? 'loader' : ''}`} onClick={refreshAppointment} />
+          </div>
         </div>
         <Link to='/providers' className='text-sm bg-[#2D2E2E] py-2 px-5 rounded-xl text-white flex items-center justify-center gap-2 hover:bg-[#0f0f0f]'><CalendarDays /> Book New Appointment</Link>
       </div>
@@ -88,7 +106,7 @@ const MyAppointment = () => {
 
                         <button
                           className="flex-1 px-4 py-2 rounded-lg border border-red-600 text-red-600 bg-red-50 hover:bg-red-600 hover:text-white font-medium transition"
-                          onClick={() =>  cancelAppointment(item._id)}
+                          onClick={() => cancelAppointment(item._id)}
                         >
                           Reject
                         </button>
@@ -136,15 +154,15 @@ const MyAppointment = () => {
                   <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-4 hover:shadow-md transition">
                     <div className="flex items-center gap-4">
                       <img
-                        src={item.provData.image}
+                        src={item.userData.image}
                         className="w-20 h-20 rounded-full object-cover"
                       />
 
                       <div className='flex flex-col gap-2'>
-                        <p className="font-semibold text-xl">{item.provData.name}</p>
+                        <p className="font-semibold text-xl">{item.userData.name}</p>
                         <p className="text-sm text-zinc-500 flex gap-2 items-center"><ContactRound className='h-5 w-5' />{item.provData.service}</p>
                         <p className="text-sm text-zinc-600 flex gap-2 items-center">
-                          <MapPin className='h-5 w-5' />{item.provData.address.line1}, {item.provData.address.line2}
+                          <MapPin className='h-5 w-5' />{item.userData.address.street}, {item.userData.address.city}
                         </p>
                         <p className="text-sm text-zinc-600 flex gap-2 items-center">
                           <Calendar className='h-5 w-5' /> {slotDateFormat(item.slotDate)} | {item.slotTime}
