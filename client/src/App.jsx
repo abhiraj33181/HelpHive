@@ -26,7 +26,6 @@ import ProviderAppointments from './Pages/Provider/ProviderAppointments'
 import ProviderProfile from './Pages/Provider/ProviderProfile'
 import { UserOnboarding } from './Pages/UserOnboarding'
 import ProviderLogin from './Pages/Provider/ProviderLogin'
-import ProtectedRoutes from './components/ProtectedRoutes'
 import UserDashboard from './Pages/User/UserDashboard'
 import MyAppointment from './Pages/User/MyAppointment'
 
@@ -77,19 +76,14 @@ const App = () => {
 
         <Route path='/admin'>
           <Route index element={aToken ? <Navigate to='/admin/dashboard' /> : <Login />} />
-          <Route element={<ProtectedRoutes role='admin'><AdminDashboard /></ProtectedRoutes>}>
-            <Route path='dashboard' element={<ProtectedRoutes role='admin'><Dashboard /></ProtectedRoutes>} />
-            <Route path='all-appointments' element={<ProtectedRoutes role='admin'><AllAppointments /></ProtectedRoutes>} />
-            <Route path='add-provider' element={<ProtectedRoutes role='admin'><AddProvider /></ProtectedRoutes>} />
-            <Route path='provider-list' element={<ProtectedRoutes role='admin'><ProviderList /></ProtectedRoutes>} />
+          <Route element={<AdminDashboard />}>
+            <Route path='dashboard' element={<Dashboard />} />
+            <Route path='all-appointments' element={<AllAppointments />} />
+            <Route path='add-provider' element={<AddProvider />} />
+            <Route path='provider-list' element={<ProviderList />} />
           </Route>
         </Route>
 
-        {/* <Route path='/provider'>
-          <Route element={<ProtectedRoutes role='provider'><ProviderLayout /></ProtectedRoutes>}>
-          <Route path='dashboard' element={<ProtectedRoutes role='provider'><ProviderDashboard /></ProtectedRoutes>} />
-          </Route>
-        </Route> */}
       </Routes>
 
       {!hideLayout && <Footer />}

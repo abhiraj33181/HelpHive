@@ -5,7 +5,7 @@ import { BadgeInfo, Calendar, CalendarCheck, CheckCircle2, ChevronRight, Clock, 
 import { AppContext } from '../../context/AppContext';
 
 const ProviderDashboard = () => {
-  const { pToken, dashData, setDashData, getDashData, completeAppointment, cancelAppointment, profileData } = useContext(ProviderContext)
+  const { navigate, pToken, dashData, setDashData, getDashData, completeAppointment, cancelAppointment, profileData, updateAppointmentStatus } = useContext(ProviderContext)
   const { slotDateFormat, currencySymbol } = useContext(AppContext)
 
   const getGreeting = () => {
@@ -20,10 +20,13 @@ const ProviderDashboard = () => {
   useEffect(() => {
     if (pToken) {
       getDashData()
+    } else {
+      navigate('/provider')
     }
-  }, [])
+  }, [pToken])
+
   return profileData && (
-    <div className='px-4 py-10 sm:mx-[10%] md:mx-10 '>
+    <div className='px-4 py-10 sm:mx-[10%] md:mx-10'>
       <div className='flex flex-col md:flex-row gap-10 md:gap-0 justify-between items-center'>
         {/* left section */}
         <div className='flex items-center gap-5 md:gap-10'>
@@ -94,39 +97,43 @@ const ProviderDashboard = () => {
       </div>
 
       {/* details part */}
-      <div className='flex flex-col md:flex-row gap-10 w-full my-12 h-[70vh] overflow-hidden'>
+      <div className='flex flex-col md:flex-row gap-10 w-full my-12 items-start'>
         {/* left part */}
-        <div className='md:w-[70%] bg-white shadow-xl pt-5 px-3 rounded-xl'>
+        <div className='md:w-[70%] bg-white shadow-xl p-5 px-3 rounded-xl min-h-[70vh]'>
           <div className='flex items-center justify-between'>
             <div className='flex gap-5 '>
               <p className='flex items-center gap-2 font-semibold'><Calendar strokeWidth='2.2' className='text-[#2540C8]' /> Today's Schedule</p>
-              <p className='hidden md:block text-xs md:text-sm bg-zinc-100 rounded-full py-1 px-3'>3 Appointments</p>
+              <p className='hidden md:block text-xs md:text-sm bg-zinc-100 rounded-full py-1 px-3'>{dashData.appointments} Appointments</p>
             </div>
             <button className='text-sm md:text-base flex items-center justify-center  gap1 text-slate-800 hover:bg-zinc-100 cursor-pointer py-1 px-3 duration-300 rounded-xl'>
               View All <ChevronRight />
             </button>
           </div>
           {dashData?.latestAppointments?.length > 0 ? (
-            <div className='h-full p-5 grid grid-cols-2 gap-6 overflow-y-scroll'>
-              {dashData.latestAppointments.map((item, index) => (
-                <div key={index} className='border shadow-md hover:shadow-xl duration-200 border-slate-400 rounded-xl py-2 px-3 relative'>
+            <div className='mt-5 flex flex-col gap-5'>
+              {dashData.latestAppointments.filter(appointment => !appointment.cancelled && !appointment.isCompleted).map((item, index) => (
+                <div key={index} className='hover:shadow-xl duration-200 bg-zinc-50 rounded-xl py-5 px-3 relative'>
                   <div className='flex items-center'>
                     <div className='flex gap-5 h-full'>
-                    <img src={item.userData.image} className='h-23 w-23 rounded-full object-cover' />
-                    <div>
-                      <p className='text-xl font-semibold'>{item.userData.name}</p>
-                      <p className='flex items-center gap-1 text-slate-700'><BadgeInfo className='w-5 h-5' />{item.provData.service} . <span className='font-semibold'>₹{item.amount.toLocaleString('en-IN')}</span></p>
-                      <p className='flex items-center gap-1 text-slate-700'><Phone className='w-5 h-5' />{item.userData.phone}</p>
-                      <p className='flex items-center gap-1 text-slate-700'><MapPin className='w-5 h-5' />Near Bus Stand Fatehpur, Gaya</p>
+                      <img src={item.userData.image} className='h-23 w-23 rounded-full object-cover' />
+                      <div>
+                        <p className='text-xl font-semibold'>{item.userData.name}</p>
+                        <p className='flex items-center gap-1 text-slate-700'><BadgeInfo className='w-5 h-5' />{item.provData.service} . <span className='font-semibold'>₹{item.amount.toLocaleString('en-IN')}</span></p>
+                        <p className='flex items-center gap-1 text-slate-700'><Phone className='w-5 h-5' />{item.userData.phone}</p>
+                        <p className='flex items-center gap-1 text-slate-700'><MapPin className='w-5 h-5' />Near Bus Stand Fatehpur, Gaya</p>
 
+                      </div>
                     </div>
                   </div>
-                  </div>
-                  <div className='flex gap-3 border-t-1 border-slate-400 py-2 justify-end mt-2'>
-                    <button className='bg-[#3d73f4] text-semibold text-white rounded py-1 px-3'>Accept</button>
-                    <button className='text-semibold border border-slate-slate-700 rounded py-1 px-3'>Reject</button>
-                  </div>
-                  <p className='absolute top-3 right-3 bg-amber-400 py-1 px-3 rounded-md font-semibold text-sm'>Pending</p>
+                  {item.isAccepted === 'Pending' &&
+                    <div className='flex gap-3 border-t-1 border-slate-400 py-2 justify-end mt-2'>
+                      <button onClick={() => updateAppointmentStatus(item._id, 'Appointment Confirmed')} className='bg-[#3d73f4] text-semibold text-white rounded py-1 px-3'>Accept</button>
+                      <button onClick={() => updateAppointmentStatus(item._id, 'Appointment Request Cancelled')} className='text-semibold border border-slate-slate-700 rounded py-1 px-3'>Reject</button>
+                    </div>}
+                  <p className='text-right border-t-1 md:border-t-0 border-slate-400 pt-3 mt-3 md:absolute top-3 right-3 font-semibold text-xs'>
+                    <span className='bg-amber-200 py-1 px-3 rounded-md mr-2'>{item.isAccepted}</span>
+                    <span className={` py-1 px-3 rounded-md text-zinc-900 ${item.payment ? 'bg-green-200' : 'bg-red-200'}`}>{item.payment ? 'Paid' : 'Not Paid'}</span>
+                  </p>
                 </div>
               ))}
             </div>
@@ -143,7 +150,7 @@ const ProviderDashboard = () => {
         {/* right part  */}
         <div className='md:w-[30%] flex flex-col gap-5'>
 
-          <div className='flex-1 bg-white shadow-xl rounded-xl py-5 px-3'>
+          <div className='flex-1 bg-white min-h-[35vh] shadow-xl rounded-xl py-5 px-3'>
             <div className='flex items-center justify-between'>
               <p className='flex items-center gap-2 font-semibold'><Clock strokeWidth='2.2' className='text-green-700 w-5 h-5' /> Upcoming</p>
               <button className='flex items-center justify-center gap-2 text-slate-800 hover:bg-zinc-100 cursor-pointer py-1 px-3 duration-300 rounded-xl'>

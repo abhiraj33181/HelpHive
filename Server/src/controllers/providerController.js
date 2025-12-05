@@ -139,6 +139,26 @@ export const appointmentCancel = async (req, res) => {
     }
 }
 
+export const appointmentAccept = async (req, res) => {
+    try {
+        let provId = req.provider._id;
+
+
+        const { appointmentId, status } = req.body;
+        const appointmentData = await appointmentModel.findById(appointmentId)
+
+        if (appointmentData && appointmentData.provId.toString() === provId.toString()) {
+            await appointmentModel.findByIdAndUpdate(appointmentId, { isAccepted: status })
+            return res.json({ success: true, message: 'Appointment Confirmed!' })
+        } else {
+            return res.json({ success: false, message: 'Something went wrong!' })
+        }
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
+}
+
 
 export const providerDashboard = async (req, res) => {
     try {

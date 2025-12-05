@@ -45,7 +45,7 @@ function dashboardLayout() {
 
   return (
     <div className='bg-zinc-100 min-h-screen max-w-full'>
-      <nav className='w-full bg-white py-3 px-6 flex justify-between items-center sticky top-0 border-b border-gray-200 shadow'>
+      <nav className='w-full bg-white py-3 px-6 flex justify-between items-center sticky top-0 border-b border-gray-200 shadow z-10'>
         {/* left part  */}
         <div className='flex items-center gap-10'>
           <div className='flex items-center space-x-8'>

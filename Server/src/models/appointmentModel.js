@@ -33,9 +33,9 @@ const appointmentSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
-    payment: {
-        type: Boolean,
-        default: false,
+    isAccepted: {
+        type: String,
+        default: 'Pending',
     },
     payment: {
         type: Boolean,

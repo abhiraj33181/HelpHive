@@ -33,6 +33,7 @@ const AppContextProvider = (props) => {
         }
     };
 
+
     const loadUserProfileData = async () => {
         try {
             const { data } = await axios.get(

@@ -63,7 +63,7 @@ const MyAppointment = () => {
                     const { data } = await axios.post(`${backendURL}/api/user/verify-razorpay`, { response }, { withCredentials: true })
                     if (data.success) {
                         getUserAppointments()
-                        navigate('/my-appointment')
+                        navigate('/dashboard')
                         toast.success(data.message)
                     } else {
                         console.log(data.message)

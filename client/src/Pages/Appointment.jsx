@@ -97,7 +97,7 @@ const Appointment = () => {
       if (data.success) {
         toast.success(data.message)
         getProvidersData()
-        navigate('/my-appointment')
+        navigate('/dashboard')
       } else {
         toast.error(data.message)
       }

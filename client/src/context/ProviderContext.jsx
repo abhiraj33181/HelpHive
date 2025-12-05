@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import { createContext } from "react"
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import { useNavigate } from "react-router-dom";
 
 axios.defaults.withCredentials = true;
 
 export const ProviderContext = createContext();
 
 const ProviderContextProvider = (props) => {
+
+    const navigate = useNavigate()
 
     const backendURL = import.meta.env.VITE_BACKEND_URL
     const [pToken, setPToken] = useState(false)
@@ -37,7 +40,7 @@ const ProviderContextProvider = (props) => {
             const { data } = await axios.post(`${backendURL}/api/provider/complete-appointment`, { appointmentId }, { withCredentials: true })
             if (data.success) {
                 toast.success(data.message)
-                getAppointments()
+                await getAppointments()
             } else {
                 toast.error(data.message)
             }
@@ -52,7 +55,22 @@ const ProviderContextProvider = (props) => {
             const { data } = await axios.post(`${backendURL}/api/provider/cancel-appointment`, { appointmentId }, { withCredentials: true })
             if (data.success) {
                 toast.success(data.message)
-                getAppointments()
+                await getAppointments()
+            } else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            console.log(error.message)
+            toast.success(error.message)
+        }
+    }
+
+    const updateAppointmentStatus = async (appointmentId, status) => {
+        try {
+            const { data } = await axios.post(`${backendURL}/api/provider/accept-appointment`, { appointmentId, status }, { withCredentials: true })
+            if (data.success) {
+                toast.success(data.message)
+                await getAppointments()
             } else {
                 toast.error(data.message)
             }
@@ -97,7 +115,7 @@ const ProviderContextProvider = (props) => {
 
 
     const value = {
-        pToken, setPToken, backendURL, getAppointments, appointments, setAppointments, completeAppointment, cancelAppointment, dashData, setDashData, getDashData, profileData, setProfileData, getProfileData
+        navigate, pToken, setPToken, backendURL, getAppointments, appointments, setAppointments, completeAppointment, cancelAppointment, dashData, setDashData, getDashData, profileData, setProfileData, getProfileData, updateAppointmentStatus
     }
 
 
