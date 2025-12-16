@@ -136,54 +136,49 @@ function Header() {
                             <img src={assets.dropdown_icon} className="w-2.5" />
 
                             {/* Dropdown */}
-                            <div
-                                className={`absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20 transition-all duration-200 ${showDropdown ? 'block' : 'hidden'
-                                    }`}
-                            >
-                                <div className="min-w-48 bg-white rounded-lg flex flex-col gap-4 p-4 shadow-lg" onClick={(e) => e.stopPropagation()}>
-                <p
-                  onClick={() => {
-                    navigate('/provider/dashboard');
-                    setShowDropdown(false)
-                  }}
-                  className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
-                >
-                  Dashboard
-                </p>
-                <p
-                  onClick={() => {
-                    navigate('/provider/dashboard/my-shop');
-                    setShowDropdown(false)
-                  }}
-                  className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
-                >
-                  My Shop
-                </p>
-                <p
-                  onClick={() => {
-                    navigate('/provider/dashboard/my-property');
-                    setShowDropdown(false)
-                  }}
-                  className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
-                >
-                  My Property
-                </p>
-                <p
-                  onClick={() => {
-                    navigate('/provider/dashboard/my-profile')
-                    setShowDropdown(false)
-                  }}
-                  className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
-                >
-                  My Profile
-                </p>
-                <p
-                  onClick={logout}
-                  className="hover:text-black cursor-pointer font-semibold"
-                >
-                  Logout
-                </p>
-              </div>
+                            <div className="min-w-48 bg-white rounded-lg flex flex-col gap-4 p-4 shadow-lg" onClick={(e) => e.stopPropagation()}>
+                                <p
+                                    onClick={() => {
+                                        navigate('/provider/dashboard');
+                                        setShowDropdown(false)
+                                    }}
+                                    className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
+                                >
+                                    Dashboard
+                                </p>
+                                <p
+                                    onClick={() => {
+                                        navigate('/provider/dashboard/my-shop');
+                                        setShowDropdown(false)
+                                    }}
+                                    className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
+                                >
+                                    My Shop
+                                </p>
+                                <p
+                                    onClick={() => {
+                                        navigate('/provider/dashboard/my-property');
+                                        setShowDropdown(false)
+                                    }}
+                                    className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
+                                >
+                                    My Property
+                                </p>
+                                <p
+                                    onClick={() => {
+                                        navigate('/provider/dashboard/my-profile')
+                                        setShowDropdown(false)
+                                    }}
+                                    className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
+                                >
+                                    My Profile
+                                </p>
+                                <p
+                                    onClick={logout}
+                                    className="hover:text-black cursor-pointer font-semibold"
+                                >
+                                    Logout
+                                </p>
                             </div>
                         </div>
                     ) : (

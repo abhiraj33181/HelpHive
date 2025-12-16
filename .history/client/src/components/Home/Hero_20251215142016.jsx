@@ -68,8 +68,8 @@ function Hero() {
 
                 {/* Category List */}
                 <div className="py-6">
-                    <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-100">
-                        <div className="flex items-center gap-6 pb-2 px-4 w-max mx-auto">
+                    <div className="scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-100">
+                        <div className="mx-auto flex items-center gap-6 pb-2 px-4 w-max mx-auto">
                             {localServiceCategories.map((category) => (
                                 <button
                                     onClick={() => nvaigate(`/providers/${category.title}`)}

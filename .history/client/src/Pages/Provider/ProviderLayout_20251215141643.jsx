@@ -105,7 +105,7 @@ function dashboardLayout() {
                     navigate('/provider/dashboard');
                     setShowDropdown(false)
                   }}
-                  className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
+                  className="hover:text-black cursor-pointer font-semibold"
                 >
                   Dashboard
                 </p>
@@ -114,7 +114,7 @@ function dashboardLayout() {
                     navigate('/provider/dashboard/my-shop');
                     setShowDropdown(false)
                   }}
-                  className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
+                  className="hover:text-black cursor-pointer font-semibold"
                 >
                   My Shop
                 </p>
@@ -123,7 +123,7 @@ function dashboardLayout() {
                     navigate('/provider/dashboard/my-property');
                     setShowDropdown(false)
                   }}
-                  className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
+                  className="hover:text-black cursor-pointer font-semibold"
                 >
                   My Property
                 </p>
@@ -132,7 +132,7 @@ function dashboardLayout() {
                     navigate('/provider/dashboard/my-profile')
                     setShowDropdown(false)
                   }}
-                  className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
+                  className="hover:text-black cursor-pointer font-semibold"
                 >
                   My Profile
                 </p>

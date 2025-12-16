@@ -141,49 +141,31 @@ function Header() {
                                     }`}
                             >
                                 <div className="min-w-48 bg-white rounded-lg flex flex-col gap-4 p-4 shadow-lg" onClick={(e) => e.stopPropagation()}>
-                <p
-                  onClick={() => {
-                    navigate('/provider/dashboard');
-                    setShowDropdown(false)
-                  }}
-                  className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
-                >
-                  Dashboard
-                </p>
-                <p
-                  onClick={() => {
-                    navigate('/provider/dashboard/my-shop');
-                    setShowDropdown(false)
-                  }}
-                  className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
-                >
-                  My Shop
-                </p>
-                <p
-                  onClick={() => {
-                    navigate('/provider/dashboard/my-property');
-                    setShowDropdown(false)
-                  }}
-                  className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
-                >
-                  My Property
-                </p>
-                <p
-                  onClick={() => {
-                    navigate('/provider/dashboard/my-profile')
-                    setShowDropdown(false)
-                  }}
-                  className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
-                >
-                  My Profile
-                </p>
-                <p
-                  onClick={logout}
-                  className="hover:text-black cursor-pointer font-semibold"
-                >
-                  Logout
-                </p>
-              </div>
+                                    <p
+                                        onClick={() => {
+                                            navigate('/provider/dashboard');
+                                            setShowDropdown(false)
+                                        }}
+                                        className="hover:text-black cursor-pointer font-semibold"
+                                    >
+                                        Dashboard
+                                    </p>
+                                    <p
+                                        onClick={() => {
+                                            navigate('/provider/dashboard/my-profile')
+                                            setShowDropdown(false)
+                                        }}
+                                        className="hover:text-black cursor-pointer font-semibold"
+                                    >
+                                        My Profile
+                                    </p>
+                                    <p
+                                        onClick={logout}
+                                        className="hover:text-black cursor-pointer font-semibold"
+                                    >
+                                        Logout
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     ) : (

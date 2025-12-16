@@ -65,16 +65,6 @@ function dashboardLayout() {
             `${isActive ? "font-bold" : ""} hidden md:flex gap-2 items-center justify-center text-[#2E50ED] hover:text-[#0e38f1]`}>
             <CalendarDays className='h-10' /><p>Appointment</p>
           </NavLink>
-
-           <NavLink to={'/provider/dashboard/my-shop'}  className={({ isActive }) =>
-            `${isActive ? "font-bold" : ""} hidden md:flex gap-2 items-center justify-center text-[#2E50ED] hover:text-[#0e38f1]`}>
-            <CalendarDays className='h-10' /><p>Shop Listing</p>
-          </NavLink>
-
-           <NavLink to={'/provider/dashboard/my-property'}  className={({ isActive }) =>
-            `${isActive ? "font-bold" : ""} hidden md:flex gap-2 items-center justify-center text-[#2E50ED] hover:text-[#0e38f1]`}>
-            <CalendarDays className='h-10' /><p>Property Listing</p>
-          </NavLink>
         </div>
 
         {/* right side  */}
@@ -105,34 +95,16 @@ function dashboardLayout() {
                     navigate('/provider/dashboard');
                     setShowDropdown(false)
                   }}
-                  className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
+                  className="hover:text-black cursor-pointer font-semibold"
                 >
                   Dashboard
-                </p>
-                <p
-                  onClick={() => {
-                    navigate('/provider/dashboard/my-shop');
-                    setShowDropdown(false)
-                  }}
-                  className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
-                >
-                  My Shop
-                </p>
-                <p
-                  onClick={() => {
-                    navigate('/provider/dashboard/my-property');
-                    setShowDropdown(false)
-                  }}
-                  className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
-                >
-                  My Property
                 </p>
                 <p
                   onClick={() => {
                     navigate('/provider/dashboard/my-profile')
                     setShowDropdown(false)
                   }}
-                  className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
+                  className="hover:text-black cursor-pointer font-semibold"
                 >
                   My Profile
                 </p>

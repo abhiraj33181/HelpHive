@@ -105,34 +105,16 @@ function dashboardLayout() {
                     navigate('/provider/dashboard');
                     setShowDropdown(false)
                   }}
-                  className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
+                  className="hover:text-black cursor-pointer font-semibold"
                 >
                   Dashboard
-                </p>
-                <p
-                  onClick={() => {
-                    navigate('/provider/dashboard/my-shop');
-                    setShowDropdown(false)
-                  }}
-                  className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
-                >
-                  My Shop
-                </p>
-                <p
-                  onClick={() => {
-                    navigate('/provider/dashboard/my-property');
-                    setShowDropdown(false)
-                  }}
-                  className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
-                >
-                  My Property
                 </p>
                 <p
                   onClick={() => {
                     navigate('/provider/dashboard/my-profile')
                     setShowDropdown(false)
                   }}
-                  className="hover:text-black cursor-pointer font-semibold border-b border-slate-200 pb-2"
+                  className="hover:text-black cursor-pointer font-semibold"
                 >
                   My Profile
                 </p>
