@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Linkedin, Twitter, Phone, Mail, MapPin, Video, Clock, FileText } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Twitter ,Phone, Mail, MapPin, Video, Clock, FileText} from "lucide-react";
 
 export const localServiceCategories = [
     {
@@ -62,68 +62,6 @@ export const localServiceCategories = [
         color: 'bg-indigo-500',
     },
 ];
-
-export const localServiceCategories1 = [{
-    id: 'ac-repair',
-    title: 'AC Repair',
-    icon: 'M4 6h16v8H4V6zm2 10h12v2H6v-2zm3-6h2v2H9v-2zm4 0h2v2h-2v-2z',
-    color: 'bg-cyan-500',
-},
-{
-    id: 'refrigerator-repair',
-    title: 'Refrigerator Repair',
-    icon: 'M6 2h12v20H6V2zm2 2v6h8V4H8zm0 8v8h8v-8H8z',
-    color: 'bg-sky-500',
-},
-{
-    id: 'washing-machine',
-    title: 'Washing Machine Repair',
-    icon: 'M4 2h16v20H4V2zm8 6a5 5 0 100 10 5 5 0 000-10z',
-    color: 'bg-blue-600',
-},
-{
-    id: 'internet-technician',
-    title: 'Internet Technician',
-    icon: 'M2 10a10 10 0 0120 0h-2a8 8 0 00-16 0H2zm4 0a6 6 0 0112 0h-2a4 4 0 00-8 0H6zm4 0a2 2 0 014 0h-4z',
-    color: 'bg-violet-500',
-},
-{
-    id: 'cctv-installation',
-    title: 'CCTV Installation',
-    icon: 'M2 7l10-4 10 4-10 4-10-4zm10 6l6-2v4l-6 2-6-2v-4l6 2z',
-    color: 'bg-slate-600',
-},
-{
-    id: 'moving-service',
-    title: 'Packers & Movers',
-    icon: 'M3 7h18v10H3V7zm2 2v6h14V9H5z',
-    color: 'bg-amber-500',
-},
-{
-    id: 'laundry',
-    title: 'Laundry Service',
-    icon: 'M6 2h12v20H6V2zm6 6a4 4 0 100 8 4 4 0 000-8z',
-    color: 'bg-teal-500',
-},
-{
-    id: 'computer-repair',
-    title: 'Computer Repair',
-    icon: 'M4 4h16v10H4V4zm6 12h4v2h-4v-2z',
-    color: 'bg-zinc-700',
-},
-{
-    id: 'mobile-repair',
-    title: 'Mobile Repair',
-    icon: 'M8 2h8v20H8V2zm4 18a1 1 0 100-2 1 1 0 000 2z',
-    color: 'bg-rose-500',
-},
-{
-    id: 'security-guard',
-    title: 'Security Guard',
-    icon: 'M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-4z',
-    color: 'bg-neutral-700',
-},
-]
 
 
 export const testimonials = [

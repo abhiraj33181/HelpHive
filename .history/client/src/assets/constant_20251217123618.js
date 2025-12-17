@@ -63,7 +63,7 @@ export const localServiceCategories = [
     },
 ];
 
-export const localServiceCategories1 = [{
+export const localServiceCatrgories1 = [{
     id: 'ac-repair',
     title: 'AC Repair',
     icon: 'M4 6h16v8H4V6zm2 10h12v2H6v-2zm3-6h2v2H9v-2zm4 0h2v2h-2v-2z',

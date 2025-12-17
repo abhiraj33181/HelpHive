@@ -74,7 +74,7 @@ function Hero() {
                                 <button
                                     onClick={() => navigate(`/providers/${category.title}`)}
                                     key={category.id}
-                                    className="w-10 flex flex-col items-center min-w-[100px] group transition-transform hover:scale-105"
+                                    className="flex flex-col items-center min-w-[100px] group transition-transform hover:scale-105"
                                 >
                                     <div
                                         className={`w-14 h-14 ${category.color} rounded-2xl flex items-center justify-center mb-2 group-hover:shadow-xl transition-all duration-200`}
@@ -103,7 +103,7 @@ function Hero() {
                                 <button
                                     onClick={() => navigate(`/providers/${category.title}`)}
                                     key={category.id}
-                                    className="w-10 flex flex-col items-center min-w-[100px] group transition-transform hover:scale-105"
+                                    className="flex flex-col items-center min-w-[100px] group transition-transform hover:scale-105"
                                 >
                                     <div
                                         className={`w-14 h-14 ${category.color} rounded-2xl flex items-center justify-center mb-2 group-hover:shadow-xl transition-all duration-200`}

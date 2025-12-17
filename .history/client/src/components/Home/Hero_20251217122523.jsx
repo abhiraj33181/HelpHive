@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { localServiceCategories, localServiceCategories1 } from "../../assets/constant";
+import { localServiceCategories } from "../../assets/constant";
 import { useNavigate } from "react-router-dom";
 
 const texts = [
-    "trusted local helpers",
-    "verified service providers",
-    "book services instantly",
-    "simple. fast. reliable."
+  "trusted local helpers",
+  "verified service providers",
+  "book services instantly",
+  "simple. fast. reliable."
 ];
 
 
@@ -15,7 +15,7 @@ function Hero() {
     const [index, setIndex] = useState(0);
     const [isDeleting, setIsDeleting] = useState(false);
     const isAuthenticated = true;
-    const navigate = useNavigate()
+    const nvaigate = useNavigate()
 
 
     useEffect(() => {
@@ -57,12 +57,12 @@ function Hero() {
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                    <button onClick={() => navigate('/providers')} className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-full px-8 py-3 text-lg transition-all duration-300 shadow-md hover:shadow-lg">
+                    <button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-full px-8 py-3 text-lg transition-all duration-300 shadow-md hover:shadow-lg">
                         Find Helper
                     </button>
 
-                    <button onClick={() => navigate('/auth/login')} className="border-2 border-blue-600 text-blue-700 hover:bg-blue-50 font-medium rounded-full px-8 py-3 text-lg transition-all duration-300">
-                        Join as a Helper
+                    <button className="border-2 border-blue-600 text-blue-700 hover:bg-blue-50 font-medium rounded-full px-8 py-3 text-lg transition-all duration-300">
+                        {isAuthenticated ? "Go to Dashboard" : "Join as Helper"}
                     </button>
                 </div>
 
@@ -72,38 +72,9 @@ function Hero() {
                         <div className="flex items-center gap-6 pb-2 px-4 w-max mx-auto">
                             {localServiceCategories.map((category) => (
                                 <button
-                                    onClick={() => navigate(`/providers/${category.title}`)}
+                                    onClick={() => nvaigate(`/providers/${category.title}`)}
                                     key={category.id}
-                                    className="w-10 flex flex-col items-center min-w-[100px] group transition-transform hover:scale-105"
-                                >
-                                    <div
-                                        className={`w-14 h-14 ${category.color} rounded-2xl flex items-center justify-center mb-2 group-hover:shadow-xl transition-all duration-200`}
-                                    >
-                                        <svg
-                                            className="w-6 h-6 text-white"
-                                            fill="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path d={category.icon} />
-                                        </svg>
-                                    </div>
-                                    <span className="text-xs font-medium text-blue-900 text-center leading-tight">
-                                        {category.title}
-                                    </span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                </div>
-                <div className="py-6">
-                    <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-100">
-                        <div className="flex items-center gap-6 pb-2 px-4 w-max mx-auto">
-                            {localServiceCategories1.map((category) => (
-                                <button
-                                    onClick={() => navigate(`/providers/${category.title}`)}
-                                    key={category.id}
-                                    className="w-10 flex flex-col items-center min-w-[100px] group transition-transform hover:scale-105"
+                                    className="flex flex-col items-center min-w-[100px] group transition-transform hover:scale-105"
                                 >
                                     <div
                                         className={`w-14 h-14 ${category.color} rounded-2xl flex items-center justify-center mb-2 group-hover:shadow-xl transition-all duration-200`}

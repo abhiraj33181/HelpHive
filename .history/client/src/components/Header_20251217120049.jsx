@@ -66,7 +66,7 @@ function Header() {
                 </div>
 
                 {/* right side  */}
-                <div className='flex justify-center gap-10'>
+                <div>
 
                     <ul className='hidden md:flex items-start gap-5 font-medium'>
                         <NavLink to='/' >
