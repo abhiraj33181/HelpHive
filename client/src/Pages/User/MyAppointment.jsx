@@ -1,289 +1,278 @@
-import { Bell, Calendar, CalendarDays, ChevronDown, Clock, ContactRound, FileText, HandHelpingIcon, MapPin, RefreshCw } from 'lucide-react'
-import React, { useContext, useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
-import { AppContext } from '../../context/AppContext'
+import React, { useContext, useEffect, useState } from 'react';
+import { 
+    Calendar, 
+    Clock, 
+    MapPin, 
+    RefreshCw, 
+    CreditCard, 
+    AlertCircle, 
+    CheckCircle2, 
+    XCircle,
+    CalendarDays
+} from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { AppContext } from '../../context/AppContext';
 
 const MyAppointment = () => {
+    const { backendURL, token, axios, getProvidersData, navigate } = useContext(AppContext);
+    
+    const [appointments, setAppointments] = useState([]);
+    const [isAppointment, setIsAppointment] = useState(true); // true = Upcoming, false = Past
+    const [refreshing, setRefreshing] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-    const [refresh, setRefresh] = useState(false)
-
-    const [isAppointment, setIsAppointment] = useState(true)
-    const { backendURL, token, axios, getProvidersData, navigate } = useContext(AppContext)
-
-    const [appointments, setAppointments] = useState([])
     const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
+    // --- Helpers ---
     const slotDateFormat = (slotDate) => {
-        const dateArray = slotDate.split('_')
-        return dateArray[0] + " " + months[Number(dateArray[1])] + " " + dateArray[2]
-    }
+        const dateArray = slotDate.split('_');
+        return dateArray[0] + " " + months[Number(dateArray[1])] + " " + dateArray[2];
+    };
 
+    // --- API Calls ---
     const getUserAppointments = async () => {
         try {
-            const { data } = await axios.get(`${backendURL}/api/user/listAppointment`, { withCredentials: true })
+            const { data } = await axios.get(`${backendURL}/api/user/listAppointment`, { withCredentials: true });
             if (data.success) {
-                setAppointments(data.appointments.reverse())
+                setAppointments(data.appointments.reverse());
             }
         } catch (error) {
-            toast(error.message)
-            console.log(error.message)
+            toast.error(error.message);
+        } finally {
+            setLoading(false);
         }
-    }
+    };
 
     const cancelAppointment = async (appointmentId) => {
+        if(!window.confirm("Are you sure you want to cancel this appointment?")) return;
+        
         try {
-            const { data } = await axios.post(`${backendURL}/api/user/cancelAppointment`, { appointmentId }, { withCredentials: true })
+            const { data } = await axios.post(`${backendURL}/api/user/cancelAppointment`, { appointmentId }, { withCredentials: true });
             if (data.success) {
-                toast.success(data.message)
-                await getUserAppointments()
-                await getProvidersData()
+                toast.success(data.message);
+                getUserAppointments();
+                getProvidersData();
             } else {
-                toast.error(data.message)
+                toast.error(data.message);
             }
         } catch (error) {
-            toast(error.message)
-            console.log(error.message)
+            toast.error(error.message);
         }
-    }
+    };
 
+    const refreshData = async () => {
+        setRefreshing(true);
+        await getUserAppointments();
+        setRefreshing(false);
+        toast.info("List updated");
+    };
+
+    // --- Razorpay Logic ---
     const initPay = (order) => {
         const options = {
             key: import.meta.env.VITE_RAZORPAY_KEY_ID,
             amount: order.amount,
             currency: order.currency,
             name: "Appointment Payment",
-            description: "Apppointment Payment",
+            description: "Service Fee",
             order_id: order.id,
             receipt: order.receipt,
             handler: async (response) => {
-                console.log(response)
-
                 try {
-                    const { data } = await axios.post(`${backendURL}/api/user/verify-razorpay`, { response }, { withCredentials: true })
+                    const { data } = await axios.post(`${backendURL}/api/user/verify-razorpay`, { response }, { withCredentials: true });
                     if (data.success) {
-                        getUserAppointments()
-                        navigate('/dashboard')
-                        toast.success(data.message)
+                        getUserAppointments();
+                        toast.success(data.message);
                     } else {
-                        console.log(data.message)
-                        toast.error(data.message)
+                        toast.error(data.message);
                     }
                 } catch (error) {
-
+                    toast.error(error.message);
                 }
             }
-        }
-
-        const rzp = new window.Razorpay(options)
-        rzp.open()
-    }
+        };
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+    };
 
     const appointmentRazorpay = async (appointmentId) => {
         try {
-            const { data } = await axios.post(`${backendURL}/api/user/payment-razorpay`, { appointmentId }, { withCredentials: true })
+            const { data } = await axios.post(`${backendURL}/api/user/payment-razorpay`, { appointmentId }, { withCredentials: true });
             if (data.success) {
-                initPay(data.order)
+                initPay(data.order);
             } else {
-                toast.error(data.message)
+                toast.error(data.message);
             }
         } catch (error) {
-            toast(error.message)
-            console.log(error.message)
+            toast.error(error.message);
         }
-    }
-
-    const refreshAppointment = async () => {
-        try {
-            setRefresh(true)
-            await getUserAppointments()
-            toast.success('Appointment Updated!')
-        } catch (error) {
-            toast.error(error.message)
-        } finally {
-            setRefresh(false)
-        }
-    }
-
-    const upcomingAppointments = appointments.filter(
-        item => !item.isCompleted && !item.cancelled
-    );
-
+    };
 
     useEffect(() => {
         if (token) {
-            getUserAppointments()
+            getUserAppointments();
         } else {
-            navigate('/auth/login')
+            navigate('/auth/login');
         }
-    }, [token])
+    }, [token]);
 
+    // --- Filtering Logic ---
+    const filteredAppointments = appointments.filter(item => {
+        if (isAppointment) {
+            // Upcoming: Not completed AND Not cancelled
+            return !item.isCompleted && !item.cancelled;
+        } else {
+            // Past: Completed OR Cancelled
+            return item.isCompleted || item.cancelled;
+        }
+    });
+
+    if (loading) {
+        return <div className="min-h-[60vh] flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>;
+    }
 
     return (
-        <div>
-            <div className='mx-4 my-10 sm:mx-[10%] flex flex-col md:flex-row gap-5 md:gap-0 items-center justify-between'>
-                <div className='flex gap-5 items-center'>
-                    <div>
-                        <h1 className='text-center text-3xl font-semibold'>My Appointments</h1>
-                        <p className='text-center text-md md:text-xl text-zinc-600'>Manage your appointment</p>
-                    </div>
-                    <div className='h-full hover:text-blue-600 cursor-pointer'>
-                        <RefreshCw className={`${refresh ? 'loader' : ''}`} onClick={refreshAppointment} />
-                    </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-10">
+                <div className="flex items-center gap-4">
+                    <h1 className="text-3xl font-bold text-slate-900">My Appointments</h1>
+                    <button 
+                        onClick={refreshData}
+                        className={`p-2 rounded-full hover:bg-slate-100 transition-colors text-slate-500 hover:text-blue-600 ${refreshing ? 'animate-spin text-blue-600' : ''}`}
+                        title="Refresh List"
+                    >
+                        <RefreshCw className="w-5 h-5" />
+                    </button>
                 </div>
-                <Link to='/providers' className='text-sm bg-[#2D2E2E] py-2 px-5 rounded-xl text-white flex items-center justify-center gap-2 hover:bg-[#0f0f0f]'><CalendarDays /> Book New Appointment</Link>
+                <Link 
+                    to='/providers' 
+                    className='bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-all shadow-sm'
+                >
+                    <CalendarDays className="w-4 h-4" /> Book New
+                </Link>
             </div>
 
-            <div className='mx-4 mt-5 sm:mx-[10%] flex items-center justify-center gap-5 bg-zinc-200 rounded-xl overflow-hidden p-1'>
-                <button onClick={() => setIsAppointment(prev => !prev)} className={`${isAppointment ? 'bg-white' : ''} cursor-pointer flex flex-1 items-center justify-center gap-3 p-2 rounded-xl`}>Upcoming <Clock /></button>
-                <button onClick={() => setIsAppointment(prev => !prev)} className={`${!isAppointment ? 'bg-white' : ''} cursor-pointer flex flex-1 items-center justify-center gap-3 p-2 rounded-xl`}>Past <Calendar /></button>
+            {/* Tabs */}
+            <div className="bg-slate-100 p-1.5 rounded-xl flex items-center max-w-md mx-auto md:mx-0 mb-8">
+                <button 
+                    onClick={() => setIsAppointment(true)} 
+                    className={`flex-1 py-2.5 text-sm font-semibold rounded-lg flex items-center justify-center gap-2 transition-all ${isAppointment ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                >
+                    <Clock className="w-4 h-4" /> Upcoming
+                </button>
+                <button 
+                    onClick={() => setIsAppointment(false)} 
+                    className={`flex-1 py-2.5 text-sm font-semibold rounded-lg flex items-center justify-center gap-2 transition-all ${!isAppointment ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                >
+                    <Calendar className="w-4 h-4" /> History
+                </button>
             </div>
 
-            {
-                isAppointment ? (
-                    <>
-                        {!upcomingAppointments.length ? (
-                            <div className='flex flex-col h-100 justify-center items-center mx-4 mt-5 sm:mx-[10%] bg-white rounded-xl'>
-                                <Clock className='w-25 h-25 text-zinc-400 mb-5' />
-                                <h1 className='text-xl md:text-3xl font-semibold text-zinc-500'>No Upcoming Appointments</h1>
-                                <p className='text-md md:text-md text-zinc-500'>You have no upcooming appointment scheduled!</p>
-                            </div>
-                        ) : (
-                            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mx-4 mt-5 sm:mx-[10%]'>
-                                {appointments.filter(item => !item.isCompleted && !item.cancelled).map((item, index) => (
-                                    <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-4 hover:shadow-md transition relative">
-                                        <div className="flex items-center gap-4">
-                                            <img
-                                                src={item.provData.image}
-                                                className="w-20 h-20 rounded-full object-cover"
-                                            />
-
-                                            <div className='flex flex-col gap-2'>
-                                                <p className="font-semibold text-xl">{item.provData.name}</p>
-                                                <p className="text-sm text-zinc-500 flex gap-2 items-center"><ContactRound className='h-5 w-5' />{item.provData.service}</p>
-                                                <p className="text-sm text-zinc-600 flex gap-2 items-center">
-                                                    <MapPin className='h-5 w-5' />{item.provData.address.line1}, {item.provData.address.line2}
-                                                </p>
-                                                <p className="text-sm text-zinc-600 flex gap-2 items-center">
-                                                    <Calendar className='h-5 w-5' /> {slotDateFormat(item.slotDate)} | {item.slotTime}
-                                                </p>
-                                                <div className="text-sm text-zinc-700 flex flex-col md:flex-row gap-1 md:gap-10">
-                                                    <p>Fee : <span className='font-semibold'>₹{item.amount}</span></p>
-                                                    <p className='font-semibold'><span className='text-red-600 mr-1'>*</span>Wire brunt out!</p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {!item.cancelled && !item.isCompleted && (
-                                            <div className="flex gap-3 mt-4">
-
-                                                {!item.payment && (
-                                                    <button
-                                                        className="flex-1 px-4 py-2 rounded-lg border border-blue-500 text-blue-500 bg-blue-50 hover:bg-blue-500 hover:text-white font-medium transition"
-                                                        onClick={() => appointmentRazorpay(item._id)}
-                                                    >
-                                                        Pay Online
-                                                    </button>
-                                                )}
-
-                                                <button
-                                                    className="flex-1 px-4 py-2 rounded-lg border border-red-600 text-red-600 bg-red-50 hover:bg-red-600 hover:text-white font-medium transition"
-                                                    onClick={() => cancelAppointment(item._id)}
-                                                >
-                                                    Cancel
-                                                </button>
-                                            </div>
+            {/* Grid Content */}
+            {filteredAppointments.length === 0 ? (
+                <div className='flex flex-col items-center justify-center py-20 bg-slate-50 rounded-2xl border border-slate-200 border-dashed'>
+                    <div className="bg-white p-4 rounded-full shadow-sm mb-4">
+                        <Calendar className='w-10 h-10 text-slate-300' />
+                    </div>
+                    <h3 className='text-lg font-semibold text-slate-900'>No appointments found</h3>
+                    <p className='text-slate-500 text-sm mt-1'>
+                        {isAppointment ? "You don't have any upcoming bookings." : "No past appointment history available."}
+                    </p>
+                </div>
+            ) : (
+                <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6'>
+                    {filteredAppointments.map((item) => (
+                        <div key={item._id} className="group bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-300 flex flex-col">
+                            
+                            {/* Card Header: Provider Info */}
+                            <div className="p-5 flex items-start gap-4 border-b border-slate-50">
+                                <img
+                                    src={item.provData.image}
+                                    alt={item.provData.name}
+                                    className="w-14 h-14 rounded-full object-cover border border-slate-100"
+                                />
+                                <div className="flex-1 min-w-0">
+                                    <h3 className="font-bold text-slate-900 truncate">{item.provData.name}</h3>
+                                    <p className="text-sm text-slate-500 truncate">{item.provData.service}</p>
+                                    
+                                    {/* Status Badge (Top Right of Content) */}
+                                    <div className="mt-2">
+                                        {item.cancelled && (
+                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-100">
+                                                <XCircle className="w-3 h-3" /> Cancelled
+                                            </span>
                                         )}
-
-                                        <div className='flex flex-col gap-2 absolute right-3 top-2'>
-
-                                            {!item.cancelled && !item.isCompleted && (
-                                                <span className="text-center px-3 py-1 bg-gray-200 text-gray-600 text-xs rounded-full border border-green-200">
-                                                    Upcoming
-                                                </span>
-                                            )}
-
-                                            {!item.cancelled && item.payment && !item.isCompleted && (
-                                                <span className="text-center px-3 py-1 bg-green-50 text-green-600 text-xs rounded-full border border-green-200">
-                                                    Paid
-                                                </span>
-                                            )}
-                                        </div>
+                                        {item.isCompleted && (
+                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-100">
+                                                <CheckCircle2 className="w-3 h-3" /> Completed
+                                            </span>
+                                        )}
+                                        {!item.cancelled && !item.isCompleted && (
+                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                                                <Clock className="w-3 h-3" /> Scheduled
+                                            </span>
+                                        )}
                                     </div>
-
-                                ))}
+                                </div>
                             </div>
-                        )}
 
-                    </>
-                ) : (
-                    <>
-                        {!appointments.length ? (
-                            <div className='flex flex-col h-100 justify-center items-center mx-4 mt-5 sm:mx-[10%] bg-white rounded-xl'>
-                                <FileText className='w-25 h-25 text-zinc-400 mb-5' />
-                                <h1 className='text-xl md:text-3xl font-semibold text-zinc-500'>No Past Appointments</h1>
-                                <p className='text-sm md:text-md text-zinc-500'>Your completed appointments will appear here.</p>
-                            </div>
-                        ) : (
-                            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mx-4 mt-5 sm:mx-[10%]'>
-                                {appointments.filter(item => item.isCompleted || item.cancelled).map((item, index) => (
-                                    <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-4 hover:shadow-md transition">
-                                        <div className="flex items-center gap-4">
-                                            <img
-                                                src={item.provData.image}
-                                                className="w-20 h-20 rounded-full object-cover"
-                                            />
-
-                                            <div className='flex flex-col gap-2'>
-                                                <p className="font-semibold text-xl">{item.provData.name}</p>
-                                                <p className="text-sm text-zinc-500 flex gap-2 items-center"><ContactRound className='h-5 w-5' />{item.provData.service}</p>
-                                                <p className="text-sm text-zinc-600 flex gap-2 items-center">
-                                                    <MapPin className='h-5 w-5' />{item.provData.address.line1}, {item.provData.address.line2}
-                                                </p>
-                                                <p className="text-sm text-zinc-600 flex gap-2 items-center">
-                                                    <Calendar className='h-5 w-5' /> {slotDateFormat(item.slotDate)} | {item.slotTime}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex justify-between items-center pt-2">
-                                            <div className="text-sm text-zinc-700">
-                                                <p>Fee : ₹{item.amount}</p>
-                                                <p>Wire brunt out!</p>
-                                            </div>
-
-                                            <div>
-                                                {!item.cancelled && item.payment && !item.isCompleted && (
-                                                    <span className="px-3 py-1 bg-green-50 text-green-600 text-xs rounded-full border border-green-200">
-                                                        Paid
-                                                    </span>
-                                                )}
-
-                                                {item.cancelled && !item.isCompleted && (
-                                                    <span className="px-3 py-1 bg-red-50 text-red-500 text-xs rounded-full border border-red-200">
-                                                        Cancelled
-                                                    </span>
-                                                )}
-
-                                                {item.isCompleted && (
-                                                    <span className="px-3 py-1 bg-green-50 text-green-600 text-xs rounded-full border border-green-200">
-                                                        Completed
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
+                            {/* Card Body: Details */}
+                            <div className="p-5 flex-1 space-y-3">
+                                <div className="flex items-center gap-3 text-sm text-slate-600">
+                                    <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
+                                    <span>{slotDateFormat(item.slotDate)} <span className="text-slate-300 mx-1">|</span> {item.slotTime}</span>
+                                </div>
+                                <div className="flex items-start gap-3 text-sm text-slate-600">
+                                    <MapPin className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                                    <span className="line-clamp-2">{item.provData.address.line1}, {item.provData.address.line2}</span>
+                                </div>
+                                
+                                <div className="h-px bg-slate-100 my-2"></div>
+                                
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <CreditCard className="w-4 h-4 text-slate-400" />
+                                        <span className="font-semibold text-slate-900">₹{item.amount}</span>
                                     </div>
-
-                                ))}
+                                    {!item.cancelled && item.payment && !item.isCompleted && (
+                                        <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded">PAID</span>
+                                    )}
+                                    {!item.cancelled && !item.payment && !item.isCompleted && (
+                                        <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded flex items-center gap-1">
+                                            <AlertCircle className="w-3 h-3" /> UNPAID
+                                        </span>
+                                    )}
+                                </div>
                             </div>
-                        )}
-                    </>
-                )
-            }
 
-
+                            {/* Card Footer: Actions */}
+                            {!item.cancelled && !item.isCompleted && (
+                                <div className="p-4 pt-0 flex gap-3">
+                                    {!item.payment && (
+                                        <button
+                                            onClick={() => appointmentRazorpay(item._id)}
+                                            className="flex-1 py-2.5 rounded-lg text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm"
+                                        >
+                                            Pay Now
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={() => cancelAppointment(item._id)}
+                                        className={`flex-1 py-2.5 rounded-lg text-sm font-semibold border transition-colors ${item.payment ? 'w-full' : ''} border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-100`}
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
-    )
-}
+    );
+};
 
-export default MyAppointment
+export default MyAppointment;
