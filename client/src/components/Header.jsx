@@ -16,14 +16,14 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import { ProviderContext } from '../context/ProviderContext';
 import { toast } from 'react-toastify';
-import { assets } from '../assets/assets'; // Keep strictly for user avatars if needed
+import { assets } from '../assets/assets'; 
 
 function Header() {
     const navigate = useNavigate();
     const [showMenu, setShowMenu] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
     
-    // Local state for search if not provided by context yet
+    // Local state for search
     const [localSearch, setLocalSearch] = useState(""); 
 
     const { token, userData, axios, backendURL, loadUserProfileData, setSearchQuery } = useContext(AppContext);
@@ -40,7 +40,6 @@ function Header() {
 
     const logout = async () => {
         try {
-            // FIXED: Changed bitwise & to logical &&
             if (token && !pToken) {
                 const { data } = await axios.post(`${backendURL}/api/user/logout`, {}, { withCredentials: true });
                 if (data.success) {
@@ -63,14 +62,14 @@ function Header() {
         }
     };
 
-    // Handle search input (Checks if setSearchQuery exists in context, else uses local)
     const handleSearch = (e) => {
         setLocalSearch(e.target.value);
         if(setSearchQuery) setSearchQuery(e.target.value);
     };
 
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-md transition-all duration-300">
+        // Header Z-index 40 rakha hai taaki mobile menu (Z-50) iske upar aa sake
+        <header className="fixed top-0 left-0 right-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur-md transition-all duration-300">
             <div className='container mx-auto px-4 lg:px-8 h-20 flex items-center justify-between'>
 
                 {/* --- Logo Section --- */}
@@ -177,7 +176,7 @@ function Header() {
                         </button>
                     )}
 
-                    {/* Mobile Menu Toggle */}
+                    {/* Mobile Menu Toggle Button */}
                     <button onClick={() => setShowMenu(true)} className="md:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
                         <Menu className="w-6 h-6" />
                     </button>
@@ -185,15 +184,19 @@ function Header() {
             </div>
 
             {/* --- Mobile Sidebar (Drawer) --- */}
-            {/* Overlay */}
+            
+            {/* 1. Overlay (High Z-Index) */}
             <div 
-                className={`fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 transition-opacity duration-300 md:hidden ${showMenu ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                className={`fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[50] transition-opacity duration-300 md:hidden ${showMenu ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                 onClick={() => setShowMenu(false)}
             />
 
-            {/* Drawer */}
-            <div className={`fixed top-0 right-0 h-full w-[80%] max-w-sm bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out md:hidden ${showMenu ? 'translate-x-0' : 'translate-x-full'}`}>
-                <div className="p-6 flex flex-col h-full">
+            {/* 2. Drawer (Higher Z-Index + overflow-y-auto for scrolling) */}
+            <div className={`fixed top-0 right-0 h-screen w-full max-w-sm bg-white shadow-2xl z-[60] transform transition-transform duration-300 ease-in-out md:hidden flex flex-col ${showMenu ? 'translate-x-0' : 'translate-x-full'}`}>
+                
+                {/* Scrollable Content Area */}
+                <div className="flex-1 overflow-y-auto p-6">
+                    {/* Drawer Header */}
                     <div className="flex items-center justify-between mb-8">
                         <div className='flex items-center space-x-2'>
                             <div className='w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center'>
@@ -212,14 +215,14 @@ function Header() {
                         <input 
                             onChange={handleSearch}
                             value={localSearch}
-                            className="w-full bg-slate-100 py-2.5 pl-10 pr-4 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-100 border border-transparent focus:border-blue-500 transition-all" 
+                            className="w-full bg-slate-100 py-3 pl-10 pr-4 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-100 border border-transparent focus:border-blue-500 transition-all" 
                             type="text" 
                             placeholder="Search provider..." 
                         />
                     </div>
 
                     {/* Mobile Nav Links */}
-                    <ul className="space-y-2 flex-1">
+                    <ul className="space-y-2">
                         {['Home', 'Providers', 'About', 'Contact'].map((item) => (
                             <NavLink 
                                 key={item}
@@ -233,33 +236,33 @@ function Header() {
                             </NavLink>
                         ))}
                     </ul>
+                </div>
 
-                    {/* Mobile Footer Actions */}
-                    <div className="mt-auto border-t border-slate-100 pt-6">
-                        {!token && !pToken && (
-                            <button 
-                                onClick={() => { navigate('/auth/login'); setShowMenu(false); }}
-                                className='w-full flex justify-center items-center gap-2 bg-blue-600 text-white py-3 rounded-xl font-medium shadow-lg shadow-blue-500/20 active:scale-95 transition-transform'
-                            >
-                                Login <ArrowRight className="w-4 h-4" />
-                            </button>
-                        )}
-                        {(token || pToken) && (
-                            <button 
-                                onClick={() => { logout(); setShowMenu(false); }}
-                                className='w-full flex justify-center items-center gap-2 bg-red-50 text-red-600 py-3 rounded-xl font-medium hover:bg-red-100 transition-colors'
-                            >
-                                <LogOut className="w-4 h-4" /> Logout
-                            </button>
-                        )}
-                    </div>
+                {/* Mobile Footer Actions (Sticky Bottom inside drawer) */}
+                <div className="p-6 border-t border-slate-100 bg-white">
+                    {!token && !pToken && (
+                        <button 
+                            onClick={() => { navigate('/auth/login'); setShowMenu(false); }}
+                            className='w-full flex justify-center items-center gap-2 bg-blue-600 text-white py-3.5 rounded-xl font-medium shadow-lg shadow-blue-500/20 active:scale-95 transition-transform'
+                        >
+                            Login <ArrowRight className="w-4 h-4" />
+                        </button>
+                    )}
+                    {(token || pToken) && (
+                        <button 
+                            onClick={() => { logout(); setShowMenu(false); }}
+                            className='w-full flex justify-center items-center gap-2 bg-red-50 text-red-600 py-3.5 rounded-xl font-medium hover:bg-red-100 transition-colors'
+                        >
+                            <LogOut className="w-4 h-4" /> Logout
+                        </button>
+                    )}
                 </div>
             </div>
         </header>
     );
 }
 
-// Helper component for Dropdown Items to reduce repetition
+// Helper component for Dropdown Items
 function MenuItem({ icon: Icon, label, onClick, isDestructive = false }) {
     return (
         <button 
