@@ -76,7 +76,7 @@ const MyProfile = () => {
     if (!userData) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin text-blue-600" /></div>;
 
     return (
-        <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8 mt-16">
             <div className="max-w-6xl mx-auto">
                 
                 {/* --- Header --- */}
