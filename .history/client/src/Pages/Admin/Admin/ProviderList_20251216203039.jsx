@@ -1,1 +1,0 @@
-convert it to the table type make sure everything is responsive and minimilistic design as well
