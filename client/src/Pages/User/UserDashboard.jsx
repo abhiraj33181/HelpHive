@@ -1,124 +1,155 @@
-import { Bell, Calendar, CalendarDays, ChevronDown, Clock, ContactRound, FileText, HandHelpingIcon, MapPin } from 'lucide-react'
-import React, { useContext, useEffect, useState } from 'react'
-import { Link, Outlet, useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
-import { AppContext } from '../../context/AppContext'
+import React, { useContext, useEffect, useState } from 'react';
+import { 
+    Bell, 
+    CalendarDays, 
+    HandHelpingIcon, 
+    LogOut, 
+    LayoutDashboard, 
+    User, 
+    ChevronDown 
+} from 'lucide-react';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { AppContext } from '../../context/AppContext';
 
 const UserDashboard = () => {
-
-    const [showMenu, setShowMenu] = useState(false)
-    const [showDropdown, setShowDropdown] = useState(false)
-    const [isAppointment, setIsAppointment] = useState(true)
-    const { backendURL, token, axios, getProvidersData, navigate, loadUserProfileData, userData } = useContext(AppContext)
-
+    const [showDropdown, setShowDropdown] = useState(false);
+    const { backendURL, axios, navigate, loadUserProfileData, userData } = useContext(AppContext);
 
     const logout = async () => {
         try {
-            const { data } = await axios.post(`${backendURL}/api/user/logout`, { withCredentials: true })
+            const { data } = await axios.post(`${backendURL}/api/user/logout`, {}, { withCredentials: true });
             if (data.success) {
-                toast.success(data.message)
-                await loadUserProfileData()
-                navigate('/')
+                toast.success(data.message);
+                await loadUserProfileData();
+                navigate('/');
             }
         } catch (error) {
-            toast.error(error.message)
+            toast.error(error.message);
         }
-    }
+    };
 
+    // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (!e.target.closest('.profile-menu')) {
-                setShowDropdown(false)
+                setShowDropdown(false);
             }
-        }
-        document.addEventListener('click', handleClickOutside)
-        return () => document.removeEventListener('click', handleClickOutside)
-    }, [])
-    return userData && (
-        <div className='bg-zinc-100 min-h-screen max-w-full'>
-            <nav className='w-full bg-white py-3 px-6 flex justify-between items-center'>
-                {/* left part  */}
-                <div className='flex items-center gap-10'>
-                    <div className='flex items-center space-x-8'>
-                        <Link to='/' className='flex items-center space-x-2'>
-                            <div className='w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center'>
-                                <HandHelpingIcon className='w-5 h-5 text-white' />
-                            </div>
-                            <div className='heading text-2xl font-bold bg-gradient-to-br from-blue-600 to-blue-800 bg-clip-text text-transparent'>
-                                HelpHive
-                            </div>
+        };
+        document.addEventListener('click', handleClickOutside);
+        return () => document.removeEventListener('click', handleClickOutside);
+    }, []);
+
+    if (!userData) {
+        return <div className="min-h-screen flex items-center justify-center bg-zinc-50">Loading...</div>;
+    }
+
+    return (
+        <div className='bg-zinc-50 min-h-screen w-full flex flex-col'>
+            
+            {/* --- Navbar --- */}
+            <nav className='w-full bg-white border-b border-zinc-200 sticky top-0 z-50 px-4 sm:px-6 py-3 flex justify-between items-center shadow-sm'>
+                
+                {/* Left Side: Logo & Navigation */}
+                <div className='flex items-center gap-8'>
+                    {/* Logo */}
+                    <Link to='/' className='flex items-center gap-2 group'>
+                        <div className='w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-600/20 group-hover:scale-105 transition-transform'>
+                            <HandHelpingIcon className='w-5 h-5 text-white' />
+                        </div>
+                        <span className='text-xl font-bold text-slate-800 tracking-tight'>HelpHive</span>
+                    </Link>
+
+                    {/* Nav Links (Desktop) */}
+                    <div className='hidden md:flex items-center gap-6'>
+                        <Link 
+                            to='/dashboard/my-appointments' 
+                            className='flex items-center gap-2 text-slate-500 hover:text-blue-600 font-medium transition-colors'
+                        >
+                            <CalendarDays className='w-5 h-5' />
+                            <span>Appointments</span>
                         </Link>
                     </div>
-                    <div className='hidden  md:flex gap-2 items-center justify-center text-[#2E50ED] hover:text-[#0e38f1] font-semibold'>
-                        <CalendarDays className='h-10' /><p>Appointment</p>
-                    </div>
                 </div>
 
-                {/* right side  */}
-                <div className='flex gap-9 items-center'>
-                    <div className='relative'>
-                        <Bell className='h-10' />
-                        <span className='absolute right-[-4px] top-0 bg-red-600 text-white h-5 w-5 flex justify-center items-center rounded-full'>5</span>
-                    </div>
+                {/* Right Side: Actions & Profile */}
+                <div className='flex items-center gap-6'>
+                    
+                    {/* Notification Bell */}
+                    <button className='relative p-2 text-slate-400 hover:text-slate-600 transition-colors'>
+                        <Bell className='w-6 h-6' />
+                        <span className='absolute top-1 right-1 h-4 w-4 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white'>
+                            5
+                        </span>
+                    </button>
 
-                    <div
-                        className="flex items-center gap-2 cursor-pointer relative profile-menu hover:bg-[#F5F5F5] p-1 rounded"
-                        onClick={() => setShowDropdown(prev => !prev)}
-                    >
-                        <img src={userData.image} className="w-10 h-10 object-cover rounded-full" />
-
-                        <div className='hidden md:flex flex-col justify-center'>
-                            <p className='font-semibold m-0 leading-tight'>{userData.name}</p>
-                            <p className='text-zinc-600 text-xs font-semibold m-0 leading-tight'>User</p>
-                        </div>
-                        {/* Dropdown */}
-                        <div
-                            className={`absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20 transition-all duration-200 ${showDropdown ? 'block' : 'hidden'
-                                }`}
+                    {/* Profile Dropdown */}
+                    <div className="relative profile-menu">
+                        <button 
+                            onClick={() => setShowDropdown(!showDropdown)}
+                            className="flex items-center gap-3 p-1 pl-2 pr-1 rounded-full hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all"
                         >
-                            <div className="min-w-48 bg-white rounded-lg flex flex-col gap-4 p-4 shadow-lg" onClick={(e) => e.stopPropagation()}>
-                                <p
-                                    onClick={() => {
-                                        navigate('/dashboard');
-                                        setShowDropdown(false)
-                                    }}
-                                    className="hover:text-black cursor-pointer font-semibold"
+                            <div className="hidden md:flex flex-col items-end mr-1">
+                                <span className="text-sm font-semibold text-slate-700 leading-none">{userData.name}</span>
+                                <span className="text-xs text-slate-400 font-medium mt-0.5">User</span>
+                            </div>
+                            <img 
+                                src={userData.image} 
+                                alt="Profile" 
+                                className="w-9 h-9 object-cover rounded-full border border-slate-200 bg-slate-100" 
+                            />
+                            <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 hidden sm:block ${showDropdown ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {/* Dropdown Content */}
+                        <div 
+                            className={`absolute top-full right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-slate-100 transform origin-top-right transition-all duration-200 ${
+                                showDropdown 
+                                ? 'opacity-100 scale-100 visible' 
+                                : 'opacity-0 scale-95 invisible'
+                            }`}
+                        >
+                            <div className="p-2">
+                                <div className="px-3 py-2 border-b border-slate-100 mb-1 md:hidden">
+                                    <p className="font-semibold text-slate-800">{userData.name}</p>
+                                    <p className="text-xs text-slate-500">User Account</p>
+                                </div>
+                                
+                                <button 
+                                    onClick={() => { navigate('/dashboard'); setShowDropdown(false); }}
+                                    className="w-full flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                 >
-                                    Dashboard
-                                </p>
-                                <p
-                                    onClick={() => {
-                                        navigate('/dashboard/my-profile')
-                                        setShowDropdown(false)
-                                    }}
-                                    className="hover:text-black cursor-pointer font-semibold"
+                                    <LayoutDashboard className="w-4 h-4" /> Dashboard
+                                </button>
+                                
+                                <button 
+                                    onClick={() => { navigate('/dashboard/my-profile'); setShowDropdown(false); }}
+                                    className="w-full flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                 >
-                                    My Profile
-                                </p>
-                                <p
+                                    <User className="w-4 h-4" /> My Profile
+                                </button>
+
+                                <div className="h-px bg-slate-100 my-1"></div>
+                                
+                                <button 
                                     onClick={logout}
-                                    className="hover:text-black cursor-pointer font-semibold"
+                                    className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                 >
-                                    Logout
-                                </p>
+                                    <LogOut className="w-4 h-4" /> Logout
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
-
-
             </nav>
 
-
-            {/* outlet part  */}
-            <Outlet/>
-
-
-
-
+            {/* --- Main Content Outlet --- */}
+            <main className='flex-1 w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8'>
+                <Outlet />
+            </main>
 
         </div>
-    )
-}
+    );
+};
 
-export default UserDashboard
+export default UserDashboard;

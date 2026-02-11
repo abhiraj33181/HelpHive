@@ -1,13 +1,7 @@
-<<<<<<< HEAD
 import React, { useEffect, useState, useMemo } from "react";
 import { localServiceCategories, localServiceCategories1 } from "../../assets/constant";
 import { useNavigate } from "react-router-dom";
 import { Search, CheckCircle2, ArrowRight } from "lucide-react";
-=======
-import React, { useEffect, useState } from "react";
-import { localServiceCategories, localServiceCategories1 } from "../../assets/constant";
-import { useNavigate } from "react-router-dom";
->>>>>>> ad8a7309a6429a315a675c843406e9e3e412259e
 
 const texts = [
     "trusted local helpers",
@@ -16,25 +10,15 @@ const texts = [
     "simple. fast. reliable."
 ];
 
-<<<<<<< HEAD
-=======
-
->>>>>>> ad8a7309a6429a315a675c843406e9e3e412259e
 function Hero() {
     const [text, setText] = useState("");
     const [index, setIndex] = useState(0);
     const [isDeleting, setIsDeleting] = useState(false);
-<<<<<<< HEAD
     const navigate = useNavigate();
 
     const allCategories = useMemo(() => {
         return [...localServiceCategories, ...localServiceCategories1];
     }, []);
-=======
-    const isAuthenticated = true;
-    const navigate = useNavigate()
-
->>>>>>> ad8a7309a6429a315a675c843406e9e3e412259e
 
     useEffect(() => {
         const current = texts[index];
@@ -48,11 +32,7 @@ function Hero() {
             );
 
             if (!isDeleting && text === current) {
-<<<<<<< HEAD
                 setTimeout(() => setIsDeleting(true), 1500);
-=======
-                setTimeout(() => setIsDeleting(true), 1000);
->>>>>>> ad8a7309a6429a315a675c843406e9e3e412259e
             }
 
             if (isDeleting && text === "") {
@@ -65,7 +45,6 @@ function Hero() {
     }, [text, isDeleting, index]);
 
     return (
-<<<<<<< HEAD
         <section className="relative pt-24 pb-12 px-4 overflow-hidden bg-white mt-16 sm:mt-0">
             
             {/* Background Decor */}
@@ -131,64 +110,19 @@ function Hero() {
                                         <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                         <svg
                                             className="w-7 h-7 sm:w-8 sm:h-8 text-white drop-shadow-sm"
-=======
-        <section className="py-20 px-4 bg-gradient-to-b from-blue-50 to-white">
-            <div className="container mx-auto text-center">
-                <h1 className="h-40 heading text-5xl md:text-6xl font-bold text-blue-900 leading-tight mb-6">
-                    Find trusted local helpers <br />
-                    <span className="heading text-blue-800">{text}</span>
-                </h1>
-
-                <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
-                    Book trusted local helpers for any task — plumbers, electricians,
-                    tutors, and more. Affordable, reliable, and available anytime,
-                    anywhere.
-                </p>
-
-                <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                    <button onClick={() => navigate('/providers')} className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-full px-8 py-3 text-lg transition-all duration-300 shadow-md hover:shadow-lg">
-                        Find Helper
-                    </button>
-
-                    <button onClick={() => navigate('/auth/login')} className="border-2 border-blue-600 text-blue-700 hover:bg-blue-50 font-medium rounded-full px-8 py-3 text-lg transition-all duration-300">
-                        Join as a Helper
-                    </button>
-                </div>
-
-                {/* Category List */}
-                <div className="py-6">
-                    <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-100">
-                        <div className="flex items-center gap-6 pb-2 px-4 w-max mx-auto">
-                            {localServiceCategories.map((category) => (
-                                <button
-                                    onClick={() => navigate(`/providers/${category.title}`)}
-                                    key={category.id}
-                                    className="w-10 flex flex-col items-center min-w-[100px] group transition-transform hover:scale-105"
-                                >
-                                    <div
-                                        className={`w-14 h-14 ${category.color} rounded-2xl flex items-center justify-center mb-2 group-hover:shadow-xl transition-all duration-200`}
-                                    >
-                                        <svg
-                                            className="w-6 h-6 text-white"
->>>>>>> ad8a7309a6429a315a675c843406e9e3e412259e
                                             fill="currentColor"
                                             viewBox="0 0 24 24"
                                         >
                                             <path d={category.icon} />
                                         </svg>
                                     </div>
-<<<<<<< HEAD
                                     <span className="text-xs sm:text-sm font-semibold text-slate-700 text-center leading-tight group-hover:text-blue-600 transition-colors">
-=======
-                                    <span className="text-xs font-medium text-blue-900 text-center leading-tight">
->>>>>>> ad8a7309a6429a315a675c843406e9e3e412259e
                                         {category.title}
                                     </span>
                                 </button>
                             ))}
                         </div>
                     </div>
-<<<<<<< HEAD
                 </div>
 
                 {/* Trust Indicators - Vertical on Mobile, Horizontal on Desktop */}
@@ -198,61 +132,11 @@ function Hero() {
                     <TrustItem text="24/7 Support Available" />
                 </div>
 
-=======
-
-                </div>
-                <div className="py-6">
-                    <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-100">
-                        <div className="flex items-center gap-6 pb-2 px-4 w-max mx-auto">
-                            {localServiceCategories1.map((category) => (
-                                <button
-                                    onClick={() => navigate(`/providers/${category.title}`)}
-                                    key={category.id}
-                                    className="w-10 flex flex-col items-center min-w-[100px] group transition-transform hover:scale-105"
-                                >
-                                    <div
-                                        className={`w-14 h-14 ${category.color} rounded-2xl flex items-center justify-center mb-2 group-hover:shadow-xl transition-all duration-200`}
-                                    >
-                                        <svg
-                                            className="w-6 h-6 text-white"
-                                            fill="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path d={category.icon} />
-                                        </svg>
-                                    </div>
-                                    <span className="text-xs font-medium text-blue-900 text-center leading-tight">
-                                        {category.title}
-                                    </span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                </div>
-
-                {/* Trust Indicators */}
-                <div className="flex flex-wrap justify-center items-center gap-8 text-sm text-gray-600 mt-10">
-                    <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span>500+ Certified Helpers</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span>50,000+ Satisfied Users</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span>24/7 Availability</span>
-                    </div>
-                </div>
->>>>>>> ad8a7309a6429a315a675c843406e9e3e412259e
             </div>
         </section>
     );
 }
 
-<<<<<<< HEAD
 function TrustItem({ text }) {
     return (
         <div className="flex items-center gap-2 text-slate-600 font-medium text-sm sm:text-base">
@@ -263,6 +147,3 @@ function TrustItem({ text }) {
 }
 
 export default Hero;
-=======
-export default Hero;
->>>>>>> ad8a7309a6429a315a675c843406e9e3e412259e
