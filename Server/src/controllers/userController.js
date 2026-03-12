@@ -6,6 +6,7 @@ import { v2 as cloudinary } from 'cloudinary'
 import providerModel from '../models/providerModel.js'
 import appointmentModel from '../models/appointmentModel.js'
 import razorpay from 'razorpay'
+import { buildClearCookieOptions, buildCookieOptions } from '../utils/cookieOptions.js'
 
 // register new user 
 
@@ -37,13 +38,7 @@ export const registerUser = async (req, res) => {
 
         const token = await user.getJWT()
 
-        res.cookie('token', token, {
-            httpOnly: true,
-            sameSite: 'none',
-            secure: true,
-            path: "/",
-            expires: new Date(Date.now() + 24 * 7 * 60 * 60 * 1000)
-        })
+        res.cookie('token', token, buildCookieOptions())
         user.password = undefined;
         res.json({ success: true, message: "User Registered", user });
     } catch (error) {
@@ -72,13 +67,7 @@ export const userLogin = async (req, res) => {
         if (isMatch) {
             const token = await user.getJWT()
 
-            res.cookie('token', token, {
-                httpOnly: true,
-                sameSite: 'none',
-                secure: true,
-                path: "/",
-                expires: new Date(Date.now() + 24 * 7 * 60 * 60 * 1000)
-            })
+            res.cookie('token', token, buildCookieOptions())
             res.json({ success: true, user })
         } else {
             res.json({ success: false, message: 'Invalid Credentials!!' })
@@ -91,12 +80,7 @@ export const userLogin = async (req, res) => {
 
 export const logOutUser = async (req, res) => {
     try {
-        res.clearCookie('token', {
-            httpOnly: true,
-            sameSite: 'none',
-            secure: true,
-            path: "/",
-        })
+        res.clearCookie('token', buildClearCookieOptions())
 
         res.json({ success: true, message: 'Logged out Successfully' })
     } catch (error) {

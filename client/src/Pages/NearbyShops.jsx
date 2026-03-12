@@ -1,0 +1,1 @@
+export { default } from './NearbyShops.jsx.jsx'

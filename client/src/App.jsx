@@ -11,7 +11,7 @@ import Header from './components/Header'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollTop'
 import Login from './Pages/Admin/Admin/Login'
-import { ToastContainer, toast } from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { useContext } from 'react'
 import { AdminContext } from './context/AdminContext'
@@ -38,27 +38,27 @@ import AddProperty from './Pages/Provider/property/AddProperty.jsx'
 import MyProperties from './Pages/Provider/property/MyProperties.jsx'
 import UpdateProperty from './Pages/Provider/property/UpdateProperty.jsx'
 import NearbyProperties from './Pages/NearbyProperties.jsx'
-import HelpHiveAssistant from './components/HelpHiveAssistant.jsx.jsx'
+import HelpHiveAssistant from './components/HelpHiveAssistant.jsx'
 
 const App = () => {
 
   const location = useLocation()
 
   const { aToken } = useContext(AdminContext)
-  const { pToken } = useContext(ProviderContext)
+  useContext(ProviderContext)
 
-  const noHeaderFooterRoutes = ['/auth/login', '/auth/signup']
+  const isAuthRoute = location.pathname.startsWith('/auth/')
   const isAdminRoute = location.pathname.startsWith('/admin')
   const isProviderRoute = location.pathname === '/provider' || location.pathname.startsWith('/provider/');
   const isUserRoute = location.pathname === '/dashboard' || location.pathname.startsWith('/dashboard/');
 
 
-  const hideLayout = noHeaderFooterRoutes.includes(location.pathname) || isAdminRoute || isProviderRoute || isUserRoute;
+  const hideLayout = isAuthRoute || isAdminRoute || isProviderRoute || isUserRoute;
   return (
     // mx-4 sm:mx-[10%]
     <>
     <HelpHiveAssistant/>
-      <div className='bg-gradient-to-br from-blue-50 via-white to-indigo-50 min-h-screen max-w-full'>
+      <div className='min-h-screen max-w-full bg-[radial-gradient(circle_at_top,_rgba(186,230,253,0.32),_transparent_22%),linear-gradient(180deg,#f8fbff_0%,#ffffff_42%,#f8fafc_100%)]'>
       <ScrollToTop />
 
       {!hideLayout && <Header />}
@@ -78,6 +78,7 @@ const App = () => {
 
         <Route path='/dashboard' element={<UserDashboard />}>
           <Route index element={<MyAppointment />} />
+          <Route path='my-appointments' element={<MyAppointment />} />
           <Route path='my-profile' element={<MyProfile />} />
           <Route path='chat/:provId' element={<UserChat />} />
         </Route>

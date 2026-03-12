@@ -5,6 +5,22 @@
 *{
     font-family: Outfit;
 }
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background:
+        radial-gradient(circle at top, rgba(125, 211, 252, 0.18), transparent 28%),
+        linear-gradient(180deg, #f8fbff 0%, #ffffff 38%, #f7fafc 100%);
+    color: #0f172a;
+}
+
+::selection {
+    background: rgba(37, 99, 235, 0.18);
+    color: #0f172a;
+}
+
 *::-webkit-scrollbar {
     display: none;
 }
@@ -13,7 +29,7 @@
 .bg-primary {
     background-color: #5f6FFF;
 }
-.hover:bg-primary {
+.hover\:bg-primary:hover {
     background-color: #5f6FFF;
 }
 

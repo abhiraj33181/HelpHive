@@ -97,6 +97,27 @@ export const getMyShops = async (req, res) => {
 };
 
 
+export const deleteShop = async (req, res) => {
+    try {
+        const { shopId } = req.params;
+
+        const deletedShop = await Shop.findOneAndDelete({
+            _id: shopId,
+            owner: req.provider._id,
+        });
+
+        if (!deletedShop) {
+            return res.status(404).json({ success: false, message: "Shop not found" });
+        }
+
+        res.json({ success: true, message: "Shop deleted successfully" });
+    } catch (error) {
+        console.error("Delete Shop Error:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+
+
 export const getNearbyShops = async (req, res) => {
     try {
         const { lat, lng, radius = 5, category } = req.query;

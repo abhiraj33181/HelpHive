@@ -5,6 +5,7 @@ import providerModel from '../models/providerModel.js';
 import JWT from 'jsonwebtoken'
 import appointmentModel from '../models/appointmentModel.js';
 import userModel from '../models/userModel.js';
+import { buildClearCookieOptions, buildCookieOptions } from '../utils/cookieOptions.js';
 
 // creating the provider
 export const addProvider = async (req, res) => {
@@ -23,27 +24,27 @@ export const addProvider = async (req, res) => {
             return res.json({ success: false, message: "Please Enter a Strong Password" })
         }
 
-        const existingProvider = await providerModel({ email })
+        const existingProvider = await providerModel.findOne({ email })
         if (existingProvider) {
             return res.json({ success: false, message: 'Provider Already Exist!!' })
         }
 
         const hashPassword = await bcrypt.hash(password, 10)
 
-
-        const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" })
-        const imageURL = imageUpload.secure_url
-
         const providerData = {
             name,
             email,
-            image: imageURL,
             password: hashPassword,
             service,
             experience,
             fees,
             address: JSON.parse(address),
             about
+        }
+
+        if (imageFile) {
+            const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" })
+            providerData.image = imageUpload.secure_url
         }
 
         const newProvider = new providerModel(providerData)
@@ -62,13 +63,7 @@ export const loginAdmin = async (req, res) => {
 
         if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
             const token = JWT.sign(email + password, process.env.SECRET_KEY)
-            res.cookie('aToken', token, {
-                httpOnly: true,
-                sameSite: 'none',
-                secure: true,
-                path: "/",
-                expires: new Date(Date.now() + 24 * 7 * 60 * 60 * 1000)
-            })
+            res.cookie('aToken', token, buildCookieOptions())
             res.json({ success: true, token })
         } else {
             res.json({ success: false, message: 'Invalid Credentials' })
@@ -81,12 +76,7 @@ export const loginAdmin = async (req, res) => {
 
 export const logOutUser = async (req, res) => {
     try {
-        res.clearCookie('aToken', {
-            httpOnly: true,
-            sameSite: 'none',
-            secure: true,
-            path: "/",
-        })
+        res.clearCookie('aToken', buildClearCookieOptions())
 
         res.json({ success: true, message: 'Logged out Successfully' })
     } catch (error) {

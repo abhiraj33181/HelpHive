@@ -10,6 +10,8 @@ const AppContextProvider = (props) => {
 
     const [providers, setProviders] = useState([]);
     const [userData, setUserData] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedLocation, setSelectedLocation] = useState('All India');
 
     const currencySymbol = "₹";
     const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -115,6 +117,17 @@ const AppContextProvider = (props) => {
     };
 
 
+    const providerCities = [
+        'All India',
+        ...Array.from(
+            new Set(
+                providers
+                    .map((provider) => provider.address?.city?.trim())
+                    .filter(Boolean)
+            )
+        ).sort((firstCity, secondCity) => firstCity.localeCompare(secondCity))
+    ];
+
     const value = {
         providers,
         currencySymbol,
@@ -129,6 +142,11 @@ const AppContextProvider = (props) => {
         slotDateFormat,
         token,
         setToken,
+        searchQuery,
+        setSearchQuery,
+        selectedLocation,
+        setSelectedLocation,
+        providerCities,
         addReview,
         getProviderReviews,
         deleteReview,

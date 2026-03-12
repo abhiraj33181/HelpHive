@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   getMyPropertiesAPI,
+  deletePropertyAPI,
 } from "../../../services/propertyService";
 import { Link } from "react-router-dom";
 import {
@@ -19,6 +20,7 @@ import { toast } from "react-toastify";
 export default function MyProperties() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
     fetchProperties();
@@ -40,12 +42,20 @@ export default function MyProperties() {
     if (!confirm("Are you sure you want to delete this property?")) return;
 
     try {
-      console.log(id);
-      setProperties((prev) => prev.filter((p) => p._id !== id));
-      toast.success("Property deleted successfully");
+      setDeletingId(id);
+      const res = await deletePropertyAPI(id);
+
+      if (res.data.success) {
+        setProperties((prev) => prev.filter((p) => p._id !== id));
+        toast.success("Property deleted successfully");
+      } else {
+        toast.error(res.data.message || "Failed to delete property");
+      }
     } catch (err) {
       console.error(err);
       toast.error("Failed to delete property");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -149,7 +159,7 @@ export default function MyProperties() {
                     <span className="text-sm text-gray-500">/month</span>
                   </div>
                   <p className="text-sm text-gray-500 mt-1">
-                    Deposit: ₹{property.deposit.toLocaleString("em-IN")}
+                    Deposit: ₹{property.deposit.toLocaleString("en-IN")}
                   </p>
                 </div>
 
@@ -197,10 +207,15 @@ export default function MyProperties() {
                   </Link>
                   <button
                     onClick={() => handleDelete(property._id)}
+                    disabled={deletingId === property._id}
                     className="flex items-center gap-2 text-sm text-gray-700 hover:text-red-600 font-medium transition-colors px-3 py-2 hover:bg-red-50 rounded-xl group/delete"
                   >
-                    <Trash2 className="w-4 h-4" />
-                    Delete
+                    {deletingId === property._id ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-4 h-4" />
+                    )}
+                    {deletingId === property._id ? "Deleting..." : "Delete"}
                   </button>
                 </div>
               </div>

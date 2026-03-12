@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-// Make sure to import deleteShopAPI if you have it created in your services
 import { getMyShopsAPI, deleteShopAPI } from "../../services/shopService"; 
 import { Link } from "react-router-dom";
 import { Plus, Pencil, Trash2, MapPin, Phone, Store, Loader2 } from "lucide-react";
@@ -33,12 +32,10 @@ export default function MyShop() {
 
     setDeletingId(id);
     try {
-      // Assuming you have a delete API endpoint
       const res = await deleteShopAPI(id); 
       
       if (res.data.success) {
         toast.success("Shop deleted successfully");
-        // Optimistic update: remove from UI immediately
         setShops((prev) => prev.filter((shop) => shop._id !== id));
       } else {
         toast.error(res.data.message || "Could not delete shop");

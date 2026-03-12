@@ -22,14 +22,22 @@ app.set('trust proxy', 1)
 
 
 const PORT = process.env.PORT || 4000
+const allowedOrigins = [
+    'http://localhost:5173',
+    'https://helphive-liard.vercel.app',
+    ...(process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',').map((origin) => origin.trim()).filter(Boolean) : [])
+]
 
 app.use(cors({
-    origin : ['http://localhost:5173', 'https://helphive-liard.vercel.app'],
+    origin : allowedOrigins,
     credentials: true
 }))
 
 app.use(express.json())
 app.use(cookieParser())
+app.get('/api/health', (req, res) => {
+    res.json({ success: true, message: 'HelpHive API is running' })
+})
 // API Endpoints 
 
 app.use('/api/admin', adminRouter)

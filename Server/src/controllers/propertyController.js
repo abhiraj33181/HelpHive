@@ -117,6 +117,27 @@ export const getMyProperties = async (req, res) => {
 };
 
 
+export const deleteProperty = async (req, res) => {
+    try {
+        const { propertyId } = req.params;
+
+        const deletedProperty = await Property.findOneAndDelete({
+            _id: propertyId,
+            owner: req.provider._id,
+        });
+
+        if (!deletedProperty) {
+            return res.status(404).json({ success: false, message: "Property not found" });
+        }
+
+        res.json({ success: true, message: "Property deleted successfully" });
+    } catch (error) {
+        console.error("Delete Property Error:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+
+
 
 export const getNearbyProperties = async (req, res) => {
     try {

@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt'
 import JWT from 'jsonwebtoken';
 import { v2 as cloudinary } from 'cloudinary'
 import appointmentModel from "../models/appointmentModel.js";
+import { buildClearCookieOptions, buildCookieOptions } from '../utils/cookieOptions.js';
 
 
 // register provider 
@@ -38,13 +39,7 @@ export const registerProvider = async (req, res) => {
 
         const token = await provider.getJWT()
 
-        res.cookie('pToken', token, {
-            httpOnly: true,
-            sameSite: 'none',
-            secure: true,
-            path: "/",
-            expires: new Date(Date.now() + 24 * 7 * 60 * 60 * 1000)
-        })
+        res.cookie('pToken', token, buildCookieOptions())
 
         res.cookie
         res.json({ success: true, provider })
@@ -105,13 +100,7 @@ export const loginProvider = async (req, res) => {
         if (isMatch) {
             const token = await provider.getJWT()
 
-            res.cookie('pToken', token, {
-                httpOnly: true,
-                sameSite: 'none',
-                secure: true,
-                path: "/",
-                expires: new Date(Date.now() + 24 * 7 * 60 * 60 * 1000)
-            })
+            res.cookie('pToken', token, buildCookieOptions())
 
             const provObj = provider.toObject();
             delete provObj.password;
@@ -127,12 +116,7 @@ export const loginProvider = async (req, res) => {
 
 export const logOutUser = async (req, res) => {
     try {
-        res.clearCookie('pToken', {
-            httpOnly: true,
-            sameSite: 'none',
-            secure: true,
-            path: "/",
-        })
+        res.clearCookie('pToken', buildClearCookieOptions())
 
         res.json({ success: true, message: 'Logged out Successfully' })
     } catch (error) {

@@ -192,29 +192,30 @@ export const footerSections = [
         title: "Company",
         links: [
             { text: "About Us", href: "/about" },
-            { text: "How It Works", href: "/how-it-works" },
+            { text: "Browse Providers", href: "/providers" },
             { text: "Contact Us", href: "/contact" },
         ],
     },
     {
         title: "For Helpers",
         links: [
-            { text: "Join as a Service Provider", href: "/signup/helper" },
-            { text: "Partner Resources", href: "/resources" },
+            { text: "Join as a Provider", href: "/auth/signup" },
+            { text: "Provider Dashboard", href: "/provider/dashboard" },
         ],
     },
     {
         title: "For Customers",
         links: [
-            { text: "Find Local Helpers", href: "/helpers" },
-            { text: "Book a Service", href: "/book-service" },
+            { text: "Find Local Helpers", href: "/providers" },
+            { text: "Nearby Shops", href: "/shops" },
+            { text: "Nearby Rentals", href: "/property" },
         ],
     },
     {
         title: "Legal",
         links: [
-            { text: "Privacy Policy", href: "/privacy" },
-            { text: "Terms & Conditions", href: "/terms" },
+            { text: "Support", href: "/contact" },
+            { text: "About Platform", href: "/about" },
         ],
     },
 ];

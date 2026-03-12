@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { 
     ArrowRight, 
     HandHelpingIcon, 
+    MapPin,
     Search, 
     Menu, 
     X, 
@@ -12,7 +13,7 @@ import {
     Building2, 
     LogOut 
 } from 'lucide-react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import { ProviderContext } from '../context/ProviderContext';
 import { toast } from 'react-toastify';
@@ -20,13 +21,23 @@ import { assets } from '../assets/assets';
 
 function Header() {
     const navigate = useNavigate();
+    const location = useLocation();
     const [showMenu, setShowMenu] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
-    
-    // Local state for search
     const [localSearch, setLocalSearch] = useState(""); 
 
-    const { token, userData, axios, backendURL, loadUserProfileData, setSearchQuery } = useContext(AppContext);
+    const {
+        token,
+        userData,
+        axios,
+        backendURL,
+        loadUserProfileData,
+        searchQuery,
+        setSearchQuery,
+        selectedLocation,
+        setSelectedLocation,
+        providerCities,
+    } = useContext(AppContext);
     const { pToken, profileData, getProfileData, setPToken } = useContext(ProviderContext);
 
     // Prevent body scroll when mobile menu is open
@@ -37,6 +48,10 @@ function Header() {
             document.body.style.overflow = 'unset';
         }
     }, [showMenu]);
+
+    useEffect(() => {
+        setLocalSearch(searchQuery || '');
+    }, [searchQuery]);
 
     const logout = async () => {
         try {
@@ -62,9 +77,40 @@ function Header() {
         }
     };
 
-    const handleSearch = (e) => {
+    const handleSearchChange = (e) => {
         setLocalSearch(e.target.value);
-        if(setSearchQuery) setSearchQuery(e.target.value);
+        if (setSearchQuery) setSearchQuery(e.target.value);
+    };
+
+    const submitSearch = () => {
+        const trimmedSearch = localSearch.trim();
+
+        if (setSearchQuery) {
+            setSearchQuery(trimmedSearch);
+        }
+
+        if (location.pathname !== '/providers') {
+            navigate('/providers');
+        }
+
+        setShowMenu(false);
+    };
+
+    const handleSearchKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            submitSearch();
+        }
+    };
+
+    const handleLocationChange = (e) => {
+        if (setSelectedLocation) {
+            setSelectedLocation(e.target.value);
+        }
+
+        if (location.pathname !== '/providers') {
+            navigate('/providers');
+        }
     };
 
     return (
@@ -77,9 +123,12 @@ function Header() {
                     <div className='w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 transition-transform group-hover:scale-105'>
                         <HandHelpingIcon className='w-6 h-6 text-white' />
                     </div>
-                    <span className='text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent tracking-tight'>
-                        HelpHive
-                    </span>
+                    <div className='flex flex-col leading-none'>
+                        <span className='text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-600 bg-clip-text text-transparent tracking-tight'>
+                            HelpHive
+                        </span>
+                        <span className='text-[10px] uppercase tracking-[0.3em] text-orange-500 font-semibold'>India</span>
+                    </div>
                 </Link>
 
                 {/* --- Desktop Navigation --- */}
@@ -100,16 +149,41 @@ function Header() {
                 {/* --- Right Actions --- */}
                 <div className='flex items-center gap-4'>
                     
-                    {/* Search Bar (Desktop) */}
-                    <div className="hidden lg:flex items-center bg-slate-100/80 px-4 py-2 rounded-full border border-slate-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition-all w-64">
-                        <Search className='w-4 h-4 text-slate-400 mr-2' />
-                        <input 
-                            onChange={handleSearch} 
-                            value={localSearch}
-                            className="bg-transparent text-sm outline-none w-full text-slate-700 placeholder:text-slate-400" 
-                            type="text" 
-                            placeholder="Find a provider..." 
-                        />
+                    {/* Search Controls (Desktop) */}
+                    <div className="hidden xl:flex items-center gap-2 rounded-[24px] border border-slate-200 bg-white/90 px-2 py-2 shadow-sm shadow-sky-100/50 backdrop-blur-md">
+                        <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2">
+                            <MapPin className='h-4 w-4 text-sky-600' />
+                            <select
+                                value={selectedLocation}
+                                onChange={handleLocationChange}
+                                className="bg-transparent pr-2 text-sm font-medium text-slate-700 outline-none"
+                            >
+                                {providerCities.map((city) => (
+                                    <option key={city} value={city}>{city}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="flex items-center rounded-full bg-slate-50 px-4 py-2.5 w-[300px] focus-within:ring-2 focus-within:ring-sky-100 transition-all">
+                            <Search className='w-4 h-4 text-slate-400 mr-2' />
+                            <input 
+                                onChange={handleSearchChange}
+                                onKeyDown={handleSearchKeyDown}
+                                value={localSearch}
+                                className="bg-transparent text-sm outline-none w-full text-slate-700 placeholder:text-slate-400" 
+                                type="text" 
+                                placeholder="Search provider, service or city"
+                            />
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={submitSearch}
+                            className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-900 text-white transition-colors hover:bg-blue-700"
+                            aria-label="Search providers"
+                        >
+                            <Search className="h-4 w-4" />
+                        </button>
                     </div>
 
                     {/* Authentication Logic */}
@@ -132,7 +206,7 @@ function Header() {
                                         <p className="text-sm font-semibold text-slate-800">Hello, User</p>
                                     </div>
                                     <MenuItem icon={LayoutDashboard} label="Dashboard" onClick={() => navigate('/dashboard')} />
-                                    <MenuItem icon={User} label="My Profile" onClick={() => navigate('/my-profile')} />
+                                    <MenuItem icon={User} label="My Profile" onClick={() => navigate('/dashboard/my-profile')} />
                                     <div className="h-px bg-slate-100 my-1"></div>
                                     <MenuItem icon={LogOut} label="Logout" onClick={logout} isDestructive />
                                 </div>
@@ -202,7 +276,10 @@ function Header() {
                             <div className='w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center'>
                                 <HandHelpingIcon className='w-5 h-5 text-white' />
                             </div>
-                            <span className='text-xl font-bold text-slate-800'>HelpHive</span>
+                            <div className='flex flex-col leading-none'>
+                                <span className='text-xl font-bold text-slate-800'>HelpHive</span>
+                                <span className='text-[10px] uppercase tracking-[0.25em] text-orange-500 font-semibold'>India</span>
+                            </div>
                         </div>
                         <button onClick={() => setShowMenu(false)} className="p-2 hover:bg-slate-100 rounded-full text-slate-500">
                             <X className="w-6 h-6" />
@@ -210,15 +287,39 @@ function Header() {
                     </div>
 
                     {/* Mobile Search */}
-                    <div className="relative mb-8">
-                        <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400' />
-                        <input 
-                            onChange={handleSearch}
-                            value={localSearch}
-                            className="w-full bg-slate-100 py-3 pl-10 pr-4 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-100 border border-transparent focus:border-blue-500 transition-all" 
-                            type="text" 
-                            placeholder="Search provider..." 
-                        />
+                    <div className="space-y-3 mb-8">
+                        <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
+                            <MapPin className='h-4 w-4 text-sky-600' />
+                            <select
+                                value={selectedLocation}
+                                onChange={handleLocationChange}
+                                className="w-full bg-transparent text-sm font-medium text-slate-700 outline-none"
+                            >
+                                {providerCities.map((city) => (
+                                    <option key={city} value={city}>{city}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="relative">
+                            <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400' />
+                            <input 
+                                onChange={handleSearchChange}
+                                onKeyDown={handleSearchKeyDown}
+                                value={localSearch}
+                                className="w-full bg-slate-100 py-3 pl-10 pr-4 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-100 border border-transparent focus:border-blue-500 transition-all" 
+                                type="text" 
+                                placeholder="Search provider, service or city"
+                            />
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={submitSearch}
+                            className="w-full flex items-center justify-center gap-2 rounded-xl bg-slate-900 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                        >
+                            <Search className="h-4 w-4" /> Search Providers
+                        </button>
                     </div>
 
                     {/* Mobile Nav Links */}

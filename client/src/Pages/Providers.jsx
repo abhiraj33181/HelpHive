@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom'; // Added useParams if you use route params for category
+import { useNavigate, useParams } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import { 
     Search, Filter, MapPin, Star, X, 
@@ -8,14 +8,15 @@ import {
 
 const Providers = () => {
     const navigate = useNavigate();
-    const { providers } = useContext(AppContext);
+    const { providers, searchQuery, selectedLocation, setSearchQuery, setSelectedLocation, providerCities } = useContext(AppContext);
+    const { service } = useParams();
     
     // UI States
     const [showMobileFilter, setShowMobileFilter] = useState(false);
     const [filterProv, setFilterProv] = useState([]);
 
     // Filter Logic States
-    const [search, setSearch] = useState("");
+    const [search, setSearch] = useState(searchQuery || "");
     const [selectedCategory, setSelectedCategory] = useState("");
     const [availability, setAvailability] = useState("");
     const [sortPrice, setSortPrice] = useState("");
@@ -26,6 +27,24 @@ const Providers = () => {
         "Tailor", "Painter", "Carpenter", "Beautician", "Cleaner", "Mechanic"
     ];
 
+    useEffect(() => {
+        setSearch(searchQuery || "");
+    }, [searchQuery]);
+
+    useEffect(() => {
+        if (!service) {
+            setSelectedCategory("");
+            return;
+        }
+
+        const normalizedService = decodeURIComponent(service)
+            .replace(/-/g, ' ')
+            .toLowerCase();
+
+        const matchedCategory = categories.find((category) => category.toLowerCase() === normalizedService);
+        setSelectedCategory(matchedCategory || "");
+    }, [service]);
+
     // Apply Filters
     const applyFilter = () => {
         let data = [...providers];
@@ -35,8 +54,14 @@ const Providers = () => {
             const lowerSearch = search.toLowerCase();
             data = data.filter(p => 
                 (p.name?.toLowerCase() || "").includes(lowerSearch) || 
-                (p.service?.toLowerCase() || "").includes(lowerSearch)
+                (p.service?.toLowerCase() || "").includes(lowerSearch) ||
+                (p.address?.city?.toLowerCase() || "").includes(lowerSearch)
             );
+        }
+
+        if (selectedLocation && selectedLocation !== 'All India') {
+            const normalizedLocation = selectedLocation.toLowerCase();
+            data = data.filter((provider) => (provider.address?.city?.toLowerCase() || '') === normalizedLocation);
         }
 
         // 2. Category
@@ -50,27 +75,35 @@ const Providers = () => {
 
         // 4. Rating
         if (rating) {
-            data = data.filter(p => (p.rating || 0) >= Number(rating));
+            data = data.filter(p => (p.averageRating || 0) >= Number(rating));
         }
 
         // 5. Sort Price
-        if (sortPrice === "low_high") data.sort((a, b) => (a.price || 0) - (b.price || 0));
-        if (sortPrice === "high_low") data.sort((a, b) => (b.price || 0) - (a.price || 0));
+        if (sortPrice === "low_high") data.sort((a, b) => (a.fees || 0) - (b.fees || 0));
+        if (sortPrice === "high_low") data.sort((a, b) => (b.fees || 0) - (a.fees || 0));
 
         setFilterProv(data);
     };
 
     useEffect(() => {
         applyFilter();
-    }, [providers, selectedCategory, availability, sortPrice, rating, search]);
+    }, [providers, selectedCategory, availability, sortPrice, rating, search, selectedLocation]);
 
     // Reset all filters
     const resetFilters = () => {
         setSearch("");
+        setSearchQuery("");
+        setSelectedLocation('All India');
         setSelectedCategory("");
         setAvailability("");
         setRating("");
         setSortPrice("");
+    };
+
+    const handleSearchChange = (e) => {
+        const nextSearch = e.target.value;
+        setSearch(nextSearch);
+        setSearchQuery(nextSearch);
     };
 
     return (
@@ -81,7 +114,7 @@ const Providers = () => {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                     <div>
                         <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Find Professionals</h1>
-                        <p className="text-slate-500 mt-1">Discover trusted local helpers for your needs</p>
+                        <p className="text-slate-500 mt-1">Discover trusted local helpers for your needs{selectedLocation !== 'All India' ? ` in ${selectedLocation}` : ''}</p>
                     </div>
                     
                     {/* Search Bar */}
@@ -89,9 +122,9 @@ const Providers = () => {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                         <input 
                             type="text" 
-                            placeholder="Search service (e.g. Plumber)..."
+                            placeholder="Search provider, service or city"
                             value={search}
-                            onChange={(e) => setSearch(e.target.value)}
+                            onChange={handleSearchChange}
                             className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all shadow-sm"
                         />
                     </div>
@@ -147,6 +180,20 @@ const Providers = () => {
                             <div className="h-px bg-slate-100 my-4"></div>
 
                             {/* Availability */}
+                            <div className="space-y-3 mb-6">
+                                <label className="text-sm font-semibold text-slate-700">Location</label>
+                                <select
+                                    value={selectedLocation}
+                                    onChange={(e) => setSelectedLocation(e.target.value)}
+                                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 outline-none focus:border-blue-500"
+                                >
+                                    <option value="All India">All India</option>
+                                    {providerCities.filter((city) => city !== 'All India').map((city) => (
+                                        <option key={city} value={city}>{city}</option>
+                                    ))}
+                                </select>
+                            </div>
+
                             <div className="space-y-3 mb-6">
                                 <label className="text-sm font-semibold text-slate-700">Availability</label>
                                 <select 
@@ -234,7 +281,7 @@ const Providers = () => {
                                                 <h3 className="text-lg font-bold text-slate-800 line-clamp-1 group-hover:text-blue-600 transition-colors">{provider.name}</h3>
                                                 <div className="flex items-center gap-1 bg-amber-50 px-1.5 py-0.5 rounded text-amber-600">
                                                     <Star className="w-3 h-3 fill-current" />
-                                                    <span className="text-xs font-bold">{provider.rating || "4.8"}</span>
+                                                    <span className="text-xs font-bold">{provider.averageRating || "4.8"}</span>
                                                 </div>
                                             </div>
 
@@ -247,7 +294,7 @@ const Providers = () => {
                                             <div className="mt-auto pt-4 border-t border-slate-50 flex items-center justify-between">
                                                 <div className="flex flex-col">
                                                     <span className="text-xs text-slate-400 font-medium">Starting from</span>
-                                                    <span className="text-slate-900 font-bold">₹{provider.price || "500"}</span>
+                                                    <span className="text-slate-900 font-bold">₹{provider.fees || "500"}</span>
                                                 </div>
                                                 <button className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
                                                     <ArrowRight className="w-4 h-4" />

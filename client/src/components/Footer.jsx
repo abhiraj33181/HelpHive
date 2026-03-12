@@ -26,11 +26,14 @@ function Footer() {
                             <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-900/20 group-hover:scale-105 transition-transform">
                                 <HandHelpingIcon className="w-6 h-6 text-white" />
                             </div>
-                            <span className="text-2xl font-bold text-white tracking-tight">HelpHive</span>
+                            <div className="flex flex-col leading-none">
+                                <span className="text-2xl font-bold text-white tracking-tight">HelpHive</span>
+                                <span className="text-[10px] uppercase tracking-[0.3em] text-orange-300 font-semibold">India</span>
+                            </div>
                         </Link>
 
                         <p className="text-slate-400 leading-relaxed max-w-sm">
-                            Your trusted local helper for every need. reliable, fast, and verified professionals just a click away.
+                            Discover verified local providers, nearby shops, and rental options across Indian cities with one unified help platform.
                         </p>
 
                         <div className="space-y-4 pt-2">
@@ -94,7 +97,7 @@ function Footer() {
                 {/* --- Bottom Section: Copyright & Socials --- */}
                 <div className="py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-slate-500">
                     <p>
-                        &copy; {new Date().getFullYear()} HelpHive Inc. All rights reserved.
+                        &copy; {new Date().getFullYear()} HelpHive India. All rights reserved.
                     </p>
 
                     <div className="flex items-center gap-4">

@@ -79,7 +79,7 @@ function Sidebar() {
           </NavLink>
 
           <NavLink
-            to="/provider/all-appointments"
+            to="/provider/dashboard/all-appointments"
             className={({ isActive }) =>
               `flex items-center gap-4 py-3.5 px-3 md:px-9 md:min-w-72 cursor-pointer ${
                 isActive ? 'bg-[#F2F2FF] border-r-4 border-[#5F6FFF]' : ''
@@ -91,7 +91,7 @@ function Sidebar() {
           </NavLink>
 
           <NavLink
-            to="/provider/my-profile"
+            to="/provider/dashboard/my-profile"
             className={({ isActive }) =>
               `flex items-center gap-4 py-3.5 px-3 md:px-9 md:min-w-72 cursor-pointer ${
                 isActive ? 'bg-[#F2F2FF] border-r-4 border-[#5F6FFF]' : ''

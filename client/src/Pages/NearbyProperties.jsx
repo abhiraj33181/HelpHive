@@ -4,6 +4,8 @@ import { Search, SlidersHorizontal } from "lucide-react";
 
 export default function NearbyProperties() {
   const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,12 +18,39 @@ export default function NearbyProperties() {
   const [filtered, setFiltered] = useState([]);
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      const { latitude, longitude } = pos.coords;
-      const res = await getNearbyPropertiesAPI(latitude, longitude);
-      setProperties(res.data.properties);
-      setFiltered(res.data.properties);
-    });
+    const loadNearbyProperties = async (latitude, longitude) => {
+      try {
+        setLoading(true);
+        const res = await getNearbyPropertiesAPI(latitude, longitude);
+        const nextProperties = res.data?.properties || [];
+        setProperties(nextProperties);
+        setFiltered(nextProperties);
+        setError("");
+      } catch (err) {
+        console.error(err);
+        setError("We could not load nearby properties right now.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (!navigator.geolocation) {
+      setError("Location is not supported on this device.");
+      setLoading(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        loadNearbyProperties(latitude, longitude);
+      },
+      () => {
+        setError("Enable location access to see rental options near you.");
+        setLoading(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+    );
   }, []);
 
   // Core filter logic
@@ -47,7 +76,11 @@ export default function NearbyProperties() {
 
     // BHK
     if (bhkFilter) {
-      data = data.filter((p) => String(p.bhk) === bhkFilter);
+      if (bhkFilter === "4") {
+        data = data.filter((p) => Number(p.bedroom) >= 4);
+      } else {
+        data = data.filter((p) => String(p.bedroom) === bhkFilter);
+      }
     }
 
     // Furnishing
@@ -155,7 +188,7 @@ export default function NearbyProperties() {
               <option value="">Furnishing</option>
               <option value="unfurnished">Unfurnished</option>
               <option value="semi-furnished">Semi-furnished</option>
-              <option value="fully-furnished">Fully-furnished</option>
+              <option value="furnished">Furnished</option>
             </select>
 
             {/* Type */}
@@ -166,7 +199,9 @@ export default function NearbyProperties() {
             >
               <option value="">Property type</option>
               <option value="apartment">Apartment</option>
-              <option value="independent house">Independent House</option>
+              <option value="flat">Flat</option>
+              <option value="room">Room</option>
+              <option value="house">House</option>
               <option value="pg">PG / Co-living</option>
             </select>
 
@@ -184,7 +219,19 @@ export default function NearbyProperties() {
 
       {/* LIST */}
       <div className="space-y-5">
-        {filtered.map((p) => (
+        {loading && (
+          <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-500 shadow-sm">
+            Looking up nearby rentals for you...
+          </div>
+        )}
+
+        {!loading && error && (
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-center text-amber-900 shadow-sm">
+            {error}
+          </div>
+        )}
+
+        {!loading && !error && filtered.map((p) => (
           <div
             key={p._id}
             className="border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-300 bg-white flex flex-col md:flex-row gap-4"
@@ -218,9 +265,9 @@ export default function NearbyProperties() {
                 </p>
 
                 <div className="mt-3 flex flex-wrap gap-2 text-xs">
-                  {p.bhk && (
+                  {p.bedroom && (
                     <span className="bg-slate-100 px-3 py-1 rounded-full font-medium text-slate-700">
-                      {p.bhk} BHK
+                      {p.bedroom} BHK
                     </span>
                   )}
                   {p.furnishing && (
@@ -249,7 +296,7 @@ export default function NearbyProperties() {
           </div>
         ))}
 
-        {filtered.length === 0 && (
+        {!loading && !error && filtered.length === 0 && (
           <div className="text-center text-slate-500 text-sm py-10">
             No properties match your filters. Try changing the search or filters.
           </div>

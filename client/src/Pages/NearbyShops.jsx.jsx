@@ -15,6 +15,8 @@ import {
 export default function NearbyShops() {
   const [shops, setShops] = useState([]);
   const [filtered, setFiltered] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   // Filter States
   const [sortBy, setSortBy] = useState("");
@@ -27,12 +29,39 @@ export default function NearbyShops() {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      const { latitude, longitude } = pos.coords;
-      const res = await getNearbyShopsAPI(latitude, longitude);
-      setShops(res.data.shops);
-      setFiltered(res.data.shops);
-    });
+    const loadNearbyShops = async (latitude, longitude) => {
+      try {
+        setLoading(true);
+        const res = await getNearbyShopsAPI(latitude, longitude);
+        const nextShops = res.data?.shops || [];
+        setShops(nextShops);
+        setFiltered(nextShops);
+        setError("");
+      } catch (err) {
+        console.error(err);
+        setError("We could not load nearby shops right now.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (!navigator.geolocation) {
+      setError("Location is not supported on this device.");
+      setLoading(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        loadNearbyShops(latitude, longitude);
+      },
+      () => {
+        setError("Enable location access to see shops near you.");
+        setLoading(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+    );
   }, []);
 
   // Core Filter Logic (UNCHANGED, only extended with search at the end)
@@ -205,7 +234,19 @@ export default function NearbyShops() {
 
       {/* SHOPS LIST */}
       <div className="space-y-5">
-        {filtered.map((shop) => (
+        {loading && (
+          <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-500 shadow-sm">
+            Finding trusted shops near you...
+          </div>
+        )}
+
+        {!loading && error && (
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-center text-amber-900 shadow-sm">
+            {error}
+          </div>
+        )}
+
+        {!loading && !error && filtered.map((shop) => (
           <div
             key={shop._id}
             className="border border-slate-200 rounded-2xl p-3 md:p-4 shadow-sm hover:shadow-md transition-all duration-300 bg-white flex flex-col md:flex-row gap-4"
@@ -274,7 +315,7 @@ export default function NearbyShops() {
           </div>
         ))}
 
-        {filtered.length === 0 && (
+        {!loading && !error && filtered.length === 0 && (
           <div className="text-center text-slate-500 text-sm py-10">
             No shops match your filters. Try clearing some filters or changing the search text.
           </div>

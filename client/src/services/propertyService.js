@@ -14,6 +14,7 @@ API.interceptors.request.use((req) => {
 // API Functions
 export const addPropertyAPI = (data) => API.post("/property/add", data);
 export const updatePropertyAPI = (id, data) => API.put(`/property/update/${id}`, data);
+export const deletePropertyAPI = (id) => API.delete(`/property/delete/${id}`);
 export const getMyPropertiesAPI = () => API.get("/property/my-properties");
 
 // Public (User Side)

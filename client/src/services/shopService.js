@@ -13,5 +13,6 @@ API.interceptors.request.use((req) => {
 
 export const addShopAPI = (data) => API.post("/shop/add", data);
 export const updateShopAPI = (id, data) => API.put(`/shop/update/${id}`, data);
+export const deleteShopAPI = (id) => API.delete(`/shop/delete/${id}`);
 export const getMyShopsAPI = () => API.get("/shop/my-shops");
 export const getNearbyShopsAPI = (lat, lng) => API.get(`/shop/nearby?lat=${lat}&lng=${lng}`);
